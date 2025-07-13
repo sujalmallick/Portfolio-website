@@ -1,0 +1,225 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:wght@300;400;500;600;900&display=swap');
+
+*{
+  margin:0;
+  padding:0;
+}
+body{
+  font-family:'Poppins', sans-serif;
+}
+html{
+  scroll-behavior: smooth;
+  
+}
+p{
+  color:rgb(85,85,85);
+}
+
+a,.btn{
+  transition: all 300ms ease ;
+}
+nav,
+.nav-links{
+  display:flex;/*Lays out the list items (<li>) horizontally (row) by default
+➤ It turns the vertical list into a horizontal menu*/
+
+}
+nav{ 
+   justify-content: space-around;/*justify-content : Adds equal space around items in horizontal direction and align-items:Aligns items vertically centered in the container ONLY work if display: flex is set. */
+  align-items: center;
+  height:17vh;
+}
+.nav-links{   
+  gap:2rem;
+  list-style: none; /*Removes default bullet points from <ul> or <li> elements.*/
+  font-size:2 rem; /*Sets the font size of the text inside the navigation links to 1.5 rem, which is relative to the root font size.*/
+}
+a{
+  font-size: 1.2rem;
+  color:black; 
+  text-decoration:none; /*Removes the default underline from links.*/
+  text-decoration-color: white; /*Sets the color of the text decoration (underline) to white.*/
+}
+a:hover{
+  color:#0D5EA6; /*Changes the text color to grey when hovering over the link.*/
+  text-decoration:underline; /*Adds an underline to the link when hovered over.*/
+  text-underline-offset: 1rem; /*Offsets the underline by 1 rem,1rem=16px, creating a gap between the text and the underline.*/
+  text-decoration-color:#0D5EA6; /*Sets the color of the underline to a blue when hovered over.*/
+}
+.logo{
+  font-size: 2rem;
+}
+.logo:hover{
+cursor:default; /*Changes the cursor to the default pointer when hovering over the logo.*/
+}
+
+/* HamburgerMENU */
+#hamburger-nav{
+display: none; /*Hides the hamburger menu icon by default.*/
+}
+.hamburger-menu{
+  position:relative; /*Sets the position of the hamburger menu icon to relative, allowing it to be positioned within its parent container.*/
+  display:inline-block; /*Displays the hamburger menu icon as an inline block, allowing it to be positioned next to other elements.*/
+}
+.hamburger-icon{
+  display:flex; /*Sets the display of the hamburger icon to flex, allowing its child elements to be arranged in a row or column.*/
+  flex-direction:column; /*Arranges the child elements of the hamburger icon in a column layout.*/
+  justify-content: space-between; /*Distributes the child elements of the hamburger icon evenly, with equal space between them.*/
+  height:24px;
+  width:30px;
+  cursor:pointer; /*Changes the cursor to a pointer when hovering over the hamburger icon, indicating that it is clickable.*/
+}
+.hamburger-icon span{
+  width:100%; /*Makes each <span> take 100% width of its parent (.hamburger-icon)
+Ensures all bars are equal width*/
+  height:2px;
+  background-color: black;
+  border-radius: 5px; /*Rounds the corners of each span element inside the hamburger icon.*/
+  transition:all 0.3s ease-in-out; /*Adds a smooth transition effect to the hamburger icon when it is clicked or hovered over.*/;
+}
+.menu-links{
+  position:absolute; /*Positions the menu links absolutely within their parent container, allowing them to be positioned relative to the nearest positioned ancestor.*/
+  top:100%;
+  right:0;
+  background-color: white;
+  width:fit-content; /*Makes the dropdown menu width automatically adjust to fit the links/text inside*/
+max-height: 0; /*Sets the maximum height of the menu links to 0, effectively hiding them by default.*/;
+overflow:hidden; /*Prevents content from spilling outside when height is restricted
+Necessary for the hide/show animation to work cleanly.*/
+  transition:all 0.3 ease-in-out;
+}
+.menu-links a{
+  display:block; /*Makes each link inside the menu links a block element, allowing it to take up the full width available and stack vertically.*/
+  padding:10px;
+  text-align:center; /*Centers the text inside each link within the menu links.*/
+  font-size: 1.5rem; /*Sets the font size of the text inside the menu links to 1.5 rem, which is relative to the root font size.*/
+  color:black;
+  text-decoration:none ;
+  transition:all 0.3 ease-in-out;
+}
+.menu-links li{
+  list-style: none; /*Removes the default bullet points from the list items inside the menu links.*/
+}
+.menu-links.open {
+  max-height: 300px; /* opens the hamburger menu , Sets the maximum height of the menu links to 300px when the menu is open, allowing them to be visible.*/
+}
+
+
+/* ANIMATION OF HAMBURGER INTO X */
+
+
+.hamburger-icon.open span:first-child {
+  transform: rotate(45deg) translate(10px, 5px); /*Rotates the top bar 45 degrees
+Moves it slightly right and down
+Forms the top-left to bottom-right diagonal   , LOOKS LIKE \ */
+}
+.hamburger-icon.open span:nth-child(2){
+  opacity: 0; /*Hides the middle bar by setting its opacity to 0 when the hamburger icon is open.*/
+}
+.hamburger-icon.open span:last-child {
+  transform: rotate(-45deg) translate(10px, -5px); /*Rotates the bottom bar -45 degrees
+Moves it right and upward
+Forms the bottom-left to top-right diagonal LOOKS LIKE /
+*/
+}
+
+/* FOR NO ANIMATIONS 
+.hamburger-icon.open span:first-child{
+transform:none;}
+.hamburger-icon.open span:first-child{
+opacity:1;}
+.hamburger-icon.open span:last-child{
+transform:none;}
+*/
+.profile-pic {
+  width: 150px;         /* or any size you want */
+  height: 150px;
+  object-fit: cover;    /* ensures image fills the box without stretching */
+  border-radius: 50%;   /* makes it perfectly circular */
+  border: 2px solid #000; /* optional: add border */
+}
+
+/* SECTIONS*/
+
+section{
+  padding-top:4vh; /*Adds padding to the top of each section, creating space between the top of the viewport and the content of the section.*/
+height:96vh;
+margin:0 10 rem; /*Sets the margin of each section to 0 on the top and bottom, and 10 rem on the left and right, creating space around the section.*/
+box-sizing: border-box; /*Ensures that padding and border are included in the total width and height of the section, preventing overflow.*/;
+min-height: fit-content; /*Sets the minimum height of each section to fit its content, ensuring that the section expands to accommodate its content without unnecessary extra space.*/;
+}
+.section-container{
+  display:flex;
+}
+#profile{
+  display:flex;
+  justify-content: center;
+  gap:5rem;
+  height:80vh;
+}
+.section__pic-container{
+display:flex;
+height:400px;
+width:400px;
+margin:auto 0; /*Centers the section picture container vertically and horizontally within its parent container.*/
+}
+.section__text{
+align-self: center;
+text-align: center; /*Centers the text within the section text container.*/
+}
+.section__text p{
+  font-weight: 600;
+  
+}
+.section__text_p1{
+
+  text-align: center;
+}
+.section__text_p1{
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color:rgb(53,53,53);
+}
+.section__text_p2{
+    font-size: 2.5rem;
+    color:rgb(53,53,53);
+  
+}
+.title{
+  font-size: 3rem;
+  text-align: center;
+  color:rgb(53,53,53);
+}
+#socials-container{
+  display:flex;
+  justify-content: center;
+  margin-top:1rem;
+  gap:1rem;
+}
+.icon{
+  cursor:pointer;
+  height:2rem;
+}
+
+.btn-container{
+display:flex;
+justify-content: center;
+gap:1rem;
+}
+.btn{
+  margin-top: 10px;
+  font-weight:600;
+  transition: all 0.3s ease;
+  padding:1rem;
+  width:10rem;
+  border-radius:2rem;
+  background-color:WHITE;
+  border: rgb(53,53,53) 0.1rem solid;
+}
+.btn:hover{
+  cursor:pointer;
+background:rgb(53,53,53);
+color:white;
+}
+  

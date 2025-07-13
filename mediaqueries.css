@@ -1,0 +1,9 @@
+@media screen and (max-width:900px) 
+{
+  #desktop-nav {
+    display: none; /* Hides the desktop navigation when the screen width is 900px or less */
+  }
+  #hamburger-nav {
+    display: flex; /* Displays the hamburger navigation when the screen width is 900px or less */
+  }
+}
