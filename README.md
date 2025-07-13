@@ -30,10 +30,3 @@ You can find my resume in the project under `/assets/resume-example.pdf`.
 - **Phone:** +91 9348701981  
 - **GitHub:** [sujalmallick](https://github.com/sujalmallick)  
 
-
-
-## 📃 License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
