@@ -311,7 +311,11 @@ section {
 
 .profile-photo:hover { filter: grayscale(0%); }
 
-.section__text { text-align: left; }
+.section__text { 
+  text-align: left;
+  position: relative;
+  z-index: 2; 
+}
 
 .section__text_p1 {
   font-size: 0.95rem;
