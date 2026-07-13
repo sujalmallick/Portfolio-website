@@ -262,14 +262,42 @@ section {
 
 /* ── 6. SCROLL REVEAL ─────────────────────────────────────────────────── */
 .reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  opacity: 1; /* Default for reduced motion */
+  transform: translateY(0);
 }
 
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+.reveal-divider { border-top: none !important; position: relative; }
+.reveal-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--border-light);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .reveal-divider::before {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .reveal-divider.visible::before {
+    transform: scaleX(1);
+  }
 }
 
 /* ── 7. HERO / PROFILE ────────────────────────────────────────────────── */
@@ -899,30 +927,4 @@ footer {
   transition-delay: 0.15s;
 }
 
-/* 4. Project Preview Tooltip */
-#project-preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 240px;
-  height: 160px;
-  border-radius: 4px;
-  pointer-events: none;
-  z-index: 100;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  background-size: cover;
-  background-position: center;
-}
 
-#project-preview.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Option A Placeholder Gradients (to be replaced with screenshots) */
-#project-preview[data-active="1"] { background: linear-gradient(135deg, #2b2b2a, #1a1a19); }
-#project-preview[data-active="2"] { background: linear-gradient(135deg, #3d3c3a, #1a1a19); }
-#project-preview[data-active="3"] { background: linear-gradient(135deg, #1a1a19, #0F0F0E); border: 1px solid var(--border); }

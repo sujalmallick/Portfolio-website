@@ -47,19 +47,27 @@ function toggleMenu() {
 
 /* ── 3. SCROLL REVEAL ────────────────────────────────────── */
 (function () {
-  var reveals = document.querySelectorAll('.reveal');
+  var reveals = document.querySelectorAll('.reveal, .reveal-divider');
   if (!reveals.length) return;
 
   var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
+    // Group entries that intersect at the same time to apply stagger
+    var intersecting = entries.filter(function(e) { return e.isIntersecting; });
+    
+    intersecting.forEach(function (entry, index) {
+      // Calculate stagger delay (e.g. 100ms per index)
+      var delay = index * 100;
+      entry.target.style.transitionDelay = delay + 'ms';
+      
+      // Force reflow to ensure delay is applied before class
+      void entry.target.offsetWidth;
+      
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
+  }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
 
-  reveals.forEach(function (el) { observer.observe(el); });
+  reveals.forEach(function(el) { observer.observe(el); });
 })();
 
 /* ── 4. SCROLLSPY — Active nav link ─────────────────────── */
@@ -122,38 +130,7 @@ function toggleMenu() {
 
 
 
-/* ── 8. PROJECT PREVIEWS ─────────────────────────────────── */
-(function() {
-  var preview = document.getElementById('project-preview');
-  if (!preview) return;
 
-  var triggers = document.querySelectorAll('[data-preview]');
-  var mouse = { x: -1000, y: -1000 };
-  
-  document.addEventListener('mousemove', function(e) {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    if (preview.classList.contains('visible')) {
-      // Offset slightly from cursor
-      preview.style.left = (mouse.x + 20) + 'px';
-      preview.style.top = (mouse.y + 20) + 'px';
-    }
-  });
-
-  triggers.forEach(function(el) {
-    el.addEventListener('mouseenter', function() {
-      var id = this.getAttribute('data-preview');
-      preview.setAttribute('data-active', id);
-      preview.classList.add('visible');
-      preview.style.left = (mouse.x + 20) + 'px';
-      preview.style.top = (mouse.y + 20) + 'px';
-    });
-    
-    el.addEventListener('mouseleave', function() {
-      preview.classList.remove('visible');
-    });
-  });
-})();
 
 /* ── 9. SMOOTH SCROLL & CLEAN URL ────────────────────────── */
 (function() {

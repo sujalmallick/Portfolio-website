@@ -8,10 +8,19 @@
   const ctx = canvas.getContext('2d');
 
   let particles = [];
-  const particleCount = 120; // Increased for a denser swarm
+  const particleCount = 45; // Reduced number of swarms
   let mouse = { x: -1000, y: -1000 };
+  let isMobile = false;
 
   function resize() {
+    // Determine if we should disable for performance (mobile/tablet)
+    isMobile = window.innerWidth < 900;
+    if (isMobile) {
+      canvas.width = 0;
+      canvas.height = 0;
+      return;
+    }
+    
     // Canvas matches its container size
     const rect = canvas.parentElement.getBoundingClientRect();
     canvas.width = rect.width;
@@ -40,6 +49,11 @@
   }
 
   function animate() {
+    if (isMobile) {
+      requestAnimationFrame(animate);
+      return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const themeColor = getThemeColor();
     ctx.fillStyle = themeColor;

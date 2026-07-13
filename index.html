@@ -18,9 +18,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=3">
-  <link rel="stylesheet" href="mediaqueries.css?v=3">
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=3">
+  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="mediaqueries.css?v=6">
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
 
@@ -97,10 +97,13 @@
   </section>
 
   <!-- ═══════════════════════════ ABOUT ═════════════════════════════════ -->
-  <section id="about" aria-label="About">
+  <section id="about" class="reveal-divider" aria-label="About">
     <div class="section-header reveal">
       <span class="section-label">01 / About</span>
-      <h2>Building at the intersection<br>of <em>systems and intelligence.</em></h2>
+      <h2>
+        <span class="mask-wrap"><span class="mask-reveal">Building at the intersection</span></span><br>
+        <span class="mask-wrap"><span class="mask-reveal delay-1">of <em>systems and intelligence.</em></span></span>
+      </h2>
     </div>
     <div class="about-grid">
       <div class="about-bio reveal">
@@ -148,10 +151,13 @@
   </section>
 
   <!-- ═══════════════════════════ EXPERIENCE ════════════════════════════ -->
-  <section id="experience" aria-label="Experience">
+  <section id="experience" class="reveal-divider" aria-label="Experience">
     <div class="section-header reveal">
       <span class="section-label">02 / Experience</span>
-      <h2>Where I've applied<br><em>the craft.</em></h2>
+      <h2>
+        <span class="mask-wrap"><span class="mask-reveal">Where I've applied</span></span><br>
+        <span class="mask-wrap"><span class="mask-reveal delay-1"><em>the craft.</em></span></span>
+      </h2>
     </div>
     <div class="experience-list">
       <article class="exp-entry reveal">
@@ -183,14 +189,17 @@
   </section>
 
   <!-- ═══════════════════════════ PROJECTS ══════════════════════════════ -->
-  <section id="projects" aria-label="Projects">
+  <section id="projects" class="reveal-divider" aria-label="Projects">
     <div class="section-header reveal">
       <span class="section-label">03 / Projects</span>
-      <h2>Things I've<br><em>built.</em></h2>
+      <h2>
+        <span class="mask-wrap"><span class="mask-reveal">Things I've</span></span><br>
+        <span class="mask-wrap"><span class="mask-reveal delay-1"><em>built.</em></span></span>
+      </h2>
     </div>
 
     <!-- 01 — BugMind AI -->
-    <article class="project-featured reveal" aria-label="BugMind AI" data-preview="1">
+    <article class="project-featured reveal" aria-label="BugMind AI">
       <div class="project-featured-header">
         <span class="project-index" aria-hidden="true">01</span>
         <div class="project-featured-meta">
@@ -233,7 +242,7 @@
     <div class="project-list">
 
       <!-- 02 — Collision Detection System -->
-      <article class="project-entry reveal" aria-label="Collision Detection System" data-preview="2">
+      <article class="project-entry reveal reveal-divider" aria-label="Collision Detection System" data-preview="2">
         <div class="project-entry-header">
           <span class="project-index" aria-hidden="true">02</span>
           <div class="project-entry-meta">
@@ -260,7 +269,7 @@
       </article>
 
       <!-- 03 — Swarm-CUDA -->
-      <article class="project-entry reveal" aria-label="Swarm-CUDA" data-preview="3">
+      <article class="project-entry reveal reveal-divider" aria-label="Swarm-CUDA" data-preview="3">
         <div class="project-entry-header">
           <span class="project-index" aria-hidden="true">03</span>
           <div class="project-entry-meta">
@@ -290,10 +299,13 @@
   </section>
 
   <!-- ═══════════════════════════ CONTACTS ══════════════════════════════ -->
-  <section id="contacts" aria-label="Contact">
+  <section id="contacts" class="reveal-divider" aria-label="Contact">
     <div class="section-header reveal">
       <span class="section-label">04 / Contact</span>
-      <h2>Let's build something<br><em>worth building.</em></h2>
+      <h2>
+        <span class="mask-wrap"><span class="mask-reveal">Let's build something</span></span><br>
+        <span class="mask-wrap"><span class="mask-reveal delay-1"><em>worth building.</em></span></span>
+      </h2>
     </div>
     <div class="contacts-grid">
       <div class="contacts-info reveal">
@@ -339,15 +351,13 @@
   </section>
 
   <!-- ═══════════════════════════ FOOTER ════════════════════════════════ -->
-  <footer>
+  <footer class="reveal-divider">
     <div class="footer-inner">
       <span>&copy; Sujal Mallick</span>
     </div>
   </footer>
 
-  <div id="project-preview"></div>
-
-  <script src="./assets/swarm.js?v=5"></script>
-  <script src="script.js?v=5"></script>
+  <script src="./assets/swarm.js?v=6"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>
