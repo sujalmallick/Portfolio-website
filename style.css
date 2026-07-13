@@ -1,225 +1,854 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SUJAL MALLICK — PORTFOLIO
+   Monochrome editorial aesthetic
+   Fonts: DM Serif Display (headings) + Poppins (body/ui)
+   ═══════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:wght@300;400;500;600;900&display=swap');
+/* ── 1. DESIGN TOKENS ─────────────────────────────────────────────────── */
+:root {
+  /* Typography */
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans:  'Poppins', system-ui, sans-serif;
 
-*{
-  margin:0;
-  padding:0;
+  /* Accent — muted terracotta, used sparingly */
+  --accent:       #B85C38;
+  --accent-hover: #96471E;
+
+  /* Light mode (default) */
+  --bg:           #FAFAF8;
+  --bg-surface:   #F2F1EC;
+  --text:         #111110;
+  --text-muted:   #69696A;
+  --border:       #D4D3CC;
+  --border-light: #E8E7E0;
+
+  /* Layout */
+  --nav-h:        64px;
+  --section-py:   7rem;
+  --section-px:   clamp(1.5rem, 7vw, 8rem);
+  --max-w:        1080px;
+
+  /* Motion */
+  --ease: 0.28s ease;
 }
-body{
-  font-family:'Poppins', sans-serif;
+
+/* Dark mode — manual override via data-theme="dark" */
+[data-theme="dark"] {
+  --bg:           #0F0F0E;
+  --bg-surface:   #1A1A18;
+  --text:         #EDECE5;
+  --text-muted:   #888882;
+  --border:       #2E2E2A;
+  --border-light: #232321;
 }
-html{
+
+/* Dark mode — system preference, no manual override set yet */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --bg:           #0F0F0E;
+    --bg-surface:   #1A1A18;
+    --text:         #EDECE5;
+    --text-muted:   #888882;
+    --border:       #2E2E2A;
+    --border-light: #232321;
+  }
+}
+
+/* ── 2. RESET & BASE ──────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
   scroll-behavior: smooth;
-  
-}
-p{
-  color:rgb(85,85,85);
+  font-size: 16px;
 }
 
-a,.btn{
-  transition: all 300ms ease ;
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
-nav,
-.nav-links{
-  display:flex;/*Lays out the list items (<li>) horizontally (row) by default
-➤ It turns the vertical list into a horizontal menu*/
 
-}
-nav{ 
-   justify-content: space-around;/*justify-content : Adds equal space around items in horizontal direction and align-items:Aligns items vertically centered in the container ONLY work if display: flex is set. */
+img { max-width: 100%; display: block; }
+ul  { list-style: none; }
+a   { color: inherit; text-decoration: none; transition: color var(--ease); }
+
+/* ── 3. NAVIGATION ────────────────────────────────────────────────────── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 var(--section-px);
+  display: flex;
   align-items: center;
-  height:17vh;
-}
-.nav-links{   
-  gap:2rem;
-  list-style: none; /*Removes default bullet points from <ul> or <li> elements.*/
-  font-size:2 rem; /*Sets the font size of the text inside the navigation links to 1.5 rem, which is relative to the root font size.*/
-}
-a{
-  font-size: 1.2rem;
-  color:black; 
-  text-decoration:none; /*Removes the default underline from links.*/
-  text-decoration-color: white; /*Sets the color of the text decoration (underline) to white.*/
-}
-a:hover{
-  color:#0D5EA6; /*Changes the text color to grey when hovering over the link.*/
-  text-decoration:underline; /*Adds an underline to the link when hovered over.*/
-  text-underline-offset: 1rem; /*Offsets the underline by 1 rem,1rem=16px, creating a gap between the text and the underline.*/
-  text-decoration-color:#0D5EA6; /*Sets the color of the underline to a blue when hovered over.*/
-}
-.logo{
-  font-size: 2rem;
-}
-.logo:hover{
-cursor:default; /*Changes the cursor to the default pointer when hovering over the logo.*/
+  justify-content: space-between;
+  height: var(--nav-h);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* HamburgerMENU */
-#hamburger-nav{
-display: none; /*Hides the hamburger menu icon by default.*/
-}
-.hamburger-menu{
-  position:relative; /*Sets the position of the hamburger menu icon to relative, allowing it to be positioned within its parent container.*/
-  display:inline-block; /*Displays the hamburger menu icon as an inline block, allowing it to be positioned next to other elements.*/
-}
-.hamburger-icon{
-  display:flex; /*Sets the display of the hamburger icon to flex, allowing its child elements to be arranged in a row or column.*/
-  flex-direction:column; /*Arranges the child elements of the hamburger icon in a column layout.*/
-  justify-content: space-between; /*Distributes the child elements of the hamburger icon evenly, with equal space between them.*/
-  height:24px;
-  width:30px;
-  cursor:pointer; /*Changes the cursor to a pointer when hovering over the hamburger icon, indicating that it is clickable.*/
-}
-.hamburger-icon span{
-  width:100%; /*Makes each <span> take 100% width of its parent (.hamburger-icon)
-Ensures all bars are equal width*/
-  height:2px;
-  background-color: black;
-  border-radius: 5px; /*Rounds the corners of each span element inside the hamburger icon.*/
-  transition:all 0.3s ease-in-out; /*Adds a smooth transition effect to the hamburger icon when it is clicked or hovered over.*/;
-}
-.menu-links{
-  position:absolute; /*Positions the menu links absolutely within their parent container, allowing them to be positioned relative to the nearest positioned ancestor.*/
-  top:100%;
-  right:0;
-  background-color: white;
-  width:fit-content; /*Makes the dropdown menu width automatically adjust to fit the links/text inside*/
-max-height: 0; /*Sets the maximum height of the menu links to 0, effectively hiding them by default.*/;
-overflow:hidden; /*Prevents content from spilling outside when height is restricted
-Necessary for the hide/show animation to work cleanly.*/
-  transition:all 0.3 ease-in-out;
-}
-.menu-links a{
-  display:block; /*Makes each link inside the menu links a block element, allowing it to take up the full width available and stack vertically.*/
-  padding:10px;
-  text-align:center; /*Centers the text inside each link within the menu links.*/
-  font-size: 1.5rem; /*Sets the font size of the text inside the menu links to 1.5 rem, which is relative to the root font size.*/
-  color:black;
-  text-decoration:none ;
-  transition:all 0.3 ease-in-out;
-}
-.menu-links li{
-  list-style: none; /*Removes the default bullet points from the list items inside the menu links.*/
-}
-.menu-links.open {
-  max-height: 300px; /* opens the hamburger menu , Sets the maximum height of the menu links to 300px when the menu is open, allowing them to be visible.*/
+.logo {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  cursor: default;
+  user-select: none;
 }
 
-
-/* ANIMATION OF HAMBURGER INTO X */
-
-
-.hamburger-icon.open span:first-child {
-  transform: rotate(45deg) translate(10px, 5px); /*Rotates the top bar 45 degrees
-Moves it slightly right and down
-Forms the top-left to bottom-right diagonal   , LOOKS LIKE \ */
-}
-.hamburger-icon.open span:nth-child(2){
-  opacity: 0; /*Hides the middle bar by setting its opacity to 0 when the hamburger icon is open.*/
-}
-.hamburger-icon.open span:last-child {
-  transform: rotate(-45deg) translate(10px, -5px); /*Rotates the bottom bar -45 degrees
-Moves it right and upward
-Forms the bottom-left to top-right diagonal LOOKS LIKE /
-*/
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-/* FOR NO ANIMATIONS 
-.hamburger-icon.open span:first-child{
-transform:none;}
-.hamburger-icon.open span:first-child{
-opacity:1;}
-.hamburger-icon.open span:last-child{
-transform:none;}
-*/
-.profile-pic {
-  width: 150px;         /* or any size you want */
-  height: 150px;
-  object-fit: cover;    /* ensures image fills the box without stretching */
-  border-radius: 50%;   /* makes it perfectly circular */
-  border: 2px solid #000; /* optional: add border */
+.nav-links {
+  display: flex;
+  gap: 2rem;
 }
 
-/* SECTIONS*/
+.nav-links a {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--ease);
+}
 
-section{
-  padding-top:4vh; /*Adds padding to the top of each section, creating space between the top of the viewport and the content of the section.*/
-height:96vh;
-margin:0 10 rem; /*Sets the margin of each section to 0 on the top and bottom, and 10 rem on the left and right, creating space around the section.*/
-box-sizing: border-box; /*Ensures that padding and border are included in the total width and height of the section, preventing overflow.*/;
-min-height: fit-content; /*Sets the minimum height of each section to fit its content, ensuring that the section expands to accommodate its content without unnecessary extra space.*/;
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--text);
 }
-.section-container{
-  display:flex;
-}
-#profile{
-  display:flex;
+
+/* Theme toggle button */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap:5rem;
-  height:80vh;
-}
-.section__pic-container{
-display:flex;
-height:400px;
-width:400px;
-margin:auto 0; /*Centers the section picture container vertically and horizontally within its parent container.*/
-}
-.section__text{
-align-self: center;
-text-align: center; /*Centers the text within the section text container.*/
-}
-.section__text p{
-  font-weight: 600;
-  
-}
-.section__text_p1{
-
-  text-align: center;
-}
-.section__text_p1{
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-    color:rgb(53,53,53);
-}
-.section__text_p2{
-    font-size: 2.5rem;
-    color:rgb(53,53,53);
-  
-}
-.title{
-  font-size: 3rem;
-  text-align: center;
-  color:rgb(53,53,53);
-}
-#socials-container{
-  display:flex;
-  justify-content: center;
-  margin-top:1rem;
-  gap:1rem;
-}
-.icon{
-  cursor:pointer;
-  height:2rem;
+  color: var(--text-muted);
+  transition: color var(--ease), border-color var(--ease);
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
 }
 
-.btn-container{
-display:flex;
-justify-content: center;
-gap:1rem;
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--text);
 }
-.btn{
-  margin-top: 10px;
-  font-weight:600;
+
+/* Sun icon in light mode */
+.theme-icon::before { content: '☀'; }
+
+/* Moon icon in dark mode */
+[data-theme="dark"] .theme-icon::before { content: '☽'; }
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .theme-icon::before { content: '☽'; }
+}
+
+/* ── 4. HAMBURGER NAV (mobile) ────────────────────────────────────────── */
+#hamburger-nav { display: none; }
+
+.nav-right-mobile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hamburger-menu { position: relative; }
+
+.hamburger-icon {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 18px;
+  width: 24px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--text);
   transition: all 0.3s ease;
-  padding:1rem;
-  width:10rem;
-  border-radius:2rem;
-  background-color:WHITE;
-  border: rgb(53,53,53) 0.1rem solid;
 }
-.btn:hover{
-  cursor:pointer;
-background:rgb(53,53,53);
-color:white;
+
+.hamburger-icon.open span:first-child  { transform: rotate(45deg) translate(7px, 4px); }
+.hamburger-icon.open span:nth-child(2) { opacity: 0; }
+.hamburger-icon.open span:last-child   { transform: rotate(-45deg) translate(7px, -4px); }
+
+.menu-links {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  min-width: 160px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
-  
+
+.menu-links.open { max-height: 320px; }
+
+.menu-links li a {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
+  transition: color var(--ease);
+}
+
+.menu-links li:last-child a { border-bottom: none; }
+.menu-links li a:hover      { color: var(--text); }
+
+/* ── 5. SECTION COMMON ────────────────────────────────────────────────── */
+section {
+  padding: var(--section-py) var(--section-px);
+  border-top: 1px solid var(--border-light);
+}
+
+.section-header {
+  margin-bottom: 4rem;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.section-header h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  max-width: 680px;
+}
+
+.section-header h2 em {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ── 6. SCROLL REVEAL ─────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 7. HERO / PROFILE ────────────────────────────────────────────────── */
+#profile {
+  min-height: calc(100svh - var(--nav-h));
+  display: flex;
+  align-items: center;
+  border-top: none;
+  padding: 4rem var(--section-px);
+}
+
+.profile-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5rem;
+  align-items: center;
+  max-width: var(--max-w);
+  width: 100%;
+}
+
+.section__pic-container {
+  width: clamp(200px, 24vw, 320px);
+  aspect-ratio: 1;
+  flex-shrink: 0;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+  filter: grayscale(15%);
+  transition: filter 0.4s ease;
+}
+
+.profile-photo:hover { filter: grayscale(0%); }
+
+.section__text { text-align: left; }
+
+.section__text_p1 {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.4rem;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(3.5rem, 7.5vw, 6.5rem);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.section__text_p2 {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.6rem;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-block;
+  transition: background-color var(--ease), color var(--ease), border-color var(--ease);
+}
+
+.btn--outline {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.btn--outline:hover {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn--fill {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn--fill:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.btn--wide { width: 100%; text-align: center; }
+
+/* Social icons */
+#socials-container {
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+}
+
+.icon {
+  height: 1.375rem;
+  width: auto;
+  opacity: 0.55;
+  transition: opacity var(--ease);
+}
+
+.icon:hover { opacity: 1; }
+
+/* Invert icons in dark mode so they're visible on dark backgrounds */
+[data-theme="dark"] .icon { filter: brightness(0) invert(1); }
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .icon { filter: brightness(0) invert(1); }
+}
+
+/* ── 8. ABOUT ──────────────────────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  max-width: var(--max-w);
+}
+
+.about-bio p {
+  font-size: 0.975rem;
+  color: var(--text-muted);
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+}
+
+.about-bio p:last-child { margin-bottom: 0; }
+.about-bio strong { color: var(--text); font-weight: 600; }
+
+.skills-heading {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.skills-group {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.skills-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.skill-label {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.65rem;
+}
+
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  font-size: 0.76rem;
+  font-weight: 400;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 2px;
+  letter-spacing: 0.01em;
+  transition: border-color var(--ease), background-color var(--ease);
+}
+
+.chip:hover {
+  border-color: var(--text);
+  background: var(--bg-surface);
+}
+
+/* ── 9. EXPERIENCE ─────────────────────────────────────────────────────── */
+.experience-list { max-width: var(--max-w); }
+
+.exp-entry {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 3rem;
+  padding: 3rem 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.exp-meta { padding-top: 0.2rem; }
+
+.exp-date {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.01em;
+}
+
+.exp-type {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.18rem 0.5rem;
+  border-radius: 2px;
+}
+
+.exp-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.875rem;
+}
+
+.exp-role {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.exp-company {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.exp-description {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.exp-description strong { color: var(--text); }
+
+.exp-bullets {
+  margin-left: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.exp-bullets li {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 0.45rem;
+  list-style: disc;
+}
+
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.exp-tag {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 2px;
+}
+
+/* ── 10. PROJECTS ──────────────────────────────────────────────────────── */
+
+/* — Featured flagship card — */
+.project-featured {
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  max-width: var(--max-w);
+  background: var(--bg-surface);
+  transition: border-color var(--ease);
+  margin-bottom: 0;
+}
+
+.project-featured:hover { border-color: var(--text-muted); }
+
+.project-featured-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.project-entry-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-bottom: 0.875rem;
+}
+
+.project-index {
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--border);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: 2.8rem;
+  transition: color var(--ease);
+  user-select: none;
+}
+
+.project-featured:hover .project-index,
+.project-entry:hover .project-index {
+  color: var(--text-muted);
+}
+
+.project-featured-meta,
+.project-entry-meta { flex: 1; }
+
+.project-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.project-badge {
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.project-link {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: color var(--ease), border-color var(--ease), transform var(--ease);
+}
+
+.project-link:hover {
+  color: var(--text);
+  border-color: var(--text);
+  transform: translate(2px, -2px);
+}
+
+.project-description {
+  font-size: 0.93rem;
+  color: var(--text-muted);
+  line-height: 1.82;
+  margin-bottom: 1.5rem;
+}
+
+/* Architecture callout (BugMind AI) */
+.architecture-callout {
+  border-left: 2px solid var(--accent);
+  padding: 0.875rem 1.1rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg);
+}
+
+.arch-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.arch-node {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--bg-surface);
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.arch-arrow {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.arch-sub {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Stack row */
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.stack-item { font-weight: 500; }
+.stack-sep  { color: var(--border); }
+
+/* Project list (items 02, 03) */
+.project-list { max-width: var(--max-w); }
+
+.project-entry {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border-light);
+  transition: all var(--ease);
+}
+
+.project-entry:last-child {
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* ── 11. CONTACTS ──────────────────────────────────────────────────────── */
+.contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  max-width: var(--max-w);
+}
+
+.contacts-intro {
+  font-size: 0.975rem;
+  color: var(--text-muted);
+  line-height: 1.82;
+  margin-bottom: 2.25rem;
+}
+
+.contacts-links {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.contact-link {
+  display: flex;
+  flex-direction: column;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: color var(--ease);
+}
+
+.contact-link:first-child { border-top: 1px solid var(--border-light); }
+
+.contact-link:hover .contact-link-value { color: var(--accent); }
+
+.contact-link-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.contact-link-value {
+  font-size: 0.93rem;
+  color: var(--text);
+  transition: color var(--ease);
+}
+
+.socials-row {
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+}
+
+/* Contact form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group label {
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.form-group input,
+.form-group textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  resize: vertical;
+  transition: border-color var(--ease), background-color 0.25s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--text);
+}
+
+/* ── 12. FOOTER ────────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border-light);
+  padding: 1.75rem var(--section-px);
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  max-width: var(--max-w);
+}

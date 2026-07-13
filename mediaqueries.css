@@ -1,9 +1,92 @@
-@media screen and (max-width:900px) 
-{
-  #desktop-nav {
-    display: none; /* Hides the desktop navigation when the screen width is 900px or less */
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — SUJAL MALLICK PORTFOLIO
+   Breakpoints: 900px (tablet/hamburger), 600px (mobile)
+   ════════════════════════════════════════════════════════ */
+
+/* ── 900px — Switch to hamburger, stack hero & about & exp ─── */
+@media screen and (max-width: 900px) {
+
+  /* Nav: hide desktop, show hamburger */
+  #desktop-nav   { display: none; }
+  #hamburger-nav { display: flex; }
+
+  /* Hero: stack photo above text */
+  .profile-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
   }
-  #hamburger-nav {
-    display: flex; /* Displays the hamburger navigation when the screen width is 900px or less */
+
+  .section__text       { text-align: center; }
+  .btn-container       { justify-content: center; }
+  #socials-container   { justify-content: center; }
+
+  .section__pic-container {
+    width: clamp(160px, 44vw, 260px);
+    margin: 0 auto;
+  }
+
+  /* About: single column */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  /* Experience: stack meta above content */
+  .exp-entry {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Projects featured: slightly less padding */
+  .project-featured { padding: 2rem; }
+
+  /* Contacts: single column */
+  .contacts-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+}
+
+/* ── 600px — Mobile polish ─────────────────────────────────── */
+@media screen and (max-width: 600px) {
+  :root {
+    --section-py: 4.5rem;
+    --section-px: 1.25rem;
+  }
+
+  /* Title scales down gracefully */
+  .title { font-size: clamp(3rem, 14vw, 4.5rem); }
+
+  /* Section headings */
+  .section-header h2 {
+    font-size: clamp(1.75rem, 7.5vw, 2.5rem);
+  }
+
+  /* Hero: reduce gap */
+  #profile { padding: 3rem var(--section-px); }
+
+  /* Featured project: compact */
+  .project-featured { padding: 1.5rem; }
+
+  /* Pipeline flow: wrap vertically on tiny screens */
+  .arch-flow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .arch-arrow { transform: rotate(90deg); margin-left: 0.5rem; }
+
+  /* Project index number: slightly smaller */
+  .project-index { font-size: 2.2rem; }
+
+  /* Contact form full-width button already handled by btn--wide */
+
+  /* Footer: center stack */
+  .footer-inner {
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: center;
   }
 }

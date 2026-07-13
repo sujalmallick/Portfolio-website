@@ -3,57 +3,346 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My portfolio</title>
+  <meta name="description" content="Sujal Mallick — Computer Engineering student at TIET, Patiala. Full-stack development, AI engineering, GPU systems, and software testing.">
+  <title>Sujal Mallick — Portfolio</title>
+
+  <!-- Prevent flash of wrong theme: runs synchronously before CSS paints -->
+  <script>
+    (function () {
+      var saved = sessionStorage.getItem('theme');
+      var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="style.css">
-   <link rel="stylesheet" href="mediaqueries.css">
+  <link rel="stylesheet" href="mediaqueries.css">
 </head>
 <body>
-  <nav id="desktop-nav"> 
-    <div class="logo">Sujal Mallick </div>
-    <div>
-      <ul class="nav-links">
+
+  <!-- ═══════════════════════════ DESKTOP NAV ════════════════════════════ -->
+  <nav id="desktop-nav" aria-label="Primary navigation">
+    <div class="logo" aria-label="Sujal Mallick">SM.</div>
+    <div class="nav-right">
+      <ul class="nav-links" role="list">
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#contacts">contacts</a></li>
-
+        <li><a href="#contacts">Contact</a></li>
       </ul>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle colour theme" title="Toggle dark / light mode">
+        <span class="theme-icon" aria-hidden="true"></span>
+      </button>
     </div>
   </nav>
-  <nav id="hamburger-nav">
-    <div class="logo">Sujal Mallick </div>
-    <div class="hamburger-menu">
-      <div class="hamburger-icon" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="menu-links">
-        <li><a href="#about" onclick="toggleMenu()">About</a></li>
-        <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
-        <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
-        <li><a href="#contacts" onclick="toggleMenu()">contacts</a></li>
-      </div>
-    </div>
-  </nav>
-  <sections id="profile"> 
-    <div class="section__pic-container">
-      <img src="./assets/profile-pic.png" alt="Sujal Mallick pfp"> </div>
-      <div class="section__text">
-        <p1 class="section__text_p1">Hey there! I'm </p1> 
-        <h1 class="title">Sujal Mallick</h1>
-        <p2 class="section__text_p2">CS Engineer</p2> 
-        <div class="btn-container"> 
-          <button class="btn" onclick="window.open('./assets/resume.jpg')">DOWNLOAD CV</button>
-           <button class="btn" onclick="location.href='./#contact'">CONTACT INFO</button>
-        </div>
-        <div id="socials-container">
-          <img src="./assets/github.png" alt="github profile" class="icon" onclick="location.href='https://github.com/sujalmallick'"/>
-          <img src="./assets/linkedin.png" alt="linkdln profile" class="icon" onclick="location.href='https://www.linkedin.com/in/sujal-mallick-9b9494289'"/>
-          <img src="./assets/insta.png" alt="insta profile" class="icon" onclick="location.href='https://www.instagram.com/sujal.mallickk?igsh=eHB5a3ljMjB3cDVm&utm_source=qr'"/>
 
+  <!-- ═══════════════════════════ MOBILE NAV ════════════════════════════ -->
+  <nav id="hamburger-nav" aria-label="Mobile navigation">
+    <div class="logo" aria-label="Sujal Mallick">SM.</div>
+    <div class="nav-right-mobile">
+      <button class="theme-toggle" id="theme-toggle-mobile" aria-label="Toggle colour theme">
+        <span class="theme-icon" aria-hidden="true"></span>
+      </button>
+      <div class="hamburger-menu">
+        <button class="hamburger-icon" id="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <ul class="menu-links" id="mobile-menu" role="list">
+          <li><a href="#about" onclick="toggleMenu()">About</a></li>
+          <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
+          <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+          <li><a href="#contacts" onclick="toggleMenu()">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════ HERO ══════════════════════════════════ -->
+  <section id="profile" aria-label="Hero">
+    <div class="profile-inner">
+      <div class="section__pic-container">
+        <img src="./assets/profile-pic.png" alt="Sujal Mallick" class="profile-photo">
+      </div>
+      <div class="section__text">
+        <p class="section__text_p1 reveal">Hey there, I'm</p>
+        <h1 class="title reveal">Sujal<br>Mallick.</h1>
+        <p class="section__text_p2 reveal">CS Engineer</p>
+        <div class="btn-container reveal">
+          <a class="btn btn--outline" href="./assets/resume.pdf" target="_blank" rel="noopener noreferrer" download>Download CV</a>
+          <a class="btn btn--fill" href="#contacts">Contact Info</a>
+        </div>
+        <div id="socials-container" class="reveal">
+          <a href="https://github.com/sujalmallick" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+            <img src="./assets/github.png" alt="GitHub" class="icon">
+          </a>
+          <a href="https://www.linkedin.com/in/sujal-mallick-9b9494289" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+            <img src="./assets/linkedin.png" alt="LinkedIn" class="icon">
+          </a>
+          <a href="https://www.instagram.com/sujal.mallickk?igsh=eHB5a3ljMjB3cDVm&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram profile">
+            <img src="./assets/insta.png" alt="Instagram" class="icon">
+          </a>
         </div>
       </div>
-  </sections>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ ABOUT ═════════════════════════════════ -->
+  <section id="about" aria-label="About">
+    <div class="section-header reveal">
+      <span class="section-label">01 / About</span>
+      <h2>Building at the intersection<br>of <em>systems and intelligence.</em></h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-bio reveal">
+        <p>Computer Engineering student at <strong>Thapar Institute of Engineering &amp; Technology (TIET)</strong>, Patiala — building at the intersection of full-stack engineering, AI systems, and low-level computing.</p>
+        <p>My work spans software engineering, AI engineering, and computer architecture — from orchestrating multi-agent LLM pipelines to writing CUDA kernels and 8086/8085 assembly. I'm drawn to problems where both performance and reliability matter.</p>
+        <p>Currently contributing as a Software Testing &amp; CDN Development Intern at <strong>Aumbram</strong>, with a passion for developing reliable, high-performance software solutions.</p>
+      </div>
+      <div class="about-skills reveal">
+        <h3 class="skills-heading">Technical Depth</h3>
+        <div class="skills-group">
+          <span class="skill-label">Frontend</span>
+          <div class="skill-chips">
+            <span class="chip">React</span>
+            <span class="chip">Vite</span>
+            <span class="chip">Tailwind CSS</span>
+          </div>
+        </div>
+        <div class="skills-group">
+          <span class="skill-label">Backend &amp; Data</span>
+          <div class="skill-chips">
+            <span class="chip">FastAPI</span>
+            <span class="chip">SQLAlchemy</span>
+            <span class="chip">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="skills-group">
+          <span class="skill-label">AI &amp; Parallel Systems</span>
+          <div class="skill-chips">
+            <span class="chip">LangGraph</span>
+            <span class="chip">Gemini API</span>
+            <span class="chip">CUDA / C++</span>
+            <span class="chip">OpenCL</span>
+            <span class="chip">x86 Assembly</span>
+          </div>
+        </div>
+        <div class="skills-group">
+          <span class="skill-label">Infra &amp; Cloud</span>
+          <div class="skill-chips">
+            <span class="chip">AWS EC2</span>
+            <span class="chip">AWS S3 / CloudFront</span>
+            <span class="chip">Docker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ EXPERIENCE ════════════════════════════ -->
+  <section id="experience" aria-label="Experience">
+    <div class="section-header reveal">
+      <span class="section-label">02 / Experience</span>
+      <h2>Where I've applied<br><em>the craft.</em></h2>
+    </div>
+    <div class="experience-list">
+      <article class="exp-entry reveal">
+        <div class="exp-meta">
+          <span class="exp-date">2025 — Present</span>
+          <span class="exp-type">Internship</span>
+        </div>
+        <div class="exp-content">
+          <div class="exp-header">
+            <h3 class="exp-role">Software Testing &amp; CDN Development Intern</h3>
+            <span class="exp-company">Aumbram</span>
+          </div>
+          <p class="exp-description">Manual testing of Aumbram's React Native Android application on a <strong>Pixel 10 Pro emulator</strong> (Android Studio). Systematically covered six screen domains — Home, Categories, Videos, Search, Profile, and Offline Handling — applying structured QA methodology throughout.</p>
+          <ul class="exp-bullets">
+            <li>Wrote formal bug reports with reproducible steps, expected vs. actual behaviour, and evidence attachments</li>
+            <li>Applied full bug lifecycle management: severity classification (Critical → Low), status tracking, and regression verification</li>
+            <li>Authored structured test case documents covering positive, negative, and edge-case scenarios</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="exp-tag">React Native</span>
+            <span class="exp-tag">Android Studio</span>
+            <span class="exp-tag">Manual Testing</span>
+            <span class="exp-tag">QA Methodology</span>
+            <span class="exp-tag">Bug Lifecycle</span>
+            <span class="exp-tag">Test Case Writing</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PROJECTS ══════════════════════════════ -->
+  <section id="projects" aria-label="Projects">
+    <div class="section-header reveal">
+      <span class="section-label">03 / Projects</span>
+      <h2>Things I've<br><em>built.</em></h2>
+    </div>
+
+    <!-- 01 — BugMind AI (flagship) -->
+    <article class="project-featured reveal" aria-label="BugMind AI — flagship project">
+      <div class="project-featured-header">
+        <span class="project-index" aria-hidden="true">01</span>
+        <div class="project-featured-meta">
+          <h3 class="project-title">BugMind AI</h3>
+          <span class="project-badge">Solo Project &middot; Flagship</span>
+        </div>
+        <a href="https://github.com/sujalmallick/BugMind-AI" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="BugMind AI on GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17L17 7"/>
+            <polyline points="7 7 17 7 17 17"/>
+          </svg>
+        </a>
+      </div>
+      <p class="project-description">A QA automation platform that turns a product description into structured test coverage — automatically. Built solo from scratch, it orchestrates a multi-agent LLM pipeline to generate module breakdowns, feature checklists, and detailed test cases end-to-end.</p>
+      <div class="architecture-callout">
+        <span class="arch-label">Pipeline Architecture</span>
+        <div class="arch-flow">
+          <span class="arch-node">module_agent</span>
+          <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+          <span class="arch-node">checklist_agent</span>
+          <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+          <span class="arch-node">test_case_agent</span>
+        </div>
+        <span class="arch-sub">LangGraph orchestration &middot; Gemini API &middot; LiteLLM abstraction (BYOK &#x2192; dev&nbsp;.env &#x2192; FreeLLMAPI fallback)</span>
+      </div>
+      <div class="project-stack">
+        <span class="stack-item">React / Vite / Tailwind</span>
+        <span class="stack-sep" aria-hidden="true">&middot;</span>
+        <span class="stack-item">FastAPI / SQLAlchemy / PostgreSQL</span>
+        <span class="stack-sep" aria-hidden="true">&middot;</span>
+        <span class="stack-item">LangGraph</span>
+        <span class="stack-sep" aria-hidden="true">&middot;</span>
+        <span class="stack-item">Gemini API</span>
+        <span class="stack-sep" aria-hidden="true">&middot;</span>
+        <span class="stack-item">LiteLLM</span>
+      </div>
+    </article>
+
+    <!-- Projects 02 &amp; 03 (list) -->
+    <div class="project-list">
+
+      <!-- 02 — Collision Detection System -->
+      <article class="project-entry reveal" aria-label="Collision Detection System">
+        <div class="project-entry-header">
+          <span class="project-index" aria-hidden="true">02</span>
+          <div class="project-entry-meta">
+            <h3 class="project-title">Collision Detection System</h3>
+            <span class="project-badge">Team Project (4 members) &middot; My role: Frontend, Backend, AWS Deployment</span>
+          </div>
+          <a href="https://github.com/sujalmallick/Collison_detecion_fullstack_deployed" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="Collision Detection System on GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17L17 7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </a>
+        </div>
+        <p class="project-description">Cloud-deployed AI accident-detection platform built with a four-person team. YOLO-based real-time vehicle detection paired with a CNN collision classifier — served via a Dockerized FastAPI backend on AWS EC2, with a React / TypeScript / Vite frontend distributed through AWS S3 and CloudFront.</p>
+        <div class="project-stack">
+          <span class="stack-item">React / TypeScript / Vite</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">FastAPI / Docker</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">YOLO / CNN</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">AWS EC2 / S3 / CloudFront</span>
+        </div>
+      </article>
+
+      <!-- 03 — swarm-cuda -->
+      <article class="project-entry reveal" aria-label="swarm-cuda">
+        <div class="project-entry-header">
+          <span class="project-index" aria-hidden="true">03</span>
+          <div class="project-entry-meta">
+            <h3 class="project-title">swarm-cuda</h3>
+            <span class="project-badge">Fork Extended &middot; GPU Systems</span>
+          </div>
+          <a href="https://github.com/sujalmallick/swarm-cuda" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="swarm-cuda on GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17L17 7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </a>
+        </div>
+        <p class="project-description">Extended a GPU-accelerated open-source CUDA boids simulator. Added a spatial-hash neighbour search, CUDA&ndash;OpenGL interop for zero-copy rendering, and an interactive ImGui control panel &mdash; scaling real-time agent simulation to 100k+ boids.</p>
+        <div class="project-stack">
+          <span class="stack-item">CUDA / C++</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">OpenGL</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">ImGui</span>
+          <span class="stack-sep" aria-hidden="true">&middot;</span>
+          <span class="stack-item">Spatial Hash</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ CONTACTS ══════════════════════════════ -->
+  <section id="contacts" aria-label="Contact">
+    <div class="section-header reveal">
+      <span class="section-label">04 / Contact</span>
+      <h2>Let's build something<br><em>worth building.</em></h2>
+    </div>
+    <div class="contacts-grid">
+      <div class="contacts-info reveal">
+        <p class="contacts-intro">Open to full-time roles, internships, and serious collaboration. Reach out directly or drop a message using the form.</p>
+        <div class="contacts-links">
+          <a href="mailto:sujalmallick123@gmail.com" class="contact-link" aria-label="Email Sujal">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">sujalmallick123@gmail.com</span>
+          </a>
+          <a href="tel:+919348701981" class="contact-link" aria-label="Call Sujal">
+            <span class="contact-link-label">Phone</span>
+            <span class="contact-link-value">+91 93487 01981</span>
+          </a>
+        </div>
+        <div class="socials-row" aria-label="Social links">
+          <a href="https://github.com/sujalmallick" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <img src="./assets/github.png" alt="GitHub" class="icon">
+          </a>
+          <a href="https://www.linkedin.com/in/sujal-mallick-9b9494289" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <img src="./assets/linkedin.png" alt="LinkedIn" class="icon">
+          </a>
+          <a href="https://www.instagram.com/sujal.mallickk?igsh=eHB5a3ljMjB3cDVm&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="./assets/insta.png" alt="Instagram" class="icon">
+          </a>
+        </div>
+      </div>
+      <form class="contact-form reveal" id="contact-form" novalidate aria-label="Contact form">
+        <div class="form-group">
+          <label for="contact-name">Name</label>
+          <input type="text" id="contact-name" name="name" placeholder="Your name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" name="email" placeholder="your@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" name="message" placeholder="What are you building?" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--fill btn--wide" id="submit-btn">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <span>&copy; 2025 Sujal Mallick</span>
+      <span>HTML &middot; CSS &middot; JS</span>
+    </div>
+  </footer>
+
   <script src="script.js"></script>
 </body>
+</html>
