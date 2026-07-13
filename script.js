@@ -154,3 +154,42 @@ function toggleMenu() {
     });
   });
 })();
+
+/* ── 9. SMOOTH SCROLL & CLEAN URL ────────────────────────── */
+(function() {
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function (e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      
+      var target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        
+        // Account for sticky nav
+        var headerOffset = 64; 
+        var elementPosition = target.getBoundingClientRect().top;
+        var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        
+        // Update URL cleanly without jumping or leaving #hash
+        history.replaceState(null, null, window.location.pathname);
+        
+        // Close mobile menu if open
+        var menu = document.getElementById('mobile-menu');
+        var icon = document.getElementById('hamburger-btn');
+        if (menu && menu.classList.contains('open')) {
+          menu.classList.remove('open');
+          if (icon) {
+            icon.classList.remove('open');
+            icon.setAttribute('aria-expanded', 'false');
+          }
+        }
+      }
+    });
+  });
+})();
