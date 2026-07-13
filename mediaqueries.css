@@ -12,9 +12,10 @@
 
   /* Hero: stack photo above text */
   .profile-inner {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse;
     gap: 2.5rem;
-    text-align: center;
+    align-items: center;
   }
 
   .section__text       { text-align: center; }
