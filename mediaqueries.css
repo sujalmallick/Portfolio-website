@@ -83,10 +83,5 @@
 
   /* Contact form full-width button already handled by btn--wide */
 
-  /* Footer: center stack */
-  .footer-inner {
-    flex-direction: column;
-    gap: 0.4rem;
-    text-align: center;
-  }
+
 }
