@@ -305,7 +305,9 @@ section {
   border-radius: 50%; /* Circular photo */
   filter: grayscale(15%);
   transition: filter 0.4s ease;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 2; /* Sits above canvas */
 }
 
@@ -924,35 +926,3 @@ footer {
 #project-preview[data-active="1"] { background: linear-gradient(135deg, #2b2b2a, #1a1a19); }
 #project-preview[data-active="2"] { background: linear-gradient(135deg, #3d3c3a, #1a1a19); }
 #project-preview[data-active="3"] { background: linear-gradient(135deg, #1a1a19, #0F0F0E); border: 1px solid var(--border); }
-
-/* 5. Custom Cursor (only on fine pointers & no reduced motion) */
-@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  html, body {
-    cursor: none;
-  }
-  
-  /* Override cursor:pointer for elements */
-  a, button, .btn { cursor: none; }
-
-  #custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--text);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
-    mix-blend-mode: difference;
-  }
-
-  /* Subtle scale up on hover */
-  html.cursor-hover #custom-cursor {
-    width: 48px;
-    height: 48px;
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-}

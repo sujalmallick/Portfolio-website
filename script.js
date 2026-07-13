@@ -120,37 +120,7 @@ function toggleMenu() {
   });
 })();
 
-/* ── 7. CUSTOM CURSOR ────────────────────────────────────── */
-(function() {
-  var cursor = document.getElementById('custom-cursor');
-  if (!cursor) return;
 
-  var mouse = { x: -100, y: -100 };
-  var pos = { x: -100, y: -100 };
-  var speed = 0.2; // Smooth follow speed
-
-  document.addEventListener('mousemove', function(e) {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  function update() {
-    pos.x += (mouse.x - pos.x) * speed;
-    pos.y += (mouse.y - pos.y) * speed;
-    
-    // Only apply transform if it moved
-    cursor.style.transform = 'translate(' + pos.x + 'px, ' + pos.y + 'px) translate(-50%, -50%)';
-    requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-
-  // Hover state for interactive elements
-  var interactives = document.querySelectorAll('a, button, .btn, .icon');
-  interactives.forEach(function(el) {
-    el.addEventListener('mouseenter', function() { document.documentElement.classList.add('cursor-hover'); });
-    el.addEventListener('mouseleave', function() { document.documentElement.classList.remove('cursor-hover'); });
-  });
-})();
 
 /* ── 8. PROJECT PREVIEWS ─────────────────────────────────── */
 (function() {
