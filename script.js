@@ -113,8 +113,9 @@ function toggleMenu() {
       'Message:\n' + message
     );
 
-    window.location.href =
-      'mailto:sujalmallick123@gmail.com?subject=' + subject + '&body=' + body;
+    // Using Gmail web compose URL for maximum reliability across devices
+    var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=sujalmallick123@gmail.com&su=' + subject + '&body=' + body;
+    window.open(gmailUrl, '_blank');
   });
 })();
 
