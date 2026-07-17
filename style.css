@@ -260,6 +260,8 @@ section {
   color: var(--text-muted);
 }
 
+#about .section-header h2 em { color: var(--accent); }
+
 /* ── 6. SCROLL REVEAL ─────────────────────────────────────────────────── */
 .reveal {
   opacity: 1; /* Default for reduced motion */
@@ -926,5 +928,3 @@ footer {
 .mask-reveal.delay-1 {
   transition-delay: 0.15s;
 }
-
-
