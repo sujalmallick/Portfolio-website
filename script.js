@@ -259,8 +259,13 @@ document.addEventListener('keydown', function (e) {
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Workstation + right-props are drawn as pure canvas pixel art (no PNGs)
-  // so there is zero risk of opaque background panels.
+  // ── 1. Load Transparent Foreground Sprites ─────────────────────────────────
+  // Isolated authentic 8-bit/16-bit pixel-art sprites (100% transparent sky)
+  var workstationImg = new Image();
+  workstationImg.src = 'assets/footer-workstation-spaced.png';
+
+  var rightPropsImg = new Image();
+  rightPropsImg.src = 'assets/footer-right-props.png';
 
   var robotImg = new Image();
   robotImg.src = 'assets/pixel-terminator.png';
@@ -284,11 +289,17 @@ document.addEventListener('keydown', function (e) {
     badgeImages[k].img.src = badgeImages[k].src;
   }
 
-  // Constants
+  // ── 2. Scene Geometry & Constants ──────────────────────────────────────────
+  var WS_WIDTH = 259;
+  var WS_HEIGHT = 88;
+  var RP_WIDTH = 111;
+  var RP_HEIGHT = 88;
+  var SPRITE_GROUND_OFFSET = 79; // Baseline is 79px from top of 88px sprites
+
   var ROBOT_DRAW_W = 50;
   var ROBOT_DRAW_H = 55;
   var BARREL_OFFSET_X = 2;   // Relative to droid top-left when facing left
-  var BARREL_OFFSET_Y = 24;  // Rifle tip Y relative to droid top
+  var BARREL_OFFSET_Y = 24;  // Plasma blaster tip Y relative to droid top
   var BADGE_SPACING = 38;
   var BASE_SPEED = 1.05;
   var WALK_SPEED = 0.58;
@@ -313,35 +324,44 @@ document.addEventListener('keydown', function (e) {
   var pixelDust = [];
   var muzzleSparks = [];
 
-  // Workstation Server Rack LEDs (4 bays, staggered blinking intervals)
+  // Workstation Server Rack LEDs (4 tiers, staggered blinking intervals)
   var serverLeds = [
-    { xOff: 11, yOff: 9,  period: 22, phase: 2,  color: '#10b981' },
-    { xOff: 18, yOff: 9,  period: 38, phase: 11, color: '#34d399' },
-    { xOff: 25, yOff: 9,  period: 50, phase: 24, color: '#f59e0b' },
-    { xOff: 11, yOff: 21, period: 28, phase: 7,  color: '#10b981' },
-    { xOff: 18, yOff: 21, period: 44, phase: 19, color: '#10b981' },
-    { xOff: 25, yOff: 21, period: 32, phase: 14, color: '#34d399' },
-    { xOff: 11, yOff: 33, period: 35, phase: 5,  color: '#34d399' },
-    { xOff: 18, yOff: 33, period: 26, phase: 17, color: '#10b981' },
-    { xOff: 25, yOff: 33, period: 55, phase: 31, color: '#f59e0b' },
-    { xOff: 11, yOff: 45, period: 40, phase: 9,  color: '#10b981' },
-    { xOff: 18, yOff: 45, period: 30, phase: 21, color: '#34d399' },
-    { xOff: 25, yOff: 45, period: 48, phase: 3,  color: '#10b981' }
+    { xOff: 169, yOff: 26, period: 24, phase: 3,  color: '#10b981' },
+    { xOff: 175, yOff: 26, period: 36, phase: 11, color: '#34d399' },
+    { xOff: 181, yOff: 26, period: 48, phase: 23, color: '#f59e0b' },
+    { xOff: 169, yOff: 40, period: 28, phase: 7,  color: '#10b981' },
+    { xOff: 175, yOff: 40, period: 42, phase: 19, color: '#38bdf8' },
+    { xOff: 181, yOff: 40, period: 32, phase: 14, color: '#34d399' },
+    { xOff: 169, yOff: 54, period: 34, phase: 5,  color: '#34d399' },
+    { xOff: 175, yOff: 54, period: 26, phase: 17, color: '#10b981' },
+    { xOff: 181, yOff: 54, period: 52, phase: 31, color: '#f59e0b' },
+    { xOff: 169, yOff: 68, period: 40, phase: 9,  color: '#10b981' },
+    { xOff: 175, yOff: 68, period: 30, phase: 21, color: '#34d399' },
+    { xOff: 181, yOff: 68, period: 46, phase: 3,  color: '#10b981' }
   ];
 
-  // Ambient gentle floating fireflies / data specks
-  var ambientFireflies = [];
-  for (var a = 0; a < 6; a++) {
-    ambientFireflies.push({
-      x: Math.random() * 1000,
-      y: 20 + Math.random() * 68,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: -0.15 - Math.random() * 0.25,
-      color: Math.random() > 0.4 ? '#22d3ee' : '#f59e0b',
-      phase: Math.random() * 6.28,
-      size: Math.random() > 0.5 ? 2 : 1
-    });
-  }
+  // Twinkling Night Sky Stars (Matching Reference Image)
+  var nightStars = [
+    { x: 30,  y: 18, size: 2, color: '#f1f5f9', phase: 0.4 },
+    { x: 74,  y: 32, size: 1, color: '#38bdf8', phase: 1.8 },
+    { x: 122, y: 15, size: 2, color: '#f1f5f9', phase: 3.2 },
+    { x: 185, y: 28, size: 1, color: '#fbbf24', phase: 4.5 },
+    { x: 234, y: 14, size: 2, color: '#f1f5f9', phase: 0.9 },
+    { x: 295, y: 36, size: 1, color: '#38bdf8', phase: 2.3 },
+    { x: 348, y: 22, size: 2, color: '#f1f5f9', phase: 5.1 },
+    { x: 410, y: 16, size: 1, color: '#fbbf24', phase: 1.4 },
+    { x: 462, y: 34, size: 2, color: '#f1f5f9', phase: 3.8 },
+    { x: 518, y: 20, size: 1, color: '#38bdf8', phase: 0.2 },
+    { x: 575, y: 15, size: 2, color: '#f1f5f9', phase: 2.7 },
+    { x: 628, y: 30, size: 1, color: '#fbbf24', phase: 4.1 },
+    { x: 684, y: 18, size: 2, color: '#f1f5f9', phase: 1.1 },
+    { x: 738, y: 26, size: 1, color: '#38bdf8', phase: 3.5 },
+    { x: 792, y: 14, size: 2, color: '#f1f5f9', phase: 5.7 },
+    { x: 846, y: 32, size: 1, color: '#fbbf24', phase: 0.6 },
+    { x: 898, y: 20, size: 2, color: '#f1f5f9', phase: 2.1 },
+    { x: 945, y: 28, size: 1, color: '#38bdf8', phase: 4.8 },
+    { x: 978, y: 16, size: 2, color: '#f1f5f9', phase: 1.6 }
+  ];
 
   function resize() {
     var rect = canvas.getBoundingClientRect();
@@ -350,8 +370,10 @@ document.addEventListener('keydown', function (e) {
     canvas.width = width;
     canvas.height = height;
 
-    var minPatrolX = Math.max(380, Math.min(width * 0.45, width - 210));
-    var maxPatrolX = Math.min(width - 130, Math.max(minPatrolX + 60, width * 0.78));
+    var wsRight = 16 + WS_WIDTH;
+    var rpLeft = Math.max(width - RP_WIDTH - 16, wsRight + 80);
+    var minPatrolX = Math.max(wsRight + 20, Math.min(width * 0.44, width - 230));
+    var maxPatrolX = Math.min(rpLeft - 65, Math.max(minPatrolX + 60, width * 0.78));
     if (robotX < minPatrolX) robotX = minPatrolX;
     if (robotX > maxPatrolX) robotX = maxPatrolX;
   }
@@ -387,11 +409,13 @@ document.addEventListener('keydown', function (e) {
 
     var streamSpeed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
     var wSpeed = isOverdrive ? WALK_SPEED * 1.5 : WALK_SPEED;
-    var groundY = height - 2;
+    var groundY = height - 9; // Ground sits 9px above canvas bottom to anchor terrain cleanly
     var robotY = groundY - ROBOT_DRAW_H + 2;
 
-    var minPatrolX = Math.max(380, Math.min(width * 0.45, width - 210));
-    var maxPatrolX = Math.min(width - 130, Math.max(minPatrolX + 60, width * 0.78));
+    var wsRight = 16 + WS_WIDTH;
+    var rpLeft = Math.max(width - RP_WIDTH - 16, wsRight + 80);
+    var minPatrolX = Math.max(wsRight + 20, Math.min(width * 0.44, width - 230));
+    var maxPatrolX = Math.min(rpLeft - 65, Math.max(minPatrolX + 60, width * 0.78));
 
     // Terminator Robot Patrol
     if (patrolState === 'PATROL_LEFT') {
@@ -405,7 +429,7 @@ document.addEventListener('keydown', function (e) {
       if (robotX <= minPatrolX) {
         robotX = minPatrolX;
         patrolState = 'SCAN';
-        stateTimer = 48; // pause and scan
+        stateTimer = 48; // pause, scan, and fire
         walkFrame = 0;
       }
     } else if (patrolState === 'PATROL_RIGHT') {
@@ -419,7 +443,7 @@ document.addEventListener('keydown', function (e) {
       if (robotX >= maxPatrolX) {
         robotX = maxPatrolX;
         patrolState = 'SCAN';
-        stateTimer = 44; // pause and scan
+        stateTimer = 44; // pause and turn around
         walkFrame = 0;
       }
     } else if (patrolState === 'SCAN') {
@@ -447,9 +471,9 @@ document.addEventListener('keydown', function (e) {
       var item = streamItems[i];
       item.x -= streamSpeed;
 
-      // Dissolve near workstation boundary (x < 375) and spawn glowing pixel dust
-      if (item.x < 375) {
-        item.alpha = Math.max(0, (item.x - 330) / 45);
+      // Dissolve near workstation boundary and spawn glowing pixel dust
+      if (item.x < wsRight + 25) {
+        item.alpha = Math.max(0, (item.x - wsRight) / 25);
         if (Math.random() < 0.35) {
           pixelDust.push({
             x: item.x + Math.random() * 10,
@@ -464,12 +488,12 @@ document.addEventListener('keydown', function (e) {
         }
       }
 
-      if (item.x < 310 || item.alpha <= 0) {
+      if (item.x < wsRight - 10 || item.alpha <= 0) {
         streamItems.splice(i, 1);
       }
     }
 
-    // Firing logic: fire tech badges from muzzle when facing left or scanning left
+    // Firing logic: fire tech badges from blaster muzzle when facing left
     if (facing === -1) {
       var rightmost = streamItems.length > 0 ? streamItems[streamItems.length - 1] : null;
       var spawnStartX = muzzleTipX - 16;
@@ -490,7 +514,7 @@ document.addEventListener('keydown', function (e) {
           recoilOffset = isOverdrive ? 3.0 : 1.8;
           spawnMuzzleSparks(muzzleTipX, muzzleTipY);
         } else {
-          // Spawn separator dot between badges
+          // Spawn glowing separator dot between badges
           streamItems.push({
             type: 'dot',
             x: spawnStartX,
@@ -523,319 +547,144 @@ document.addEventListener('keydown', function (e) {
         muzzleSparks.splice(sIdx, 1);
       }
     }
-
-    // Update ambient fireflies
-    for (var af = 0; af < ambientFireflies.length; af++) {
-      var ff = ambientFireflies[af];
-      ff.x += ff.vx;
-      ff.y += ff.vy;
-      if (ff.y < 10) {
-        ff.y = groundY - 6;
-        ff.x = Math.random() * width;
-      }
-      if (ff.x < 0) ff.x = width;
-      if (ff.x > width) ff.x = 0;
-    }
   }
 
   function render() {
     // 1. Transparent Clear (Matches page background seamlessly with ZERO rectangular boundary!)
     ctx.clearRect(0, 0, width, height);
 
-    var groundY = height - 2;
+    var groundY = height - 9; // Ground baseline: terrain rests flush against bottom edge
+    var wsX = 16;
+    var wsY = groundY - SPRITE_GROUND_OFFSET;
+    var wsRight = wsX + WS_WIDTH;
 
-    // 2. Integrated Thin Ground Line across full footer
-    ctx.fillStyle = '#1c1e24';
-    ctx.fillRect(0, groundY, width, 1);
-    ctx.fillStyle = '#282b34';
-    ctx.fillRect(0, groundY + 1, width, 1);
+    var rpX = Math.max(width - RP_WIDTH - 16, wsRight + 80);
+    var rpY = groundY - SPRITE_GROUND_OFFSET;
 
-    // Full-width grass tufts along the ground line (matches reference image)
-    var grassSeeds = [0, 22, 38, 55, 74, 92, 110, 130, 148, 166, 188, 208,
-                      228, 248, 268, 292, 314, 336, 358, 380, 406, 428,
-                      452, 474, 498, 524, 548, 574, 598, 624, 652, 678,
-                      704, 728, 754, 778, 804, 828, 856, 882, 908, 932,
-                      958, 984];
-    for (var gi = 0; gi < grassSeeds.length; gi++) {
-      var gx = Math.round(grassSeeds[gi] * width / 1000);
-      if (gx < 0 || gx > width - 4) continue;
-      ctx.fillStyle = '#16a34a';
-      ctx.fillRect(gx,     groundY - 5, 2, 5);
-      ctx.fillRect(gx + 4, groundY - 7, 2, 7);
-      ctx.fillRect(gx + 8, groundY - 4, 2, 4);
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(gx + 2, groundY - 3, 2, 3);
-      ctx.fillRect(gx + 6, groundY - 5, 2, 5);
-    }
-
-    // 3. Ambient Floating Fireflies
-    for (var af = 0; af < ambientFireflies.length; af++) {
-      var ff = ambientFireflies[af];
-      var ffAlpha = 0.25 + 0.45 * (0.5 + 0.5 * Math.sin(frameCount * 0.05 + ff.phase));
-      ctx.fillStyle = ff.color;
-      ctx.globalAlpha = Math.max(0, Math.min(1, ffAlpha));
-      ctx.fillRect(Math.round(ff.x), Math.round(ff.y), ff.size, ff.size);
+    // 2. Twinkling Night Sky Stars (Delicate, Authentic 8-bit Pixel Stars)
+    for (var s = 0; s < nightStars.length; s++) {
+      var star = nightStars[s];
+      var sx = Math.round(star.x * width / 1000);
+      if (sx < 0 || sx >= width) continue;
+      var starAlpha = 0.2 + 0.65 * (0.5 + 0.5 * Math.sin(frameCount * 0.04 + star.phase));
+      ctx.fillStyle = star.color;
+      ctx.globalAlpha = Math.max(0, Math.min(1, starAlpha));
+      ctx.fillRect(sx, star.y, star.size, star.size);
+      if (star.size > 1 && starAlpha > 0.6) {
+        // Subtle cross glint
+        ctx.fillRect(sx - 1, star.y, 3, 1);
+        ctx.fillRect(sx, star.y - 1, 1, 3);
+      }
     }
     ctx.globalAlpha = 1.0;
 
-    // 4. LEFT WORKSTATION — pure canvas pixel art, all elements bottomed at groundY
-    (function drawWorkstation() {
-      var gY = groundY;
+    // 3. Middle Ground Seamless Terrain (Connects Workstation to Right Props with NO GAP)
+    if (rpX > wsRight) {
+      // Rocky ground line layers
+      ctx.fillStyle = '#3a3f4b';
+      ctx.fillRect(wsRight - 4, groundY, rpX - wsRight + 8, 1);
+      ctx.fillStyle = '#282b34';
+      ctx.fillRect(wsRight - 4, groundY + 1, rpX - wsRight + 8, 2);
+      ctx.fillStyle = '#181a20';
+      ctx.fillRect(wsRight - 4, groundY + 3, rpX - wsRight + 8, 3);
+      ctx.fillStyle = '#101216';
+      ctx.fillRect(wsRight - 4, groundY + 6, rpX - wsRight + 8, height - groundY - 6);
 
-      // ── Amber street lamp ────────────────────────────────────────────────
-      var lmpX = 14, lmpH = 60;
-      // base plate
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(lmpX - 4, gY - 6, 14, 6);
-      // pole
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(lmpX + 2, gY - lmpH, 4, lmpH - 6);
-      // horizontal arm
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(lmpX + 2, gY - lmpH, 22, 3);
-      // lamp head
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(lmpX + 18, gY - lmpH - 10, 14, 10);
-      ctx.fillStyle = '#1f2937';
-      ctx.fillRect(lmpX + 20, gY - lmpH - 8, 10, 6);
-      // amber lens (pulses)
-      var lampGlow = 0.75 + 0.22 * Math.sin(frameCount * 0.045);
-      ctx.fillStyle = 'rgba(251,191,36,' + lampGlow.toFixed(2) + ')';
-      ctx.fillRect(lmpX + 21, gY - lmpH - 7, 8, 4);
-      // bloom
-      var lg = ctx.createRadialGradient(lmpX+25, gY-lmpH-5, 1, lmpX+25, gY-lmpH-5, 32);
-      lg.addColorStop(0, 'rgba(251,191,36,0.18)');
-      lg.addColorStop(1, 'rgba(251,191,36,0)');
-      ctx.fillStyle = lg;
-      ctx.beginPath(); ctx.arc(lmpX+25, gY-lmpH-5, 32, 0, Math.PI*2); ctx.fill();
+      // Embedded pebbles and rock flecks
+      ctx.fillStyle = '#475569';
+      var midW = rpX - wsRight;
+      ctx.fillRect(wsRight + Math.floor(midW * 0.18), groundY + 1, 3, 2);
+      ctx.fillRect(wsRight + Math.floor(midW * 0.38), groundY, 4, 1);
+      ctx.fillRect(wsRight + Math.floor(midW * 0.62), groundY + 1, 3, 2);
+      ctx.fillRect(wsRight + Math.floor(midW * 0.82), groundY, 4, 1);
 
-      // ── Potted plant ─────────────────────────────────────────────────────
-      var pX = 54;
-      // pot body — bottomed at gY
-      ctx.fillStyle = '#f5f5f4';
-      ctx.fillRect(pX,     gY - 16, 18, 12);
-      ctx.fillStyle = '#d6d3d1';
-      ctx.fillRect(pX + 2, gY - 18, 14, 4);
-      // soil
-      ctx.fillStyle = '#3f2d1e';
-      ctx.fillRect(pX + 2, gY - 16, 14, 4);
-      // stem
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(pX + 8, gY - 34, 2, 18);
-      // leaves
-      ctx.fillStyle = '#16a34a';
-      ctx.fillRect(pX + 2, gY - 40, 8, 6);
-      ctx.fillRect(pX + 10, gY - 44, 8, 6);
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(pX + 4,  gY - 38, 6, 4);
-      ctx.fillRect(pX + 12, gY - 42, 6, 4);
-      ctx.fillStyle = '#166534';
-      ctx.fillRect(pX + 2,  gY - 36, 4, 3);
-      ctx.fillRect(pX + 14, gY - 40, 4, 3);
+      // Vibrant pixel-art grass tufts scattered in the middle stretch (matching reference image)
+      var grassPositions = [0.08, 0.22, 0.34, 0.48, 0.58, 0.72, 0.88];
+      for (var gp = 0; gp < grassPositions.length; gp++) {
+        var gx = Math.round(wsRight + midW * grassPositions[gp]);
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(gx,     groundY - 5, 2, 5);
+        ctx.fillRect(gx + 3, groundY - 7, 2, 7);
+        ctx.fillRect(gx + 6, groundY - 4, 2, 4);
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(gx + 1, groundY - 3, 2, 3);
+        ctx.fillRect(gx + 5, groundY - 5, 2, 5);
+      }
+    }
 
-      // ── R2-style droid ───────────────────────────────────────────────────
-      var dX = 92;
-      // legs — bottom at gY
-      ctx.fillStyle = '#9ca3af';
-      ctx.fillRect(dX + 2,  gY - 14, 6, 14);
-      ctx.fillRect(dX + 16, gY - 14, 6, 14);
-      // feet
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(dX,      gY - 4, 8, 4);
-      ctx.fillRect(dX + 16, gY - 4, 8, 4);
-      // body — bottom at gY-14
-      ctx.fillStyle = '#d1d5db';
-      ctx.fillRect(dX + 2, gY - 34, 20, 20);
-      ctx.fillStyle = '#e5e7eb';
-      ctx.fillRect(dX + 4, gY - 32, 16, 16);
-      // chest panel
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(dX + 7, gY - 30, 10, 12);
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(dX + 9, gY - 28, 6, 8);
-      // shoulder collar
-      ctx.fillStyle = '#9ca3af';
-      ctx.fillRect(dX, gY - 36, 24, 4);
-      // dome
-      ctx.fillStyle = '#f1f5f9';
-      ctx.fillRect(dX + 4, gY - 48, 16, 14);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(dX + 2, gY - 38, 20, 4);
-      // visor band
-      ctx.fillStyle = '#1e3a5f';
-      ctx.fillRect(dX + 4, gY - 46, 16, 5);
-      // optic (blinks)
-      if (Math.sin(frameCount * 0.08) > 0.3) {
+    // 4. Authentic Workstation Sprite (Left Side, 100% Transparent Sky)
+    if (workstationImg.complete && workstationImg.naturalWidth > 0) {
+      ctx.drawImage(workstationImg, wsX, wsY, WS_WIDTH, WS_HEIGHT);
+
+      // A) Street Lamp Warm Amber Glow Pulse
+      var lampX = wsX + 26;
+      var lampY = wsY + 29;
+      var lampGlow = 0.18 + 0.08 * Math.sin(frameCount * 0.045);
+      var lampGrad = ctx.createRadialGradient(lampX, lampY, 2, lampX, lampY, 26);
+      lampGrad.addColorStop(0, 'rgba(245, 158, 11, ' + lampGlow.toFixed(2) + ')');
+      lampGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = lampGrad;
+      ctx.beginPath();
+      ctx.arc(lampX, lampY, 26, 0, Math.PI * 2);
+      ctx.fill();
+
+      // B) Mini Droid Optic Sensor Pulse & Blink
+      var droidX = wsX + 82;
+      var droidY = wsY + 43;
+      if (Math.sin(frameCount * 0.08) > 0.35) {
         ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(dX + 9, gY - 44, 6, 3);
+        ctx.fillRect(droidX, droidY, 3, 2);
       }
-      if ((frameCount % 120) < 18) {
+      if ((frameCount % 130) < 16) {
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(dX + 17, gY - 43, 2, 2);
+        ctx.fillRect(droidX + 5, droidY, 2, 2);
       }
 
-      // ── CRT monitor on desk ──────────────────────────────────────────────
-      var mX = 138;
-      var dkH = 14; // desk height
-      // desk top
-      ctx.fillStyle = '#92400e';
-      ctx.fillRect(mX - 6, gY - dkH, 58, 4);
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(mX - 6, gY - dkH, 58, 2);
-      // desk legs
-      ctx.fillStyle = '#6b3a1f';
-      ctx.fillRect(mX - 4,  gY - dkH + 4, 5, dkH - 4);
-      ctx.fillRect(mX + 45, gY - dkH + 4, 5, dkH - 4);
-      // monitor neck / stand
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(mX + 20, gY - dkH - 6, 6, 6);
-      ctx.fillRect(mX + 16, gY - dkH - 8, 14, 3);
-      // monitor outer bezel
-      ctx.fillStyle = '#1f2937';
-      ctx.fillRect(mX + 2, gY - dkH - 52, 42, 46);
-      // inner bezel
-      ctx.fillStyle = '#111827';
-      ctx.fillRect(mX + 4, gY - dkH - 50, 38, 42);
-      // screen
-      ctx.fillStyle = '#052e16';
-      ctx.fillRect(mX + 6, gY - dkH - 48, 34, 38);
-      // code lines
-      ctx.fillStyle = 'rgba(74,222,128,0.65)';
-      ctx.fillRect(mX + 8,  gY - dkH - 46, 18, 2);
-      ctx.fillRect(mX + 8,  gY - dkH - 42, 26, 2);
-      ctx.fillRect(mX + 8,  gY - dkH - 38, 14, 2);
-      ctx.fillRect(mX + 12, gY - dkH - 34, 22, 2);
-      ctx.fillRect(mX + 8,  gY - dkH - 30, 20, 2);
-      ctx.fillRect(mX + 8,  gY - dkH - 26, 10, 2);
-      ctx.fillRect(mX + 8,  gY - dkH - 22, 16, 2);
-      // scan shimmer
-      if ((frameCount % 160) < 20) {
-        ctx.fillStyle = 'rgba(74,222,128,0.15)';
-        ctx.fillRect(mX + 6, gY - dkH - 36, 34, 3);
-      }
-      // blinking cursor
+      // C) Coding Screen Blinking Terminal Cursor & Refresh
+      var crtCursorX = wsX + 138;
+      var crtCursorY = wsY + 48;
       if ((frameCount % 50) < 26) {
         ctx.fillStyle = '#4ade80';
-        ctx.fillRect(mX + 8, gY - dkH - 18, 6, 3);
+        ctx.fillRect(crtCursorX, crtCursorY, 3, 2);
       }
-      // power LED
-      ctx.fillStyle = (frameCount % 60) < 30 ? '#22d3ee' : '#164e63';
-      ctx.fillRect(mX + 38, gY - dkH - 8, 2, 2);
+      if ((frameCount % 160) < 20) {
+        ctx.fillStyle = 'rgba(74, 222, 128, 0.35)';
+        ctx.fillRect(wsX + 118, wsY + 38, 26, 2);
+      }
 
-      // ── Server rack ──────────────────────────────────────────────────────
-      var rX = 206;
-      var rkH = 80; // rack height — bottom at gY
-      // outer chassis
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(rX, gY - rkH, 46, rkH);
-      // inner panel
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(rX + 2, gY - rkH + 2, 42, rkH - 4);
-      // 4 rack bays
-      for (var bay = 0; bay < 4; bay++) {
-        var byY = gY - rkH + 4 + bay * 18;
-        // bay face
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(rX + 3, byY, 40, 16);
-        // bay top stripe
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(rX + 4, byY + 1, 38, 2);
-        // drive slot
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(rX + 28, byY + 5, 12, 7);
-        // LED indicators
-        for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
-          var led = serverLeds[lIdx];
-          if (Math.floor(led.yOff / 12) === bay) {
-            var isOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
-            if (isOn) {
-              ctx.fillStyle = led.color;
-              ctx.fillRect(rX + 5 + led.xOff, byY + 5, 2, 2);
-            }
-          }
+      // D) 4-Tier Server Rack Blinking LEDs
+      for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
+        var led = serverLeds[lIdx];
+        var isLedOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
+        if (isLedOn) {
+          ctx.fillStyle = led.color;
+          ctx.fillRect(wsX + led.xOff, wsY + led.yOff, 2, 2);
         }
       }
-      // vent strip at bottom
-      ctx.fillStyle = '#0f172a';
-      for (var vt = 0; vt < 6; vt++) {
-        ctx.fillRect(rX + 4 + vt * 7, gY - 8, 4, 5);
-      }
-      // rack handles
-      ctx.fillStyle = '#475569';
-      ctx.fillRect(rX + 2, gY - rkH + 4, 2, rkH - 12);
-      ctx.fillRect(rX + 42, gY - rkH + 4, 2, rkH - 12);
-    })();
+    }
 
-    // 5. RIGHT PROPS — pure canvas pixel art, all elements bottomed at groundY
-    (function drawRightProps() {
-      var gY = groundY;
-      var rBase = width - 148;
+    // 5. Authentic Right Props (Crate, Rocks & Standing Lantern, 100% Transparent Sky)
+    if (rightPropsImg.complete && rightPropsImg.naturalWidth > 0) {
+      ctx.drawImage(rightPropsImg, rpX, rpY, RP_WIDTH, RP_HEIGHT);
 
-      // ── Scattered rocks ──────────────────────────────────────────────────
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(rBase,      gY - 8,  16, 8);
-      ctx.fillRect(rBase + 20, gY - 5,  12, 5);
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(rBase + 4,  gY - 10,  8, 4);
-      ctx.fillRect(rBase + 22, gY - 7,   6, 3);
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(rBase + 2,  gY - 6,   6, 2);
+      // Flickering Standing Lantern Warm Flame & Bloom
+      var torchX = rpX + 73;
+      var torchY = rpY + 40;
+      var flameBob = Math.sin(frameCount * 0.28) * 1.5;
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(torchX - 1, torchY - 2 + flameBob, 3, 4);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(torchX, torchY - 4 + flameBob, 2, 3);
 
-      // ── Wooden crate ─────────────────────────────────────────────────────
-      var cX = rBase + 36;
-      // main body
-      ctx.fillStyle = '#a16207';
-      ctx.fillRect(cX, gY - 32, 32, 32);
-      // wood grain planks
-      ctx.fillStyle = '#854d0e';
-      ctx.fillRect(cX,      gY - 20, 32, 3);
-      ctx.fillRect(cX + 14, gY - 32, 3, 32);
-      // metal corner braces
-      ctx.fillStyle = '#9ca3af';
-      ctx.fillRect(cX,      gY - 32, 5, 5);
-      ctx.fillRect(cX + 27, gY - 32, 5, 5);
-      ctx.fillRect(cX,      gY - 5,  5, 5);
-      ctx.fillRect(cX + 27, gY - 5,  5, 5);
-      // highlight top edge
-      ctx.fillStyle = '#ca8a04';
-      ctx.fillRect(cX + 1, gY - 31, 30, 2);
-
-      // ── Rocks right of crate ─────────────────────────────────────────────
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(rBase + 72, gY - 7, 14, 7);
-      ctx.fillRect(rBase + 90, gY - 4,  8, 4);
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(rBase + 76, gY - 9,  6, 4);
-
-      // ── Amber standing lantern ────────────────────────────────────────────
-      var lX = rBase + 108;
-      var lH  = 62;
-      // base plate
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(lX - 4, gY - 6, 16, 6);
-      // pole
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(lX + 2, gY - lH, 4, lH - 6);
-      // horizontal arm
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(lX - 8, gY - lH, 4, 3);
-      ctx.fillRect(lX - 8, gY - lH, 22, 3);
-      // lamp head
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(lX - 10, gY - lH - 10, 14, 10);
-      ctx.fillStyle = '#1f2937';
-      ctx.fillRect(lX - 8,  gY - lH - 8,  10, 6);
-      // flame flicker
-      var flameBob = Math.round(Math.sin(frameCount * 0.28) * 1.5);
-      ctx.fillStyle = 'rgba(251,191,36,' + (0.75 + 0.22 * Math.sin(frameCount * 0.045)).toFixed(2) + ')';
-      ctx.fillRect(lX - 7, gY - lH - 7 + flameBob, 8, 4);
-      // bloom
-      var tg = ctx.createRadialGradient(lX-3, gY-lH-5, 1, lX-3, gY-lH-5, 28);
-      tg.addColorStop(0, 'rgba(251,191,36,0.16)');
-      tg.addColorStop(1, 'rgba(251,191,36,0)');
-      ctx.fillStyle = tg;
-      ctx.beginPath(); ctx.arc(lX-3, gY-lH-5, 28, 0, Math.PI*2); ctx.fill();
-    })();
+      var torchGlow = 0.16 + 0.06 * Math.sin(frameCount * 0.045);
+      var torchGrad = ctx.createRadialGradient(torchX, torchY, 2, torchX, torchY, 24);
+      torchGrad.addColorStop(0, 'rgba(251, 191, 36, ' + torchGlow.toFixed(2) + ')');
+      torchGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      ctx.fillStyle = torchGrad;
+      ctx.beginPath();
+      ctx.arc(torchX, torchY, 24, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // 6. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Stream)
     var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
@@ -850,7 +699,7 @@ document.addEventListener('keydown', function (e) {
       var item = streamItems[bIdx];
       if (item.alpha <= 0.02) continue;
 
-      var floatY = Math.sin(item.x * 0.05 + item.waveOffset) * 1.2;
+      var floatY = Math.sin(item.x * 0.05 + item.waveOffset) * 1.4;
       var drawCenterY = Math.round(muzzleTipY + floatY);
 
       if (item.type === 'dot') {
@@ -909,15 +758,15 @@ document.addEventListener('keydown', function (e) {
 
     // 9. Muzzle Sparks
     for (var spkIdx = 0; spkIdx < muzzleSparks.length; spkIdx++) {
-      var s = muzzleSparks[spkIdx];
-      var sAlpha = (s.life / s.maxLife);
-      ctx.fillStyle = s.color;
+      var spk = muzzleSparks[spkIdx];
+      var sAlpha = (spk.life / spk.maxLife);
+      ctx.fillStyle = spk.color;
       ctx.globalAlpha = Math.max(0, Math.min(1, sAlpha));
-      ctx.fillRect(Math.round(s.x), Math.round(s.y), s.size, s.size);
+      ctx.fillRect(Math.round(spk.x), Math.round(spk.y), spk.size, spk.size);
     }
     ctx.globalAlpha = 1.0;
 
-    // 10. Preserved Terminator Character (Sprite & Animation)
+    // 10. Preserved Authentic Terminator Character (Sprite & Animation)
     var droidSprite = (walkFrame === 1 && robotStepImg.complete && robotStepImg.naturalWidth > 0)
       ? robotStepImg
       : robotImg;
@@ -964,7 +813,7 @@ document.addEventListener('keydown', function (e) {
       isOverdrive = true;
       overdriveTimer = 90; // ~1.5s overdrive
       recoilOffset = 3.6;
-      var groundY = height - 2;
+      var groundY = height - 9;
       var ry = groundY - ROBOT_DRAW_H + 2;
       var muzzleTipX = robotX + BARREL_OFFSET_X;
       var muzzleTipY = ry + BARREL_OFFSET_Y;
@@ -983,8 +832,8 @@ document.addEventListener('keydown', function (e) {
     window.addEventListener('resize', resize);
 
     if (prefersReducedMotion) {
-      // Workstation & right-props are pure canvas now — no image to wait for.
-      // Just draw once the Terminator sprite is ready (or immediately).
+      workstationImg.onload = drawStaticFallback;
+      rightPropsImg.onload = drawStaticFallback;
       robotImg.onload = drawStaticFallback;
       drawStaticFallback();
       return;
@@ -1681,34 +1530,56 @@ document.addEventListener('keydown', function (e) {
     }
   })();
 
-/* ── 10. AI PIXEL MASCOTS INTERACTION ──────────────────────────────────── */
-(function () {
-  var mascots = [
-    { id: 'mascot-chatgpt', clickDuration: 750 },
-    { id: 'mascot-claude',  clickDuration: 1050 },
-    { id: 'mascot-gemini',  clickDuration: 850 }
+/* ── 10. AI PIXEL MASCOTS CONTROLLER ──────────────────────────────────── */
+(function initMascots() {
+  var mascotConfigs = [
+    { id: 'mascot-chatgpt', duration: 650, cooldown: 850 },
+    { id: 'mascot-claude',  duration: 600, cooldown: 800 },
+    { id: 'mascot-gemini',  duration: 650, cooldown: 850 }
   ];
 
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasFinePointer = window.matchMedia('(pointer: fine)').matches;
 
-  mascots.forEach(function (m) {
-    var el = document.getElementById(m.id);
+  var mascotControllers = [];
+
+  mascotConfigs.forEach(function (cfg) {
+    var el = document.getElementById(cfg.id);
     if (!el) return;
 
-    // Click / Tap reaction with bounce & kick re-triggers
-    var timer = null;
-    function triggerAction(e) {
-      el.classList.remove('is-acting');
-      void el.offsetWidth; // Force reflow to restart CSS keyframe
+    var tiltWrap = el.querySelector('.mascot-tilt-wrap');
+    var isActing = false;
+    var cooldownUntil = 0;
+    var actionTimer = null;
+
+    // Authoritative interaction trigger with strict cooldown protection
+    function triggerAction() {
+      if (prefersReduced) return;
+      var now = Date.now();
+      if (isActing || now < cooldownUntil) return; // Prevent repeated triggers
+
+      isActing = true;
+      cooldownUntil = now + cfg.cooldown;
+
+      // Reset any active proximity tilt during special action
+      if (tiltWrap) {
+        tiltWrap.style.transform = 'rotate(0deg)';
+      }
+
       el.classList.add('is-acting');
 
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(function () {
+      if (actionTimer) clearTimeout(actionTimer);
+      actionTimer = setTimeout(function () {
         el.classList.remove('is-acting');
-      }, m.clickDuration);
+        isActing = false;
+      }, cfg.duration);
     }
 
-    el.addEventListener('click', triggerAction);
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerAction();
+    });
+
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -1716,7 +1587,7 @@ document.addEventListener('keydown', function (e) {
       }
     });
 
-    // Mobile touch handling (non-intrusive tap detection)
+    // Mobile touch handling (non-intrusive tap with threshold)
     var touchStartX = 0;
     var touchStartY = 0;
     el.addEventListener('touchstart', function (e) {
@@ -1730,45 +1601,63 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 12 && dy < 12) {
-          triggerAction(e);
+        if (dx < 10 && dy < 10) {
+          triggerAction();
         }
       }
     }, { passive: true });
+
+    mascotControllers.push({
+      el: el,
+      tiltWrap: tiltWrap,
+      isActing: function () { return isActing; },
+      rect: null
+    });
   });
 
-  // Pointer Proximity: subtle interactive tilt when cursor approaches (fine pointer only)
-  if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
-    var ticking = false;
-    var mascotEls = mascots.map(function (m) { return document.getElementById(m.id); }).filter(Boolean);
+  // Cached Proximity Tracking: avoids expensive getBoundingClientRect on every mousemove
+  if (!prefersReduced && hasFinePointer && mascotControllers.length > 0) {
+    var updateCachedBounds = function () {
+      mascotControllers.forEach(function (mc) {
+        if (!mc.el) return;
+        var r = mc.el.getBoundingClientRect();
+        mc.rect = {
+          cx: r.left + r.width / 2,
+          cy: r.top + r.height / 2
+        };
+      });
+    };
 
+    updateCachedBounds();
+    window.addEventListener('scroll', updateCachedBounds, { passive: true });
+    window.addEventListener('resize', updateCachedBounds, { passive: true });
+
+    var ticking = false;
     window.addEventListener('mousemove', function (e) {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
         ticking = false;
-        var mouseX = e.clientX;
-        var mouseY = e.clientY;
+        var mx = e.clientX;
+        var my = e.clientY;
 
-        mascotEls.forEach(function (el) {
-          var rect = el.getBoundingClientRect();
-          var cx = rect.left + rect.width / 2;
-          var cy = rect.top + rect.height / 2;
-          var dist = Math.hypot(mouseX - cx, mouseY - cy);
-
-          if (dist < 150) {
-            var tilt = ((mouseX - cx) / 150) * 4;
-            el.style.setProperty('--tilt-x', tilt.toFixed(2) + 'deg');
+        mascotControllers.forEach(function (mc) {
+          if (!mc.tiltWrap || !mc.rect || mc.isActing()) return;
+          var dist = Math.hypot(mx - mc.rect.cx, my - mc.rect.cy);
+          if (dist < 130) {
+            // Gentle restrained look toward cursor (max ±3.2deg)
+            var tilt = ((mx - mc.rect.cx) / 130) * 3.2;
+            mc.tiltWrap.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg)';
           } else {
-            el.style.setProperty('--tilt-x', '0deg');
+            mc.tiltWrap.style.transform = 'rotate(0deg)';
           }
         });
       });
     }, { passive: true });
   }
 
-  // IntersectionObserver: pause animations when scrolled out of view to save CPU/battery
-  if ('IntersectionObserver' in window) {
+  // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery
+  if ('IntersectionObserver' in window && mascotControllers.length > 0) {
     var mascotObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -1777,11 +1666,10 @@ document.addEventListener('keydown', function (e) {
           entry.target.classList.add('mascot-offscreen');
         }
       });
-    }, { threshold: 0.05, rootMargin: '120px 0px 120px 0px' });
+    }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
 
-    mascots.forEach(function (m) {
-      var el = document.getElementById(m.id);
-      if (el) mascotObserver.observe(el);
+    mascotControllers.forEach(function (mc) {
+      mascotObserver.observe(mc.el);
     });
   }
 })();
