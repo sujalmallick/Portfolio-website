@@ -27,6 +27,18 @@
     margin: 0 auto;
   }
 
+  /* Terminal mascot: scale down for tablet */
+  .hero-terminal-mascot {
+    width: 60px;
+    height: 46px;
+    top: -10px;
+    right: -18px;
+  }
+  .mascot-bubble {
+    width: 44px;
+    right: -4px;
+  }
+
   /* About: single column */
   .about-grid {
     grid-template-columns: 1fr;
@@ -39,8 +51,12 @@
     gap: 1rem;
   }
 
-  /* Projects cards: slightly less padding */
-  .project-featured, .project-entry { padding: 2rem; }
+  /* Projects: stack featured card & adjust padding */
+  .project-featured-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .project-featured, .project-entry { padding: 1.85rem; }
 
   /* Hackathons: stack date above content */
   .timeline-list li {
@@ -53,6 +69,15 @@
   .contacts-grid {
     grid-template-columns: 1fr;
     gap: 3rem;
+  }
+}
+
+/* ── 768px — Collapse 2-column project & cert grids to 1 column ─ */
+@media screen and (max-width: 768px) {
+  .project-grid,
+  .cert-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 }
 
@@ -75,7 +100,10 @@
   #profile { padding: 3rem var(--section-px); }
 
   /* Featured & entry project cards: compact */
-  .project-featured, .project-entry { padding: 1.5rem; }
+  .project-featured, .project-entry { padding: 1.35rem 1.25rem; }
+  .project-featured-header, .project-entry-header { gap: 0.75rem; }
+  .project-metrics { gap: 0.5rem 1rem; }
+  .metric-num { font-size: 1.15rem; }
 
   /* Pipeline flow: wrap vertically on tiny screens */
   .arch-flow {
@@ -87,7 +115,7 @@
   .arch-arrow { transform: rotate(90deg); margin-left: 0.5rem; }
 
   /* Project index number: slightly smaller */
-  .project-index { font-size: 2.2rem; }
+  .project-index { font-size: 1.9rem !important; min-width: 1.9rem !important; }
 
   /* Contact form full-width button already handled by btn--wide */
 
@@ -105,4 +133,64 @@
   .timeline-links {
     gap: 1rem;
   }
+
+  /* Terminal mascot: scale down for mobile */
+  .hero-terminal-mascot {
+    width: 52px;
+    height: 40px;
+    top: -8px;
+    right: -14px;
+  }
+  .mascot-bubble {
+    width: 38px;
+    right: -2px;
+  }
+
+  /* Verified credentials bar on mobile */
+  .cert-verify-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .cert-verify-links {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cert-verify-btn {
+    justify-content: center;
+  }
+
+  /* Footer robot patrol on mobile */
+  .footer-inner {
+    gap: 1rem;
+  }
+  .footer-robot-patrol {
+    width: 170px;
+    height: 44px;
+  }
+  #footer-robot-canvas {
+    width: 170px;
+    height: 44px;
+  }
 }
+
+/* ── 480px — Narrow mobile layout ──────────────────────────── */
+@media screen and (max-width: 480px) {
+  .footer-inner {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.85rem;
+    text-align: center;
+  }
+  .footer-robot-patrol {
+    width: 220px;
+    height: 46px;
+  }
+  #footer-robot-canvas {
+    width: 220px;
+    height: 46px;
+  }
+}
