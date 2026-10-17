@@ -1213,7 +1213,7 @@ footer {
   align-items: center;
   justify-content: flex-end;
   user-select: none;
-  cursor: crosshair;
+  cursor: default;
 }
 
 #footer-robot-canvas {
@@ -1230,15 +1230,14 @@ footer {
 /* 1. Theme-Matched Floating Pixel Terminal Mascot */
 .hero-terminal-mascot {
   position: absolute;
-  top: -8px;
-  right: -4px;
-  width: 72px;
-  height: 72px;
+  top: -1.5%;
+  left: 77%;
+  width: 25%;
+  height: 25%;
   z-index: 10;
   pointer-events: none;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  animation: mascot-bob 3s ease-in-out infinite alternate;
 }
 
 .mascot-sprite {
@@ -1276,8 +1275,8 @@ footer {
 .mascot-bubble {
   position: absolute;
   bottom: 84%;
-  right: 6px;
-  width: 52px;
+  right: 10%;
+  width: 72%;
   height: auto;
   opacity: 0;
   transform: scale(0.6) translateY(6px);
@@ -1310,15 +1309,6 @@ footer {
   transform: scale(1) translateY(0);
 }
 
-/* Vertical 2.5px bobbing animation */
-@keyframes mascot-bob {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-3px);
-  }
-}
 
 /* Periodic blink animation cycle (blinks every 4.5s for ~180ms) */
 @keyframes mascot-blink-cycle {
@@ -1673,5 +1663,18 @@ footer {
 
 .cert-verify-btn:hover .arrow {
   transform: translate(2px, -2px);
+}
+
+/* ── Roaming Pixel Space Rocket Companion ──────────────────────────────── */
+#space-rocket-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 25;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 

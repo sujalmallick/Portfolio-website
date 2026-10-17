@@ -27,17 +27,7 @@
     margin: 0 auto;
   }
 
-  /* Terminal mascot: scale down for tablet */
-  .hero-terminal-mascot {
-    width: 60px;
-    height: 60px;
-    top: -6px;
-    right: -2px;
-  }
-  .mascot-bubble {
-    width: 44px;
-    right: 4px;
-  }
+
 
   /* About: single column */
   .about-grid {
@@ -134,17 +124,7 @@
     gap: 1rem;
   }
 
-  /* Terminal mascot: scale down for mobile */
-  .hero-terminal-mascot {
-    width: 52px;
-    height: 52px;
-    top: -5px;
-    right: -2px;
-  }
-  .mascot-bubble {
-    width: 38px;
-    right: 2px;
-  }
+
 
   /* Verified credentials bar on mobile */
   .cert-verify-bar {
