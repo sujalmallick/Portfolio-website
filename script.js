@@ -195,11 +195,11 @@ function toggleMenu() {
   muzzleImg.src = 'assets/muzzle-flash.png';
 
   var badgeImages = {
-    python: { img: new Image(), src: 'assets/badge-python.png', w: 20, h: 22 },
-    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 18, h: 18 },
-    cpp:    { img: new Image(), src: 'assets/badge-cpp.png',    w: 20, h: 18 },
-    java:   { img: new Image(), src: 'assets/badge-java.png',   w: 18, h: 24 },
-    code:   { img: new Image(), src: 'assets/badge-code.png',   w: 20, h: 20 }
+    python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
+    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 17 },
+    cpp:    { img: new Image(), src: 'assets/badge-cpp.png',    w: 22, h: 15 },
+    java:   { img: new Image(), src: 'assets/badge-java.png',   w: 22, h: 24 },
+    code:   { img: new Image(), src: 'assets/badge-code.png',   w: 18, h: 14 }
   };
 
   var BADGE_SEQUENCE = ['code', 'java', 'cpp', 'js', 'python'];
@@ -414,9 +414,11 @@ function toggleMenu() {
         if (bInfo && bInfo.img.complete && bInfo.img.naturalWidth > 0) {
           ctx.save();
           ctx.globalAlpha = Math.max(0, item.alpha);
-          var bx = Math.round(item.x - bInfo.w / 2);
-          var by = Math.round(drawCenterY - bInfo.h / 2);
-          ctx.drawImage(bInfo.img, bx, by, bInfo.w, bInfo.h);
+          var bw = bInfo.img.naturalWidth;
+          var bh = bInfo.img.naturalHeight;
+          var bx = Math.round(item.x - bw / 2);
+          var by = Math.round(drawCenterY - bh / 2);
+          ctx.drawImage(bInfo.img, bx, by, bw, bh);
           ctx.restore();
         }
       }
@@ -511,7 +513,9 @@ function toggleMenu() {
     for (var i = 0; i < staticBadges.length; i++) {
       var bInfo = badgeImages[staticBadges[i]];
       if (bInfo && bInfo.img.complete) {
-        ctx.drawImage(bInfo.img, curX - Math.round(bInfo.w / 2), muzzleTipY - Math.round(bInfo.h / 2), bInfo.w, bInfo.h);
+        var bw = bInfo.img.naturalWidth || bInfo.w;
+        var bh = bInfo.img.naturalHeight || bInfo.h;
+        ctx.drawImage(bInfo.img, curX - Math.round(bw / 2), muzzleTipY - Math.round(bh / 2), bw, bh);
       }
       // Dot
       ctx.fillStyle = '#22D3EE';
