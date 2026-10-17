@@ -1236,25 +1236,48 @@ footer {
 .footer-inner {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   font-size: 0.76rem;
   color: var(--text-muted);
   max-width: var(--max-w);
   margin: 0 auto;
   position: relative;
-  min-height: 50px;
+  min-height: 84px;
 }
 
-/* Terminator-Inspired Pixel AI Robot Patrol */
+/* Retro Pixel-Art Technology Workshop Scene (Middle / Center-Left) */
+.footer-workshop-scene {
+  position: relative;
+  width: min(328px, 48%);
+  height: 84px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  user-select: none;
+  cursor: default;
+  margin-left: clamp(10px, 6vw, 70px);
+}
+
+#footer-workshop-canvas {
+  width: 100%;
+  height: 84px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Terminator-Inspired Pixel AI Robot Patrol (Far-Right) */
 .footer-robot-patrol {
   position: relative;
-  width: min(760px, calc(100% - 130px));
+  width: min(440px, 46%);
   height: 58px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
   user-select: none;
   cursor: default;
+  margin-left: auto;
 }
 
 #footer-robot-canvas {
