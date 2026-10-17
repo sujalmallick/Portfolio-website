@@ -1,11 +1,15 @@
 /* ════════════════════════════════════════════════════════
    RESPONSIVE — SUJAL MALLICK PORTFOLIO
-   Breakpoints: 900px (tablet/hamburger), 600px (mobile)
+   Breakpoints:
+   - 900px (tablet / switch to hamburger nav)
+   - 768px (small tablet & large mobile)
+   - 600px (standard mobile)
+   - 480px (compact mobile)
+   - 380px (ultra-narrow mobile / iPhone SE)
    ════════════════════════════════════════════════════════ */
 
-/* ── 900px — Switch to hamburger, stack hero & about & exp ─── */
+/* ── 900px — Tablet / Stack hero, about & exp ─────────────────── */
 @media screen and (max-width: 900px) {
-
   /* Nav: hide desktop, show hamburger */
   #desktop-nav   { display: none; }
   #hamburger-nav { display: flex; }
@@ -14,7 +18,7 @@
   .profile-inner {
     display: flex;
     flex-direction: column-reverse;
-    gap: 2.5rem;
+    gap: 2.25rem;
     align-items: center;
   }
 
@@ -23,16 +27,14 @@
   #socials-container   { justify-content: center; }
 
   .section__pic-container {
-    width: clamp(160px, 44vw, 260px);
+    width: clamp(160px, 42vw, 240px);
     margin: 0 auto;
   }
-
-
 
   /* About: single column */
   .about-grid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2.5rem;
   }
 
   /* AI Pixel Mascots — Tablet adjustments */
@@ -43,17 +45,26 @@
     top: auto;
     width: 56px;
   }
+
   .mascot-claude {
     left: clamp(20px, 6vw, 48px);
-    width: 56px;
+    width: 58px;
     height: auto;
     top: -34px;
   }
+
   .mascot-gemini {
     right: -58px;
     width: 48px;
     top: -12px;
   }
+
+  .edu-divider-character {
+    right: 4%;
+    transform: scale(0.9);
+    transform-origin: top right;
+  }
+
   .contact-tux-sprite {
     width: 32px;
     height: 33px;
@@ -86,195 +97,392 @@
   }
 }
 
-/* ── 768px — Collapse 2-column project & cert grids to 1 column ─ */
+/* ── 768px — Small Tablet / Single column grids ───────────────── */
 @media screen and (max-width: 768px) {
   .project-grid,
   .cert-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-}
 
-/* ── 600px — Mobile polish ─────────────────────────────────── */
-@media screen and (max-width: 600px) {
-  :root {
-    --section-py: 4.5rem;
-    --section-px: 1.25rem;
-  }
-
-  /* Title scales down gracefully */
-  .title { font-size: clamp(3rem, 14vw, 4.5rem); }
-
-  /* Section headings */
-  .section-header h2 {
-    font-size: clamp(1.75rem, 7.5vw, 2.5rem);
-  }
-
-  /* Hero: reduce gap */
-  #profile { padding: 3rem var(--section-px); }
-
-  /* Featured & entry project cards: compact */
-  .project-featured, .project-entry { padding: 1.35rem 1.25rem; }
-  .project-featured-header, .project-entry-header { gap: 0.75rem; }
-  .project-metrics { gap: 0.5rem 1rem; }
-  .metric-num { font-size: 1.15rem; }
-
-  /* Pipeline flow: wrap vertically on tiny screens */
-  .arch-flow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-  }
-
-  .arch-arrow { transform: rotate(90deg); margin-left: 0.5rem; }
-
-  /* Project index number: slightly smaller */
-  .project-index { font-size: 1.9rem !important; min-width: 1.9rem !important; }
-
-  /* Contact form full-width button already handled by btn--wide */
-
-  /* More on GitHub: single column on mobile */
-  .more-projects {
-    grid-template-columns: 1fr;
-  }
-
-  /* Certificate cards: compact mobile padding */
-  .cert-card {
-    padding: 1.6rem 1.25rem;
-  }
-
-  /* Timeline links: tighter gap */
-  .timeline-links {
-    gap: 1rem;
-  }
-
-
-
-  /* Verified credentials bar on mobile */
+  /* Verified credentials bar: stack and align */
   .cert-verify-bar {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1.15rem 1.25rem;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem;
   }
 
   .cert-verify-links {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
+    gap: 0.85rem;
   }
 
   .cert-verify-btn {
+    width: 100%;
     justify-content: center;
   }
 
-  /* Footer living pixel world on mobile */
-  .footer-inner {
+  .cert-verify-google-wrap {
+    width: 100%;
+    display: flex;
+  }
+
+  .cert-verify-google-wrap .cert-verify-btn {
+    width: 100%;
+  }
+
+  .mascot-gemini {
+    right: 8px;
+    top: -42px;
+    width: 46px;
+  }
+
+  .gemini-bubble {
+    width: 32px;
+    top: -34px;
+    right: -2px;
+  }
+}
+
+/* ── 600px — Standard Mobile Polish ───────────────────────────── */
+@media screen and (max-width: 600px) {
+  :root {
+    --section-py: 4rem;
+    --section-px: 1.25rem;
+  }
+
+  /* Title scales down gracefully */
+  .title {
+    font-size: clamp(2.4rem, 11vw, 4rem);
+  }
+
+  /* Section headings */
+  .section-header h2 {
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+  }
+
+  /* Hero */
+  #profile {
+    padding: 2.75rem var(--section-px);
+    min-height: auto;
+  }
+
+  .section__text_p2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-container {
+    width: 100%;
+    gap: 0.65rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1.25rem;
+    font-size: 0.7rem;
+  }
+
+  /* Featured & entry project cards: compact padding */
+  .project-featured, .project-entry {
+    padding: 1.35rem 1.15rem;
+  }
+
+  .project-featured-header, .project-entry-header {
+    gap: 0.75rem;
+  }
+
+  .project-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .metric-item {
+    flex: 1 1 calc(50% - 0.75rem);
+    min-width: 110px;
+  }
+
+  .metric-num {
+    font-size: 1.15rem;
+  }
+
+  /* Architecture flow: vertical sequence with downward arrows */
+  .arch-flow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .arch-arrow {
+    transform: rotate(90deg);
+    margin-left: 0.5rem;
+  }
+
+  .project-index {
+    font-size: 1.75rem !important;
+    min-width: 1.75rem !important;
+  }
+
+  .more-projects {
+    grid-template-columns: 1fr;
+  }
+
+  /* Certificate cards: compact mobile padding */
+  .cert-card {
+    padding: 1.4rem 1.15rem;
+  }
+
+  /* Timeline */
+  .timeline-links {
     gap: 1rem;
-    min-height: 70px;
+    flex-wrap: wrap;
   }
-  .footer-world-scene {
-    width: 100%;
-    height: 70px;
-    margin: 0 auto;
+
+  /* Mobile input zoom prevention (iOS Safari) */
+  .form-group input,
+  .form-group textarea {
+    font-size: 16px !important;
   }
-  #footer-world-canvas {
-    width: 100%;
-    height: 70px;
-  }
+
   /* AI Pixel Mascots — Mobile adjustments */
   .mascot-chatgpt {
     left: 14px;
     bottom: -4px;
     right: auto;
     top: auto;
-    width: 50px;
+    width: 48px;
   }
+
   .chatgpt-bubble {
-    width: 34px;
-    top: -36px;
-  }
-  .mascot-claude {
-    left: 16px;
-    width: 64px;
-    height: auto;
-    top: -38px;
-  }
-  .claude-bubble {
-    width: 36px;
-    top: -38px;
-    left: 18px;
-  }
-  .mascot-gemini {
-    right: -8px;
-    width: 46px;
-    top: -48px;
-  }
-  .gemini-bubble {
     width: 32px;
     top: -34px;
-    right: -4px;
   }
-  .edu-divider-character {
-    right: 4%;
-    transform: scale(0.9);
-    transform-origin: top right;
-  }
-}
 
-/* ── 480px — Narrow mobile layout ──────────────────────────── */
-@media screen and (max-width: 480px) {
-  .footer-inner {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 0.5rem;
-    min-height: 56px;
-    overflow: hidden;
-  }
-  .footer-world-scene {
-    width: 100%;
-    height: 56px;
-    margin: 0 auto;
-  }
-  #footer-world-canvas {
-    width: 100%;
-    height: 56px;
-  }
-  .mascot-chatgpt {
-    left: 12px;
-    bottom: -2px;
-    width: 44px;
-  }
-  .chatgpt-bubble {
-    width: 30px;
+  .mascot-claude {
+    left: 16px;
+    width: 52px;
+    height: auto;
     top: -32px;
   }
-  .mascot-claude {
-    width: 56px;
-    height: auto;
-    top: -34px;
-  }
+
   .claude-bubble {
     width: 32px;
     top: -34px;
     left: 14px;
   }
+
   .mascot-gemini {
-    width: 40px;
-    top: -46px;
-    right: -4px;
+    right: 8px;
+    width: 44px;
+    top: -42px;
   }
+
   .gemini-bubble {
-    width: 28px;
-    top: -30px;
+    width: 30px;
+    top: -32px;
+    right: -2px;
   }
+
   .edu-divider-character {
-    right: 2%;
-    transform: scale(0.8);
+    right: 3%;
+    transform: scale(0.82);
     transform-origin: top right;
   }
+
   .contact-tux-sprite {
     width: 28px;
     height: 29px;
   }
-}
+
+  /* Footer living pixel world */
+  .footer-inner {
+    gap: 0.75rem;
+    min-height: 64px;
+  }
+
+  .footer-world-scene {
+    width: 100%;
+    height: 64px;
+    margin: 0 auto;
+  }
+
+  #footer-world-canvas {
+    width: 100%;
+    height: 64px;
+  }
+}
+
+/* ── 480px — Compact Mobile Layout ─────────────────────────── */
+@media screen and (max-width: 480px) {
+  :root {
+    --section-px: 1rem;
+    --section-py: 3.5rem;
+  }
+
+  .section__pic-container {
+    width: clamp(140px, 48vw, 200px);
+  }
+
+  .title {
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.45rem, 6.5vw, 1.95rem);
+  }
+
+  .btn-container .btn {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .menu-links {
+    min-width: 180px;
+  }
+
+  .menu-links li a {
+    padding: 0.85rem 1.25rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mascot-chatgpt {
+    left: 10px;
+    bottom: -2px;
+    width: 42px;
+  }
+
+  .chatgpt-bubble {
+    width: 28px;
+    top: -30px;
+  }
+
+  .mascot-claude {
+    width: 46px;
+    height: auto;
+    top: -28px;
+    left: 12px;
+  }
+
+  .claude-bubble {
+    width: 28px;
+    top: -30px;
+    left: 12px;
+  }
+
+  .mascot-gemini {
+    width: 40px;
+    top: -38px;
+    right: 4px;
+  }
+
+  .gemini-bubble {
+    width: 26px;
+    top: -28px;
+  }
+
+  .edu-divider-character {
+    right: 2%;
+    transform: scale(0.75);
+    transform-origin: top right;
+  }
+
+  .footer-inner {
+    min-height: 52px;
+    gap: 0.5rem;
+    overflow: hidden;
+  }
+
+  .footer-world-scene {
+    width: 100%;
+    height: 52px;
+  }
+
+  #footer-world-canvas {
+    width: 100%;
+    height: 52px;
+  }
+}
+
+/* ── 380px — Ultra-Narrow Mobile (iPhone SE, Galaxy Fold) ───── */
+@media screen and (max-width: 380px) {
+  :root {
+    --section-px: 0.85rem;
+    --section-py: 3rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    line-height: 1.22;
+  }
+
+  .section-label {
+    margin-bottom: 0.75rem;
+    font-size: 0.62rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.65rem;
+  }
+
+  .mascot-chatgpt {
+    left: 8px;
+    bottom: -2px;
+    width: 36px;
+  }
+
+  .chatgpt-bubble {
+    width: 24px;
+    top: -26px;
+  }
+
+  .chatgpt-thruster-glow {
+    width: 16px;
+    height: 6px;
+  }
+
+  .mascot-claude {
+    width: 40px;
+    height: auto;
+    top: -24px;
+    left: 8px;
+  }
+
+  .claude-bubble {
+    width: 24px;
+    top: -26px;
+    left: 10px;
+  }
+
+  .mascot-gemini {
+    width: 36px;
+    top: -34px;
+    right: 0px;
+  }
+
+  .gemini-bubble {
+    width: 24px;
+    top: -24px;
+  }
+
+  .edu-divider-character {
+    right: 1%;
+    transform: scale(0.68);
+    transform-origin: top right;
+  }
+
+  .footer-inner,
+  .footer-world-scene,
+  #footer-world-canvas {
+    height: 48px;
+    min-height: 48px;
+  }
+}

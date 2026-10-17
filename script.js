@@ -45,6 +45,30 @@ function toggleMenu() {
   icon.setAttribute('aria-expanded', isOpen.toString());
 }
 
+// Close mobile menu when clicking outside or pressing Escape
+document.addEventListener('click', function (e) {
+  var menu = document.getElementById('mobile-menu');
+  var icon = document.getElementById('hamburger-btn');
+  if (!menu || !icon || !menu.classList.contains('open')) return;
+  if (!menu.contains(e.target) && !icon.contains(e.target)) {
+    menu.classList.remove('open');
+    icon.classList.remove('open');
+    icon.setAttribute('aria-expanded', 'false');
+  }
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    var menu = document.getElementById('mobile-menu');
+    var icon = document.getElementById('hamburger-btn');
+    if (menu && menu.classList.contains('open')) {
+      menu.classList.remove('open');
+      icon.classList.remove('open');
+      icon.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+
 /* ── 3. SCROLL REVEAL ────────────────────────────────────── */
 (function () {
   var reveals = document.querySelectorAll('.reveal, .reveal-divider');
