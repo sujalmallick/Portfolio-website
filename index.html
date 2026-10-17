@@ -18,8 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=14">
-  <link rel="stylesheet" href="mediaqueries.css?v=14">
+  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="stylesheet" href="mediaqueries.css?v=25">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
@@ -99,9 +99,12 @@
           <div class="mascot-bubble">
             <img src="./assets/terminal-mascot-bubble.png" alt="hi!">
           </div>
-          <img src="./assets/terminal-mascot-idle.png" alt="" class="mascot-sprite mascot-sprite--idle">
-          <img src="./assets/terminal-mascot-blink.png" alt="" class="mascot-sprite mascot-sprite--blink">
-          <img src="./assets/terminal-mascot-happy.png" alt="" class="mascot-sprite mascot-sprite--happy">
+          <div class="mascot-monitor">
+            <img src="./assets/terminal-mascot-idle.png" alt="" class="mascot-sprite mascot-sprite--idle">
+            <img src="./assets/terminal-mascot-blink.png" alt="" class="mascot-sprite mascot-sprite--blink">
+            <img src="./assets/terminal-mascot-happy.png" alt="" class="mascot-sprite mascot-sprite--happy">
+          </div>
+          <img src="./assets/terminal-mascot-paws.png" alt="" class="mascot-paws">
         </div>
       </div>
     </div>
@@ -154,26 +157,15 @@
     </div>
     <div class="about-grid">
       <div class="about-bio reveal">
-        <p>Computer Engineering student at <strong>Thapar Institute of Engineering &amp; Technology (TIET)</strong>, Patiala. Hands-on software engineer specializing in AI Engineering, distributed cloud backends, and high-performance media/CDN pipelines.</p>
-        <p>Experienced in architecting multi-agent LLM systems, scaling event-driven microservices on Azure, Google Cloud, and AWS, and low-level GPU acceleration with CUDA and C++.</p>
-
-        <div class="about-education">
-          <span class="edu-label">Education</span>
-          <div class="edu-card">
-            <div class="edu-header">
-              <strong class="edu-school">Thapar Institute of Engineering &amp; Technology</strong>
-              <span class="edu-year">2023 &mdash; 2027</span>
-            </div>
-            <p class="edu-degree">Bachelor of Engineering in Computer Engineering &middot; <strong>CGPA: 7.81 / 10</strong></p>
-          </div>
-          <div class="edu-card">
-            <div class="edu-header">
-              <strong class="edu-school">ODM Public School, Bhubaneswar</strong>
-              <span class="edu-year">2023</span>
-            </div>
-            <p class="edu-degree">Senior Secondary (CBSE Class 12) &middot; <strong>91%</strong></p>
+        <!-- Floating ChatGPT-inspired Mascot Companion -->
+        <div class="pixel-mascot mascot-chatgpt" id="mascot-chatgpt" role="img" aria-label="ChatGPT-inspired pixel companion" tabindex="0">
+          <div class="chatgpt-body">
+            <img src="./assets/mascot-chatgpt.png" alt="" class="mascot-img">
+            <span class="chatgpt-thruster-glow" aria-hidden="true"></span>
           </div>
         </div>
+        <p>Computer Engineering student at <strong>Thapar Institute of Engineering &amp; Technology (TIET)</strong>, Patiala. Hands-on software engineer specializing in AI Engineering, distributed cloud backends, and high-performance media/CDN pipelines.</p>
+        <p>Experienced in architecting multi-agent LLM systems, scaling event-driven microservices on Azure, Google Cloud, and AWS, and low-level GPU acceleration with CUDA and C++.</p>
       </div>
       <div class="about-skills reveal">
         <h3 class="skills-heading">Technical Depth</h3>
@@ -231,10 +223,47 @@
         </div>
       </div>
     </div>
+
+    <!-- Education Section with full-width horizontal divider and sitting pixel programmer -->
+    <div class="about-education reveal">
+      <div class="edu-divider-character" aria-hidden="true">
+        <div class="edu-programmer-sprite"></div>
+      </div>
+      <span class="edu-label">Education</span>
+      <div class="edu-cards-grid">
+        <div class="edu-card">
+          <div class="edu-header">
+            <strong class="edu-school">Thapar Institute of Engineering &amp; Technology</strong>
+            <span class="edu-year">2023 &mdash; 2027</span>
+          </div>
+          <p class="edu-degree">Bachelor of Engineering in Computer Engineering &middot; <strong>CGPA: 7.81 / 10</strong></p>
+        </div>
+        <div class="edu-card">
+          <div class="edu-header">
+            <strong class="edu-school">ODM Public School, Bhubaneswar</strong>
+            <span class="edu-year">2023</span>
+          </div>
+          <p class="edu-degree">Senior Secondary (CBSE Class 12) &middot; <strong>91%</strong></p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ═══════════════════════════ EXPERIENCE ════════════════════════════ -->
   <section id="experience" class="reveal-divider" aria-label="Experience">
+    <!-- Claude-inspired Robot perched on Education/Experience divider -->
+    <div class="pixel-mascot mascot-claude" id="mascot-claude" role="img" aria-label="Claude-inspired pixel robot perched on divider" tabindex="0">
+      <div class="claude-perch-wrap">
+        <div class="claude-body">
+          <img src="./assets/mascot-claude-body.png" alt="" class="mascot-img claude-main-img">
+          <img src="./assets/mascot-claude-eyes-happy.png" alt="" class="claude-face-happy" aria-hidden="true">
+        </div>
+        <div class="claude-legs" aria-hidden="true">
+          <img src="./assets/mascot-claude-leg-left.png" alt="" class="claude-leg claude-leg--left">
+          <img src="./assets/mascot-claude-leg-right.png" alt="" class="claude-leg claude-leg--right">
+        </div>
+      </div>
+    </div>
     <div class="section-header reveal">
       <span class="section-label">02 / Experience</span>
       <h2>
@@ -310,6 +339,20 @@
 
   <!-- ═══════════════════════════ PROJECTS ══════════════════════════════ -->
   <section id="projects" class="reveal-divider" aria-label="Projects">
+    <!-- Gemini-inspired Mascot floating above Experience/Projects divider -->
+    <div class="pixel-mascot mascot-gemini" id="mascot-gemini" role="img" aria-label="Gemini-inspired cosmic companion" tabindex="0">
+      <div class="gemini-orbit-wrap">
+        <div class="gemini-body">
+          <img src="./assets/mascot-gemini.png" alt="" class="mascot-img gemini-main-img">
+          <div class="gemini-star-sparkler" aria-hidden="true">
+            <span class="constellation-spark c-spark-1"></span>
+            <span class="constellation-spark c-spark-2"></span>
+            <span class="constellation-spark c-spark-3"></span>
+            <span class="constellation-spark c-spark-4"></span>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="section-header reveal">
       <span class="section-label">03 / Projects</span>
       <h2>
@@ -841,16 +884,24 @@
   <!-- ═══════════════════════════ FOOTER ════════════════════════════════ -->
   <footer class="reveal-divider">
     <div class="footer-inner">
-      <span>&copy; Sujal Mallick</span>
+      <!-- Retro Pixel-Art Technology Workshop Scene (Middle / Center-Left) -->
+      <div class="footer-workshop-scene" aria-hidden="true">
+        <canvas id="footer-workshop-canvas"></canvas>
+      </div>
+
+      <!-- Preserved Terminator Robot (Far-Right) -->
       <div class="footer-robot-patrol" aria-hidden="true">
         <canvas id="footer-robot-canvas"></canvas>
       </div>
     </div>
   </footer>
 
+  <!-- Pixelated Cosmic Starfield Background Canvas -->
+  <canvas id="pixel-stars-canvas" aria-hidden="true"></canvas>
+
   <!-- Roaming Pixel Space Rocket Companion Canvas -->
   <canvas id="space-rocket-canvas" aria-hidden="true"></canvas>
 
-  <script src="script.js?v=19"></script>
+  <script src="script.js?v=25"></script>
 </body>
 </html>

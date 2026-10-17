@@ -238,17 +238,20 @@ function toggleMenu() {
   var streamItems = [];
   var pixelDust = [];
 
-  // Ground rubble stones (fixed relative x positions)
-  var rubblePoints = [
-    { x: 38, y: 1 }, { x: 74, y: 0 }, { x: 125, y: 1 }, { x: 168, y: 0 },
-    { x: 215, y: 1 }, { x: 260, y: 0 }, { x: 305, y: 1 }, { x: 350, y: 0 },
-    { x: 395, y: 1 }, { x: 420, y: 0 }
-  ];
+  // Ground rubble stones distributed dynamically across baseline
+  function buildRubblePoints(w) {
+    var pts = [];
+    for (var rx = 35; rx < w - 15; rx += 38) {
+      pts.push({ x: rx, y: (rx % 76 === 0) ? 1 : 0 });
+    }
+    return pts;
+  }
+  var rubblePoints = buildRubblePoints(760);
 
   function resize() {
     if (!container) return;
     var rect = container.getBoundingClientRect();
-    width = Math.round(rect.width) || 440;
+    width = Math.round(rect.width) || 760;
     height = Math.round(rect.height) || 58;
 
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -258,6 +261,8 @@ function toggleMenu() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.imageSmoothingEnabled = false;
+
+    rubblePoints = buildRubblePoints(width);
 
     // Keep robot in bounds
     var maxX = width - ROBOT_DRAW_W - 8;
@@ -301,7 +306,7 @@ function toggleMenu() {
     var robotY = groundY - ROBOT_DRAW_H;
 
     var maxX = width - ROBOT_DRAW_W - 8;
-    var minX = Math.max(70, width - 200);
+    var minX = 45;
 
     // ── ROBOT PATROL MOVEMENT ──
     if (patrolState === 'PATROL_LEFT') {
@@ -653,6 +658,308 @@ function toggleMenu() {
   })();
 
   /* ═══════════════════════════════════════════════════════════════════════════
+     RETRO PIXEL-ART TECHNOLOGY WORKSHOP SCENE
+     Compact 8-bit/16-bit sci-fi environment in the footer (middle/center-left)
+     featuring an R2-D2 cylindrical droid, 5-tier server rack with blinking LEDs,
+     workstation computer displaying pixel code, conduit data packet transfer,
+     retro lamp, potted plants, and ambient industrial floor lights.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  (function initFooterWorkshop() {
+    var canvas = document.getElementById('footer-workshop-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var workshopImg = new Image();
+    workshopImg.src = 'assets/footer-workshop.png';
+
+    var container = canvas.parentElement;
+    var width = 328;
+    var height = 84;
+    var frameCount = 0;
+    var isRunning = true;
+    var rafId = null;
+
+    // Sprite native dimensions: 328 x 99
+    var SPRITE_W = 328;
+    var SPRITE_H = 99;
+
+    // Server rack LEDs coordinates on native sprite (328x99):
+    var serverLeds = [
+      { x: 146, y: 29, color: '#FBBF24', dimColor: '#78350F', interval: 28, phase: 0 },
+      { x: 154, y: 30, color: '#4ADE80', dimColor: '#14532D', interval: 20, phase: 4 },
+      { x: 167, y: 28, color: '#FBBF24', dimColor: '#78350F', interval: 34, phase: 12 },
+      { x: 146, y: 44, color: '#4ADE80', dimColor: '#14532D', interval: 22, phase: 8 },
+      { x: 167, y: 44, color: '#FBBF24', dimColor: '#78350F', interval: 40, phase: 16 },
+      { x: 146, y: 57, color: '#FBBF24', dimColor: '#78350F', interval: 18, phase: 2 },
+      { x: 160, y: 58, color: '#4ADE80', dimColor: '#14532D', interval: 26, phase: 9 },
+      { x: 167, y: 57, color: '#4ADE80', dimColor: '#14532D', interval: 32, phase: 21 },
+      { x: 142, y: 70, color: '#FBBF24', dimColor: '#78350F', interval: 36, phase: 14 },
+      { x: 167, y: 70, color: '#FBBF24', dimColor: '#78350F', interval: 21, phase: 6 },
+      { x: 146, y: 83, color: '#FBBF24', dimColor: '#78350F', interval: 30, phase: 18 },
+      { x: 167, y: 83, color: '#FBBF24', dimColor: '#78350F', interval: 16, phase: 11 }
+    ];
+
+    function resize() {
+      if (!container) return;
+      var rect = container.getBoundingClientRect();
+      width = Math.round(rect.width) || 328;
+      height = Math.round(rect.height) || 84;
+
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = false;
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      if (!workshopImg.complete || workshopImg.naturalWidth === 0) return;
+
+      frameCount++;
+
+      // Responsive drawing calculation:
+      // If width < 220 (narrow mobile), clip to core scene: R2-D2 + Server + Workstation
+      var isCompactMobile = width < 220;
+      var srcX = isCompactMobile ? 80 : 0;
+      var srcW = isCompactMobile ? 165 : SPRITE_W;
+      var srcY = 0;
+      var srcH = SPRITE_H;
+
+      // Scale to fit canvas height with baseline at ground level
+      var scale = height / SPRITE_H;
+      var drawW = Math.round(srcW * scale);
+      var drawH = Math.round(srcH * scale);
+      var drawX = isCompactMobile ? 0 : Math.max(0, Math.round((width - drawW) * 0.45));
+      var drawY = height - drawH;
+
+      // 1. Draw base workshop sprite
+      ctx.drawImage(
+        workshopImg,
+        srcX, srcY, srcW, srcH,
+        drawX, drawY, drawW, drawH
+      );
+
+      // Coordinate converter from native sprite (328x99) to canvas draw space
+      function toCanvasX(nativeX) {
+        return drawX + Math.round((nativeX - srcX) * scale);
+      }
+      function toCanvasY(nativeY) {
+        return drawY + Math.round(nativeY * scale);
+      }
+
+      var pxSize = Math.max(1, Math.round(scale * 1.5));
+
+      // 2. Server Rack Blinking Status LEDs (Green & Amber)
+      for (var i = 0; i < serverLeds.length; i++) {
+        var led = serverLeds[i];
+        if (led.x < srcX || led.x > srcX + srcW) continue;
+
+        var cycle = (frameCount + led.phase) % led.interval;
+        var isOn = cycle < (led.interval * 0.52);
+        ctx.fillStyle = isOn ? led.color : led.dimColor;
+        ctx.fillRect(toCanvasX(led.x), toCanvasY(led.y), pxSize, pxSize);
+      }
+
+      // 3. Conduit Data Packets between Server Rack and Workstation
+      // Overhead pipe from (174, 37) to (206, 37) then drops down to (206, 43)
+      var packetCycle = frameCount % 130;
+      if (packetCycle < 50) {
+        var t = packetCycle / 50; // 0 to 1
+        var pX, pY;
+        if (t < 0.75) {
+          // Horizontal along conduit pipe
+          var ht = t / 0.75;
+          pX = 174 + ht * (206 - 174);
+          pY = 37;
+        } else {
+          // Drops down into monitor
+          var vt = (t - 0.75) / 0.25;
+          pX = 206;
+          pY = 37 + vt * 6;
+        }
+        if (pX >= srcX && pX <= srcX + srcW) {
+          ctx.fillStyle = packetCycle % 4 < 2 ? '#4ADE80' : '#22D3EE';
+          ctx.fillRect(toCanvasX(pX), toCanvasY(pY), pxSize, pxSize);
+        }
+      }
+
+      // 4. Workstation Monitor Active Code Line & Blinking Cursor
+      var monCursorX = 208;
+      var monCursorY = 53;
+      if (monCursorX >= srcX && monCursorX <= srcX + srcW) {
+        var cursorBlink = (frameCount % 44) < 22;
+        if (cursorBlink) {
+          ctx.fillStyle = '#4ADE80';
+          ctx.fillRect(toCanvasX(monCursorX), toCanvasY(monCursorY), Math.max(1, pxSize), Math.max(1, pxSize));
+        }
+      }
+
+      // 5. R2-D2 Droid Idle Animation (optic sensor pulse & head tilt)
+      var r2OpticX = 105;
+      var r2OpticY = 62;
+      if (r2OpticX >= srcX && r2OpticX <= srcX + srcW) {
+        // Every 200 frames (~3.3s), brief scan blink
+        var r2Cycle = frameCount % 200;
+        var opticColor = (r2Cycle > 180 && r2Cycle < 196) ? '#EF4444' : '#22D3EE';
+        // Subtle 1px tilt shift during scan
+        var tiltOffset = (r2Cycle > 180 && r2Cycle < 196) ? -1 : 0;
+        ctx.fillStyle = opticColor;
+        ctx.fillRect(toCanvasX(r2OpticX + tiltOffset), toCanvasY(r2OpticY), pxSize, pxSize);
+      }
+
+      // 6. Subtle Floor Runway Lights Pulse (stepped warm amber glow)
+      var floorLight1X = 69;
+      var floorLight2X = 298;
+      var floorLightY = 94;
+      var glowStep = Math.floor(((Math.sin(frameCount * 0.05) + 1) * 0.5) * 3); // 0, 1, 2
+      var glowAlpha = 0.65 + glowStep * 0.15; // 0.65, 0.80, 0.95
+
+      ctx.save();
+      ctx.globalAlpha = glowAlpha;
+      ctx.fillStyle = '#F59E0B';
+      if (floorLight1X >= srcX && floorLight1X <= srcX + srcW) {
+        ctx.fillRect(toCanvasX(floorLight1X), toCanvasY(floorLightY), Math.round(pxSize * 2), Math.max(1, pxSize));
+      }
+      if (floorLight2X >= srcX && floorLight2X <= srcX + srcW) {
+        ctx.fillRect(toCanvasX(floorLight2X), toCanvasY(floorLightY), Math.round(pxSize * 2), Math.max(1, pxSize));
+      }
+      ctx.restore();
+    }
+
+    function loop() {
+      if (!isRunning) return;
+      render();
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function init() {
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      if (prefersReducedMotion) {
+        workshopImg.onload = render;
+        if (workshopImg.complete) render();
+        return;
+      }
+
+      workshopImg.onload = function () {
+        if (!isRunning) return;
+        render();
+      };
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          isRunning = false;
+          if (rafId) cancelAnimationFrame(rafId);
+        } else {
+          if (!isRunning) {
+            isRunning = true;
+            rafId = requestAnimationFrame(loop);
+          }
+        }
+      });
+
+      isRunning = true;
+      rafId = requestAnimationFrame(loop);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PIXELATED COSMIC STARFIELD BACKGROUND
+     Subtle retro 1px/2px pixel stars and 3px cross-stars (+) twinkling gently
+     across the dark portfolio background, matching the roaming space rocket.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  (function initPixelStarfield() {
+    var canvas = document.getElementById('pixel-stars-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var width = window.innerWidth || 1200;
+    var height = window.innerHeight || 800;
+    var stars = [];
+
+    function resize() {
+      width = window.innerWidth || 1200;
+      height = window.innerHeight || 800;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = false;
+
+      stars = [];
+      var count = Math.min(85, Math.max(45, Math.round((width * height) / 18000)));
+      for (var i = 0; i < count; i++) {
+        var rand = Math.random();
+        var type = rand < 0.65 ? 'dot1' : (rand < 0.88 ? 'dot2' : 'cross');
+        var color = Math.random() < 0.82 ? '#CFC6B5' : '#22D3EE';
+        stars.push({
+          x: Math.round(Math.random() * width),
+          y: Math.round(Math.random() * height),
+          type: type,
+          color: color,
+          baseAlpha: 0.18 + Math.random() * 0.42,
+          twinkleSpeed: 0.015 + Math.random() * 0.025,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    var frame = 0;
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+      frame++;
+
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var alpha = prefersReducedMotion
+          ? s.baseAlpha
+          : s.baseAlpha + Math.sin(frame * s.twinkleSpeed + s.phase) * (s.baseAlpha * 0.55);
+        if (alpha < 0.06) alpha = 0.06;
+        if (alpha > 0.95) alpha = 0.95;
+
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = s.color;
+
+        if (s.type === 'dot1') {
+          ctx.fillRect(s.x, s.y, 1, 1);
+        } else if (s.type === 'dot2') {
+          ctx.fillRect(s.x, s.y, 2, 2);
+        } else if (s.type === 'cross') {
+          ctx.fillRect(s.x, s.y - 1, 1, 3);
+          ctx.fillRect(s.x - 1, s.y, 3, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      if (!prefersReducedMotion) {
+        requestAnimationFrame(render);
+      }
+    }
+
+    render();
+  })();
+
+  /* ═══════════════════════════════════════════════════════════════════════════
      ROAMING PIXEL SPACE ROCKET COMPANION
      Autonomous retro pixel-art rocket roaming randomly across the viewport with
      dynamic main plasma plume, directional attitude (RCS) thrusters, and cursor
@@ -678,7 +985,13 @@ function toggleMenu() {
     var ROCKET_W = isMobile ? 24 : 32;
     var ROCKET_H = Math.round(ROCKET_W * (508 / 216));
 
-    // Rocket state
+    // Flight & Landing State
+    var mode = 'ROAM'; // 'ROAM', 'APPROACH', 'LANDING', 'LANDED', 'LIFTOFF'
+    var roamCountdown = 450 + Math.floor(Math.random() * 350); // 7-13s roam before attempting landing
+    var landingTarget = null;
+    var legDeploy = 0; // 0 to 1
+    var landedTimer = 0;
+
     var x = width * 0.8;
     var y = height * 0.3;
     var vx = -0.7;
@@ -730,157 +1043,321 @@ function toggleMenu() {
       waypointTimer = 180 + Math.floor(Math.random() * 140);
     }
 
+    function findVisibleLandingLine() {
+      var candidates = document.querySelectorAll('.reveal-divider, .about-education, footer');
+      var lines = [];
+      for (var i = 0; i < candidates.length; i++) {
+        var el = candidates[i];
+        var rect = el.getBoundingClientRect();
+        if (rect.top >= 100 && rect.top <= height - 120 && rect.width >= 240) {
+          var isEdu = el.classList.contains('about-education');
+          var minX = Math.max(40, rect.left + 50);
+          var maxX = isEdu ? (rect.left + rect.width * 0.55) : Math.min(width - 50, rect.right - 50);
+          if (maxX > minX + 50) {
+            lines.push({
+              x: minX + Math.random() * (maxX - minX),
+              y: Math.round(rect.top),
+              el: el
+            });
+          }
+        }
+      }
+      if (lines.length === 0) return null;
+      return lines[Math.floor(Math.random() * lines.length)];
+    }
+
     function update() {
       frameCount++;
       if (boostTimer > 0) boostTimer--;
       if (mouseActive > 0) mouseActive--;
 
-      // 1. Waypoint countdown
-      waypointTimer--;
-      var distToTarget = Math.hypot(targetX - x, targetY - y);
-      if (distToTarget < 90 || waypointTimer <= 0) {
-        pickNewWaypoint();
-      }
+      var legDropDist = ROCKET_H * 0.52; // distance from rocket center to footpads
 
-      // 2. Desired heading calculation
-      var dx = targetX - x;
-      var dy = targetY - y;
-      var desiredAngle = Math.atan2(dx, -dy);
+      // ── FLIGHT MODE STATE MACHINE ──
+      if (mode === 'ROAM') {
+        roamCountdown--;
+        if (roamCountdown <= 0) {
+          var targetLine = findVisibleLandingLine();
+          if (targetLine) {
+            landingTarget = targetLine;
+            mode = 'APPROACH';
+          } else {
+            roamCountdown = 240;
+          }
+        }
 
-      // Mouse proximity evasion
-      if (mouseActive > 0) {
-        var mDist = Math.hypot(x - mouseX, y - mouseY);
-        if (mDist < 140) {
-          desiredAngle = Math.atan2(x - mouseX, -(y - mouseY));
-          if (boostTimer < 15) boostTimer = 15;
+        // 1. Waypoint countdown
+        waypointTimer--;
+        var distToTarget = Math.hypot(targetX - x, targetY - y);
+        if (distToTarget < 90 || waypointTimer <= 0) {
+          pickNewWaypoint();
+        }
+
+        // 2. Desired heading calculation
+        var dx = targetX - x;
+        var dy = targetY - y;
+        var desiredAngle = Math.atan2(dx, -dy);
+
+        // Mouse proximity evasion
+        if (mouseActive > 0) {
+          var mDist = Math.hypot(x - mouseX, y - mouseY);
+          if (mDist < 140) {
+            desiredAngle = Math.atan2(x - mouseX, -(y - mouseY));
+            if (boostTimer < 15) boostTimer = 15;
+          }
+        }
+
+        // Screen edge soft boundaries
+        var margin = isMobile ? 40 : 70;
+        if (x < margin) desiredAngle = Math.PI / 2;
+        else if (x > width - margin) desiredAngle = -Math.PI / 2;
+        else if (y < margin) desiredAngle = Math.PI;
+        else if (y > height - margin) desiredAngle = 0;
+
+        // Smooth heading rotation
+        var angleDiff = Math.atan2(Math.sin(desiredAngle - angle), Math.cos(desiredAngle - angle));
+        var turnRate = boostTimer > 0 ? 0.055 : 0.032;
+        angle += angleDiff * turnRate;
+
+        // Unit vectors based on current heading
+        var fx = Math.sin(angle);
+        var fy = -Math.cos(angle);
+        var rx = Math.cos(angle);
+        var ry = Math.sin(angle);
+        var lx = -rx;
+        var ly = -ry;
+
+        // Propulsion along heading
+        var thrust = boostTimer > 0 ? 0.11 : 0.042;
+        vx += fx * thrust;
+        vy += fy * thrust;
+
+        // Space drag (damping)
+        vx *= 0.982;
+        vy *= 0.982;
+
+        // Speed clamping
+        var maxSpeed = boostTimer > 0 ? 2.8 : 1.45;
+        var speed = Math.hypot(vx, vy);
+        if (speed > maxSpeed) {
+          vx = (vx / speed) * maxSpeed;
+          vy = (vy / speed) * maxSpeed;
+        }
+
+        // Update position
+        x += vx;
+        y += vy;
+
+        if (legDeploy > 0) legDeploy = Math.max(0, legDeploy - 0.05);
+
+        // ── THRUSTER EMISSION ──
+        // 1. Main Plasma Plume (rear nozzle)
+        var nozzleDist = ROCKET_H * 0.44;
+        var nx = x - fx * nozzleDist;
+        var ny = y - fy * nozzleDist;
+        var pCount = boostTimer > 0 ? 3 : (frameCount % 2 === 0 ? 2 : 1);
+
+        for (var p = 0; p < pCount; p++) {
+          var spread = (Math.random() - 0.5) * 0.8;
+          var pSpeed = (boostTimer > 0 ? 2.4 : 1.4) + Math.random() * 1.6;
+          var rand = Math.random();
+          var pColor = rand > 0.6 ? '#FFFFFF' : (rand > 0.25 ? '#22D3EE' : '#38BDF8');
+
+          particles.push({
+            x: nx + rx * (Math.random() - 0.5) * 4,
+            y: ny + ry * (Math.random() - 0.5) * 4,
+            vx: -fx * pSpeed + rx * spread,
+            vy: -fy * pSpeed + ry * spread,
+            color: pColor,
+            size: Math.random() > 0.4 ? 2 : 1,
+            alpha: 1,
+            decay: boostTimer > 0 ? 0.035 : 0.045
+          });
+        }
+
+        // 2. Small Attitude (RCS) Thrusters on side hull
+        var rcsDistX = ROCKET_W * 0.44;
+        var rcsDistY = ROCKET_H * 0.12;
+
+        if (angleDiff > 0.045) {
+          particles.push({
+            x: x + lx * rcsDistX - fx * rcsDistY,
+            y: y + ly * rcsDistX - fy * rcsDistY,
+            vx: lx * (1.1 + Math.random() * 0.9) - fx * 0.2,
+            vy: ly * (1.1 + Math.random() * 0.9) - fy * 0.2,
+            color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
+            size: 1,
+            alpha: 0.9,
+            decay: 0.07 + Math.random() * 0.04
+          });
+        } else if (angleDiff < -0.045) {
+          particles.push({
+            x: x + rx * rcsDistX - fx * rcsDistY,
+            y: y + ry * rcsDistX - fy * rcsDistY,
+            vx: rx * (1.1 + Math.random() * 0.9) - fx * 0.2,
+            vy: ry * (1.1 + Math.random() * 0.9) - fy * 0.2,
+            color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
+            size: 1,
+            alpha: 0.9,
+            decay: 0.07 + Math.random() * 0.04
+          });
+        }
+
+      } else if (mode === 'APPROACH') {
+        if (landingTarget && landingTarget.el) {
+          var r = landingTarget.el.getBoundingClientRect();
+          if (r.top < 40 || r.top > height - 60) {
+            mode = 'ROAM';
+            roamCountdown = 240;
+            return;
+          }
+          landingTarget.y = Math.round(r.top);
+        }
+
+        var hoverY = landingTarget.y - legDropDist - 40;
+        var adx = landingTarget.x - x;
+        var ady = hoverY - y;
+        var distToHover = Math.hypot(adx, ady);
+
+        // Turn upright (angle = 0 points straight up)
+        var desiredAngle = 0;
+        var angleDiff = Math.atan2(Math.sin(desiredAngle - angle), Math.cos(desiredAngle - angle));
+        angle += angleDiff * 0.08;
+
+        vx += Math.sign(adx) * Math.min(0.08, Math.abs(adx) * 0.003);
+        vy += Math.sign(ady) * Math.min(0.08, Math.abs(ady) * 0.003);
+        vx *= 0.94;
+        vy *= 0.94;
+
+        x += vx;
+        y += vy;
+
+        if (frameCount % 12 === 0) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * 6,
+            y: y + ROCKET_H * 0.44,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: 1.2,
+            color: '#22D3EE',
+            size: 1,
+            alpha: 0.7,
+            decay: 0.06
+          });
+        }
+
+        if (distToHover < 35 && Math.abs(angleDiff) < 0.15) {
+          mode = 'LANDING';
+        }
+
+      } else if (mode === 'LANDING') {
+        if (landingTarget && landingTarget.el) {
+          var r = landingTarget.el.getBoundingClientRect();
+          landingTarget.y = Math.round(r.top);
+        }
+
+        angle += (0 - angle) * 0.15;
+        if (legDeploy < 1) legDeploy = Math.min(1, legDeploy + 0.045);
+
+        var touchY = landingTarget.y - legDropDist;
+        x += (landingTarget.x - x) * 0.08;
+        vy = 0.38;
+        y += vy;
+
+        if (frameCount % 4 === 0) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * 6,
+            y: y + ROCKET_H * 0.44,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: 1.2 + Math.random() * 0.6,
+            color: '#22D3EE',
+            size: 1,
+            alpha: 0.8,
+            decay: 0.06
+          });
+        }
+
+        if (y >= touchY) {
+          y = touchY;
+          vx = 0;
+          vy = 0;
+          mode = 'LANDED';
+          landedTimer = 260; // 4.5 seconds
+
+          for (var s = 0; s < 6; s++) {
+            particles.push({
+              x: x + (Math.random() - 0.5) * 12,
+              y: touchY + legDropDist,
+              vx: (Math.random() - 0.5) * 1.5,
+              vy: -0.4 - Math.random() * 0.5,
+              color: '#CFC6B5',
+              size: Math.random() > 0.4 ? 2 : 1,
+              alpha: 0.9,
+              decay: 0.03
+            });
+          }
+        }
+
+      } else if (mode === 'LANDED') {
+        if (landingTarget && landingTarget.el) {
+          var r = landingTarget.el.getBoundingClientRect();
+          landingTarget.y = Math.round(r.top);
+          y = landingTarget.y - legDropDist;
+        }
+
+        angle = 0;
+        vx = 0;
+        vy = 0;
+        landedTimer--;
+
+        if (frameCount % 60 === 0) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * 8,
+            y: y + ROCKET_H * 0.42,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: -0.5,
+            color: '#CFC6B5',
+            size: 1,
+            alpha: 0.7,
+            decay: 0.04
+          });
+        }
+
+        if (landedTimer <= 0) {
+          mode = 'LIFTOFF';
+        }
+
+      } else if (mode === 'LIFTOFF') {
+        vy -= 0.16;
+        if (vy < -2.4) vy = -2.4;
+        y += vy;
+
+        if (legDeploy > 0) legDeploy = Math.max(0, legDeploy - 0.05);
+
+        for (var p = 0; p < 3; p++) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * 8,
+            y: y + ROCKET_H * 0.44,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: 2.2 + Math.random() * 1.4,
+            color: Math.random() > 0.5 ? '#FFFFFF' : '#22D3EE',
+            size: 2,
+            alpha: 1,
+            decay: 0.04
+          });
+        }
+
+        if (landingTarget && (y < landingTarget.y - legDropDist - 90)) {
+          mode = 'ROAM';
+          roamCountdown = 700 + Math.floor(Math.random() * 400);
+          pickNewWaypoint();
         }
       }
-
-      // Screen edge soft boundaries
-      var margin = isMobile ? 40 : 70;
-      if (x < margin) desiredAngle = Math.PI / 2;
-      else if (x > width - margin) desiredAngle = -Math.PI / 2;
-      else if (y < margin) desiredAngle = Math.PI;
-      else if (y > height - margin) desiredAngle = 0;
-
-      // Smooth heading rotation
-      var angleDiff = Math.atan2(Math.sin(desiredAngle - angle), Math.cos(desiredAngle - angle));
-      var turnRate = boostTimer > 0 ? 0.055 : 0.032;
-      angle += angleDiff * turnRate;
-
-      // Unit vectors based on current heading
-      var fx = Math.sin(angle);
-      var fy = -Math.cos(angle);
-      var rx = Math.cos(angle);
-      var ry = Math.sin(angle);
-      var lx = -rx;
-      var ly = -ry;
-
-      // Propulsion along heading
-      var thrust = boostTimer > 0 ? 0.11 : 0.042;
-      vx += fx * thrust;
-      vy += fy * thrust;
-
-      // Space drag (damping)
-      vx *= 0.982;
-      vy *= 0.982;
-
-      // Speed clamping
-      var maxSpeed = boostTimer > 0 ? 2.8 : 1.45;
-      var speed = Math.hypot(vx, vy);
-      if (speed > maxSpeed) {
-        vx = (vx / speed) * maxSpeed;
-        vy = (vy / speed) * maxSpeed;
-      }
-
-      // Update position
-      x += vx;
-      y += vy;
 
       // Hard bounds safety check
       if (x < 10) x = 10;
       if (x > width - 10) x = width - 10;
       if (y < 10) y = 10;
       if (y > height - 10) y = height - 10;
-
-      // ── THRUSTER EMISSION ──
-      // 1. Main Plasma Plume (rear nozzle)
-      var nozzleDist = ROCKET_H * 0.44;
-      var nx = x - fx * nozzleDist;
-      var ny = y - fy * nozzleDist;
-      var pCount = boostTimer > 0 ? 3 : (frameCount % 2 === 0 ? 2 : 1);
-
-      for (var p = 0; p < pCount; p++) {
-        var spread = (Math.random() - 0.5) * 0.8;
-        var pSpeed = (boostTimer > 0 ? 2.4 : 1.4) + Math.random() * 1.6;
-        var rand = Math.random();
-        var pColor = rand > 0.6 ? '#FFFFFF' : (rand > 0.25 ? '#22D3EE' : '#38BDF8');
-
-        particles.push({
-          x: nx + rx * (Math.random() - 0.5) * 4,
-          y: ny + ry * (Math.random() - 0.5) * 4,
-          vx: -fx * pSpeed + rx * spread,
-          vy: -fy * pSpeed + ry * spread,
-          color: pColor,
-          size: Math.random() > 0.4 ? 2 : 1,
-          alpha: 1,
-          decay: boostTimer > 0 ? 0.035 : 0.045
-        });
-      }
-
-      // 2. Small Attitude (RCS) Thrusters on side hull
-      var rcsDistX = ROCKET_W * 0.44;
-      var rcsDistY = ROCKET_H * 0.12;
-
-      // Turning starboard: port (left) side thruster fires
-      if (angleDiff > 0.045) {
-        particles.push({
-          x: x + lx * rcsDistX - fx * rcsDistY,
-          y: y + ly * rcsDistX - fy * rcsDistY,
-          vx: lx * (1.1 + Math.random() * 0.9) - fx * 0.2,
-          vy: ly * (1.1 + Math.random() * 0.9) - fy * 0.2,
-          color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
-          size: 1,
-          alpha: 0.9,
-          decay: 0.07 + Math.random() * 0.04
-        });
-      }
-      // Turning port: starboard (right) side thruster fires
-      else if (angleDiff < -0.045) {
-        particles.push({
-          x: x + rx * rcsDistX - fx * rcsDistY,
-          y: y + ry * rcsDistX - fy * rcsDistY,
-          vx: rx * (1.1 + Math.random() * 0.9) - fx * 0.2,
-          vy: ry * (1.1 + Math.random() * 0.9) - fy * 0.2,
-          color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
-          size: 1,
-          alpha: 0.9,
-          decay: 0.07 + Math.random() * 0.04
-        });
-      }
-      // Periodic attitude stabilization micro-puff
-      else if (frameCount % 60 === 0) {
-        particles.push({
-          x: x + lx * rcsDistX - fx * rcsDistY,
-          y: y + ly * rcsDistX - fy * rcsDistY,
-          vx: lx * 0.8,
-          vy: ly * 0.8,
-          color: '#22D3EE',
-          size: 1,
-          alpha: 0.75,
-          decay: 0.08
-        });
-        particles.push({
-          x: x + rx * rcsDistX - fx * rcsDistY,
-          y: y + ry * rcsDistX - fy * rcsDistY,
-          vx: rx * 0.8,
-          vy: ry * 0.8,
-          color: '#22D3EE',
-          size: 1,
-          alpha: 0.75,
-          decay: 0.08
-        });
-      }
 
       // 3. Update active particles
       for (var i = particles.length - 1; i >= 0; i--) {
@@ -911,11 +1388,55 @@ function toggleMenu() {
       }
       ctx.globalAlpha = 1;
 
-      // 2. Draw Rocket Sprite
+      // 2. Draw Rocket Sprite & Landing Legs
       if (rocketImg.complete && rocketImg.naturalWidth > 0) {
         ctx.save();
         ctx.translate(Math.round(x), Math.round(y));
         ctx.rotate(angle);
+
+        // Draw Landing Legs if deployed
+        if (legDeploy > 0.01) {
+          var deploy = legDeploy;
+          var strutW = Math.max(1, Math.round(ROCKET_W * 0.07));
+          var baseW = ROCKET_W * 0.32;
+          var baseY = ROCKET_H * 0.36;
+          var footSpread = ROCKET_W * 0.22 * deploy;
+          var footDrop = ROCKET_H * 0.16 * deploy;
+
+          var lFootX = -baseW - footSpread;
+          var rFootX = baseW + footSpread;
+          var footY = baseY + footDrop;
+
+          // Outer dark outline
+          ctx.strokeStyle = '#1A1A1D';
+          ctx.lineWidth = strutW + 2;
+          ctx.beginPath();
+          ctx.moveTo(-baseW, baseY);
+          ctx.lineTo(lFootX, footY);
+          ctx.moveTo(baseW, baseY);
+          ctx.lineTo(rFootX, footY);
+          ctx.stroke();
+
+          // Strut core in cream
+          ctx.strokeStyle = '#CFC6B5';
+          ctx.lineWidth = strutW;
+          ctx.beginPath();
+          ctx.moveTo(-baseW, baseY);
+          ctx.lineTo(lFootX, footY);
+          ctx.moveTo(baseW, baseY);
+          ctx.lineTo(rFootX, footY);
+          ctx.stroke();
+
+          // Pixel footpads
+          var padW = Math.round(strutW * 2.8);
+          ctx.fillStyle = '#1A1A1D';
+          ctx.fillRect(Math.round(lFootX - padW / 2 - 1), Math.round(footY), padW + 2, 2);
+          ctx.fillRect(Math.round(rFootX - padW / 2 - 1), Math.round(footY), padW + 2, 2);
+          ctx.fillStyle = '#22D3EE';
+          ctx.fillRect(Math.round(lFootX - padW / 2), Math.round(footY), padW, 1);
+          ctx.fillRect(Math.round(rFootX - padW / 2), Math.round(footY), padW, 1);
+        }
+
         ctx.drawImage(
           rocketImg,
           -Math.round(ROCKET_W / 2),
@@ -968,13 +1489,17 @@ function toggleMenu() {
         mouseActive = 90;
       }, { passive: true });
 
-      // Interactive Click: Fun speed burst
+      // Interactive Click: Fun speed burst / liftoff
       window.addEventListener('click', function (e) {
         var clickDist = Math.hypot(x - e.clientX, y - e.clientY);
-        if (clickDist < 250) {
-          boostTimer = 40;
-          targetX = Math.random() > 0.5 ? width * 0.2 : width * 0.8;
-          targetY = Math.random() > 0.5 ? height * 0.2 : height * 0.8;
+        if (mode === 'LANDED' || clickDist < 250) {
+          if (mode === 'LANDED') {
+            mode = 'LIFTOFF';
+          } else {
+            boostTimer = 40;
+            targetX = Math.random() > 0.5 ? width * 0.2 : width * 0.8;
+            targetY = Math.random() > 0.5 ? height * 0.2 : height * 0.8;
+          }
         }
       }, { passive: true });
 
@@ -1000,4 +1525,110 @@ function toggleMenu() {
     } else {
       init();
     }
-  })();
+  })();
+
+/* ── 10. AI PIXEL MASCOTS INTERACTION ──────────────────────────────────── */
+(function () {
+  var mascots = [
+    { id: 'mascot-chatgpt', clickDuration: 750 },
+    { id: 'mascot-claude',  clickDuration: 1050 },
+    { id: 'mascot-gemini',  clickDuration: 850 }
+  ];
+
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  mascots.forEach(function (m) {
+    var el = document.getElementById(m.id);
+    if (!el) return;
+
+    // Click / Tap reaction with bounce & kick re-triggers
+    var timer = null;
+    function triggerAction(e) {
+      el.classList.remove('is-acting');
+      void el.offsetWidth; // Force reflow to restart CSS keyframe
+      el.classList.add('is-acting');
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        el.classList.remove('is-acting');
+      }, m.clickDuration);
+    }
+
+    el.addEventListener('click', triggerAction);
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerAction();
+      }
+    });
+
+    // Mobile touch handling (non-intrusive tap detection)
+    var touchStartX = 0;
+    var touchStartY = 0;
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function (e) {
+      if (e.changedTouches && e.changedTouches[0]) {
+        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        if (dx < 12 && dy < 12) {
+          triggerAction(e);
+        }
+      }
+    }, { passive: true });
+  });
+
+  // Pointer Proximity: subtle interactive tilt when cursor approaches (fine pointer only)
+  if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
+    var ticking = false;
+    var mascotEls = mascots.map(function (m) { return document.getElementById(m.id); }).filter(Boolean);
+
+    window.addEventListener('mousemove', function (e) {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var mouseX = e.clientX;
+        var mouseY = e.clientY;
+
+        mascotEls.forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dist = Math.hypot(mouseX - cx, mouseY - cy);
+
+          if (dist < 150) {
+            var tilt = ((mouseX - cx) / 150) * 4;
+            el.style.setProperty('--tilt-x', tilt.toFixed(2) + 'deg');
+          } else {
+            el.style.setProperty('--tilt-x', '0deg');
+          }
+        });
+      });
+    }, { passive: true });
+  }
+
+  // IntersectionObserver: pause animations when scrolled out of view to save CPU/battery
+  if ('IntersectionObserver' in window) {
+    var mascotObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('mascot-offscreen');
+        } else {
+          entry.target.classList.add('mascot-offscreen');
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '120px 0px 120px 0px' });
+
+    mascots.forEach(function (m) {
+      var el = document.getElementById(m.id);
+      if (el) mascotObserver.observe(el);
+    });
+  }
+})();
+
