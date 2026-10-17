@@ -24,7 +24,7 @@
 
   /* Layout */
   --nav-h:        64px;
-  --section-py:   7rem;
+  --section-py:   clamp(4rem, 6vw, 5.25rem);
   --section-px:   clamp(1.5rem, 7vw, 8rem);
   --max-w:        1080px;
 
@@ -232,7 +232,7 @@ section {
 }
 
 .section-header {
-  margin-bottom: 4rem;
+  margin-bottom: clamp(2.5rem, 4vw, 3.25rem);
 }
 
 .section-label {
@@ -448,8 +448,9 @@ section {
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5rem;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
   max-width: var(--max-w);
+  align-items: start;
 }
 
 .about-bio p {
@@ -462,18 +463,78 @@ section {
 .about-bio p:last-child { margin-bottom: 0; }
 .about-bio strong { color: var(--text); font-weight: 600; }
 
+/* Education Credentials */
+.about-education {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.edu-label {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.edu-card {
+  margin-bottom: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+  transition: border-color var(--ease);
+}
+
+.edu-card:last-child { margin-bottom: 0; }
+.edu-card:hover { border-color: var(--border); }
+
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.edu-school {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.edu-year {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.edu-degree {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0 !important;
+}
+
+.edu-degree strong { color: var(--text); }
+
 .skills-heading {
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .skills-group {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 1.15rem;
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -607,6 +668,45 @@ section {
   border: 1px solid var(--border);
   color: var(--text-muted);
   border-radius: 2px;
+}
+
+/* Experience Sub-sections */
+.exp-subhead {
+  padding-top: 2.25rem;
+  padding-bottom: 0.75rem;
+  border-top: 1px solid var(--border-light);
+  margin-top: 0.5rem;
+}
+
+.exp-subhead:first-child {
+  padding-top: 0;
+  border-top: none;
+  margin-top: 0;
+}
+
+.exp-subhead-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.exp-subhead + .exp-entry {
+  border-top: none;
+  padding-top: 1.25rem;
+}
+
+.company-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--ease), color var(--ease);
+}
+
+.company-link:hover {
+  color: var(--text);
+  border-color: var(--text);
 }
 
 /* ── 10. PROJECTS ──────────────────────────────────────────────────────── */
