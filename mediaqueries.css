@@ -39,8 +39,8 @@
     gap: 1rem;
   }
 
-  /* Projects featured: slightly less padding */
-  .project-featured { padding: 2rem; }
+  /* Projects cards: slightly less padding */
+  .project-featured, .project-entry { padding: 2rem; }
 
   /* Hackathons: stack date above content */
   .timeline-list li {
@@ -74,8 +74,8 @@
   /* Hero: reduce gap */
   #profile { padding: 3rem var(--section-px); }
 
-  /* Featured project: compact */
-  .project-featured { padding: 1.5rem; }
+  /* Featured & entry project cards: compact */
+  .project-featured, .project-entry { padding: 1.5rem; }
 
   /* Pipeline flow: wrap vertically on tiny screens */
   .arch-flow {

@@ -734,7 +734,7 @@ section {
   display: flex;
   align-items: flex-start;
   gap: 1.25rem;
-  margin-bottom: 0.875rem;
+  margin-bottom: 1.25rem;
 }
 
 .project-index {
@@ -864,17 +864,25 @@ section {
 .stack-item { font-weight: 500; }
 .stack-sep  { color: var(--border); }
 
-/* Project list (items 02, 03) */
-.project-list { max-width: var(--max-w); }
-
-.project-entry {
-  padding: 2rem 0;
-  border-top: 1px solid var(--border-light);
-  transition: all var(--ease);
+/* Project list (items 02-06) */
+.project-list {
+  max-width: var(--max-w);
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-top: 1.75rem;
 }
 
-.project-entry:last-child {
-  border-bottom: 1px solid var(--border-light);
+.project-entry {
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  background: var(--bg-surface);
+  border-radius: 2px;
+  transition: border-color var(--ease);
+}
+
+.project-entry:hover {
+  border-color: var(--text-muted);
 }
 
 /* ── 11. CONTACTS ──────────────────────────────────────────────────────── */
@@ -1276,6 +1284,30 @@ footer {
 .cert-card:hover {
   border-color: var(--text-muted);
   transform: translateY(-3px);
+}
+
+.cert-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cert-card-header .cert-issuer {
+  margin-bottom: 0;
+}
+
+.cert-logos-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cert-logo {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .cert-issuer {
