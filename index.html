@@ -99,9 +99,12 @@
           <div class="mascot-bubble">
             <img src="./assets/terminal-mascot-bubble.png" alt="hi!">
           </div>
-          <img src="./assets/terminal-mascot-idle.png" alt="" class="mascot-sprite mascot-sprite--idle">
-          <img src="./assets/terminal-mascot-blink.png" alt="" class="mascot-sprite mascot-sprite--blink">
-          <img src="./assets/terminal-mascot-happy.png" alt="" class="mascot-sprite mascot-sprite--happy">
+          <div class="mascot-monitor">
+            <img src="./assets/terminal-mascot-idle.png" alt="" class="mascot-sprite mascot-sprite--idle">
+            <img src="./assets/terminal-mascot-blink.png" alt="" class="mascot-sprite mascot-sprite--blink">
+            <img src="./assets/terminal-mascot-happy.png" alt="" class="mascot-sprite mascot-sprite--happy">
+          </div>
+          <img src="./assets/terminal-mascot-paws.png" alt="" class="mascot-paws">
         </div>
       </div>
     </div>
@@ -158,6 +161,9 @@
         <p>Experienced in architecting multi-agent LLM systems, scaling event-driven microservices on Azure, Google Cloud, and AWS, and low-level GPU acceleration with CUDA and C++.</p>
 
         <div class="about-education">
+          <div class="edu-divider-character" aria-hidden="true">
+            <div class="edu-programmer-sprite"></div>
+          </div>
           <span class="edu-label">Education</span>
           <div class="edu-card">
             <div class="edu-header">
@@ -848,9 +854,12 @@
     </div>
   </footer>
 
+  <!-- Pixelated Cosmic Starfield Background Canvas -->
+  <canvas id="pixel-stars-canvas" aria-hidden="true"></canvas>
+
   <!-- Roaming Pixel Space Rocket Companion Canvas -->
   <canvas id="space-rocket-canvas" aria-hidden="true"></canvas>
 
-  <script src="script.js?v=19"></script>
+  <script src="script.js?v=20"></script>
 </body>
 </html>

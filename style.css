@@ -468,9 +468,50 @@ section {
 
 /* Education Credentials */
 .about-education {
+  position: relative;
   margin-top: 1.75rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
+}
+
+/* Retro Pixel Programmer Sitting on Education Divider */
+.edu-divider-character {
+  position: absolute;
+  top: -57px;
+  right: 12%;
+  width: 68px;
+  height: 90px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.edu-programmer-sprite {
+  width: 100%;
+  height: 100%;
+  background-image: url('./assets/pixel-programmer-sheet.png');
+  background-size: 600% 100%; /* 6 frames */
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  animation: edu-programmer-anim 2.4s steps(1) infinite;
+}
+
+@keyframes edu-programmer-anim {
+  0%, 16.66%     { background-position: 0% 0; }
+  16.67%, 33.33% { background-position: 20% 0; }
+  33.34%, 50%    { background-position: 40% 0; }
+  50.01%, 66.66% { background-position: 60% 0; }
+  66.67%, 83.33% { background-position: 80% 0; }
+  83.34%, 100%   { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edu-programmer-sprite {
+    animation: none !important;
+    background-position: 0 0 !important;
+  }
 }
 
 .edu-label {
@@ -1207,7 +1248,7 @@ footer {
 /* Terminator-Inspired Pixel AI Robot Patrol */
 .footer-robot-patrol {
   position: relative;
-  width: 440px;
+  width: min(760px, calc(100% - 130px));
   height: 58px;
   display: flex;
   align-items: center;
@@ -1217,7 +1258,7 @@ footer {
 }
 
 #footer-robot-canvas {
-  width: 440px;
+  width: 100%;
   height: 58px;
   display: block;
   image-rendering: pixelated;
@@ -1230,14 +1271,24 @@ footer {
 /* 1. Theme-Matched Floating Pixel Terminal Mascot */
 .hero-terminal-mascot {
   position: absolute;
-  top: -1.5%;
-  left: 77%;
-  width: 25%;
-  height: 25%;
-  z-index: 10;
+  top: -18%;
+  left: 65%;
+  width: 38%;
+  height: 38%;
   pointer-events: none;
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+}
+
+.mascot-monitor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Sits behind circular .profile-photo (z-index: 2) */
+  pointer-events: none;
 }
 
 .mascot-sprite {
@@ -1248,6 +1299,22 @@ footer {
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
+
+.mascot-paws {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3; /* Paws sit in front of .profile-photo (z-index: 2) circular border */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   pointer-events: none;
   user-select: none;
@@ -1275,9 +1342,10 @@ footer {
 .mascot-bubble {
   position: absolute;
   bottom: 84%;
-  right: 10%;
-  width: 72%;
+  right: 18%;
+  width: 55%;
   height: auto;
+  z-index: 4;
   opacity: 0;
   transform: scale(0.6) translateY(6px);
   transform-origin: bottom center;
@@ -1663,6 +1731,20 @@ footer {
 
 .cert-verify-btn:hover .arrow {
   transform: translate(2px, -2px);
+}
+
+/* ── Pixelated Cosmic Starfield Background Canvas ───────────────────────── */
+#pixel-stars-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 /* ── Roaming Pixel Space Rocket Companion ──────────────────────────────── */

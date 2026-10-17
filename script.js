@@ -238,17 +238,20 @@ function toggleMenu() {
   var streamItems = [];
   var pixelDust = [];
 
-  // Ground rubble stones (fixed relative x positions)
-  var rubblePoints = [
-    { x: 38, y: 1 }, { x: 74, y: 0 }, { x: 125, y: 1 }, { x: 168, y: 0 },
-    { x: 215, y: 1 }, { x: 260, y: 0 }, { x: 305, y: 1 }, { x: 350, y: 0 },
-    { x: 395, y: 1 }, { x: 420, y: 0 }
-  ];
+  // Ground rubble stones distributed dynamically across baseline
+  function buildRubblePoints(w) {
+    var pts = [];
+    for (var rx = 35; rx < w - 15; rx += 38) {
+      pts.push({ x: rx, y: (rx % 76 === 0) ? 1 : 0 });
+    }
+    return pts;
+  }
+  var rubblePoints = buildRubblePoints(760);
 
   function resize() {
     if (!container) return;
     var rect = container.getBoundingClientRect();
-    width = Math.round(rect.width) || 440;
+    width = Math.round(rect.width) || 760;
     height = Math.round(rect.height) || 58;
 
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -258,6 +261,8 @@ function toggleMenu() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.imageSmoothingEnabled = false;
+
+    rubblePoints = buildRubblePoints(width);
 
     // Keep robot in bounds
     var maxX = width - ROBOT_DRAW_W - 8;
@@ -301,7 +306,7 @@ function toggleMenu() {
     var robotY = groundY - ROBOT_DRAW_H;
 
     var maxX = width - ROBOT_DRAW_W - 8;
-    var minX = Math.max(70, width - 200);
+    var minX = 45;
 
     // ── ROBOT PATROL MOVEMENT ──
     if (patrolState === 'PATROL_LEFT') {
@@ -650,6 +655,88 @@ function toggleMenu() {
     } else {
       init();
     }
+  })();
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PIXELATED COSMIC STARFIELD BACKGROUND
+     Subtle retro 1px/2px pixel stars and 3px cross-stars (+) twinkling gently
+     across the dark portfolio background, matching the roaming space rocket.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  (function initPixelStarfield() {
+    var canvas = document.getElementById('pixel-stars-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var width = window.innerWidth || 1200;
+    var height = window.innerHeight || 800;
+    var stars = [];
+
+    function resize() {
+      width = window.innerWidth || 1200;
+      height = window.innerHeight || 800;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = false;
+
+      stars = [];
+      var count = Math.min(85, Math.max(45, Math.round((width * height) / 18000)));
+      for (var i = 0; i < count; i++) {
+        var rand = Math.random();
+        var type = rand < 0.65 ? 'dot1' : (rand < 0.88 ? 'dot2' : 'cross');
+        var color = Math.random() < 0.82 ? '#CFC6B5' : '#22D3EE';
+        stars.push({
+          x: Math.round(Math.random() * width),
+          y: Math.round(Math.random() * height),
+          type: type,
+          color: color,
+          baseAlpha: 0.18 + Math.random() * 0.42,
+          twinkleSpeed: 0.015 + Math.random() * 0.025,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    var frame = 0;
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+      frame++;
+
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var alpha = prefersReducedMotion
+          ? s.baseAlpha
+          : s.baseAlpha + Math.sin(frame * s.twinkleSpeed + s.phase) * (s.baseAlpha * 0.55);
+        if (alpha < 0.06) alpha = 0.06;
+        if (alpha > 0.95) alpha = 0.95;
+
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = s.color;
+
+        if (s.type === 'dot1') {
+          ctx.fillRect(s.x, s.y, 1, 1);
+        } else if (s.type === 'dot2') {
+          ctx.fillRect(s.x, s.y, 2, 2);
+        } else if (s.type === 'cross') {
+          ctx.fillRect(s.x, s.y - 1, 1, 3);
+          ctx.fillRect(s.x - 1, s.y, 3, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      if (!prefersReducedMotion) {
+        requestAnimationFrame(render);
+      }
+    }
+
+    render();
   })();
 
   /* ═══════════════════════════════════════════════════════════════════════════
