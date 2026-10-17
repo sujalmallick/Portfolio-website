@@ -42,6 +42,13 @@
   /* Projects featured: slightly less padding */
   .project-featured { padding: 2rem; }
 
+  /* Hackathons: stack date above content */
+  .timeline-list li {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 2.25rem 0;
+  }
+
   /* Contacts: single column */
   .contacts-grid {
     grid-template-columns: 1fr;
@@ -84,5 +91,18 @@
 
   /* Contact form full-width button already handled by btn--wide */
 
+  /* More on GitHub: single column on mobile */
+  .more-projects {
+    grid-template-columns: 1fr;
+  }
 
+  /* Certificate cards: compact mobile padding */
+  .cert-card {
+    padding: 1.6rem 1.25rem;
+  }
+
+  /* Timeline links: tighter gap */
+  .timeline-links {
+    gap: 1rem;
+  }
 }
