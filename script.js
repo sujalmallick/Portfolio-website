@@ -172,22 +172,76 @@ function toggleMenu() {
   });
 })();
 
-/* ── 10. RETRO PIXEL AI ROBOT & FIRING CONVEYOR (FOOTER SENTRY) ──────── */
-(function () {
-  var canvas = document.getElementById('footer-robot-canvas');
+/* ── 10. PROJECTS SECTION — COLLAPSIBLE EXPANSION TOGGLE ─────────────── */
+(function initProjectsToggle() {
+  var btn = document.getElementById('projects-toggle-btn');
+  if (!btn) return;
+  var collapsibleCards = document.querySelectorAll('.project-collapsible');
+  if (!collapsibleCards.length) return;
+
+  var isExpanded = false;
+
+  btn.addEventListener('click', function () {
+    isExpanded = !isExpanded;
+    btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    var textSpan = btn.querySelector('.projects-toggle-text');
+    if (textSpan) {
+      textSpan.textContent = isExpanded ? 'Show Fewer Projects' : 'See More Projects';
+    }
+
+    for (var i = 0; i < collapsibleCards.length; i++) {
+      var card = collapsibleCards[i];
+      if (isExpanded) {
+        card.classList.remove('is-collapsed');
+        card.classList.add('visible');
+      } else {
+        card.classList.add('is-collapsed');
+      }
+    }
+
+    if (!isExpanded) {
+      var projectsHeader = document.querySelector('#projects .section-header');
+      if (projectsHeader) {
+        projectsHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVING RETRO PIXEL-ART FOOTER WORLD
+   A living, spacious 8-bit/16-bit retro developer scene:
+   - Spaced workstation (plant, street lamp, R2-D2 & cat, coding desk, 4-tier server rack, books crate)
+   - Independent workstation life: asynchronous server rack LEDs, blinking terminal cursor,
+     subtle amber lamp pulse, R2-D2 sensor glint, right torch flickering flame, and starry sky
+   - Main combat droid patrol-and-fire cycle:
+     1. Walks along platform with alternating 2-frame leg stride & bob
+     2. Pauses & aims plasma rifle with glowing cyan visor
+     3. Fires cyan energy < / > code bolt with recoil kickback and muzzle flash
+     4. Independent projectile travels with trailing sparks and detonates in pixel burst
+     5. Pauses, turns, and loops the patrol sequence
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function initFooterWorld() {
+  var canvas = document.getElementById('footer-world-canvas');
   if (!canvas) return;
-  var container = canvas.parentElement;
   var ctx = canvas.getContext('2d');
   if (!ctx) return;
+  var container = canvas.parentElement;
 
-  var width = 440;
-  var height = 58;
+  var width = 1000;
+  var height = 96;
   var isRunning = true;
   var rafId = null;
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Load Sprite Assets
+  // Load Sprites
+  var workstationImg = new Image();
+  workstationImg.src = 'assets/footer-workstation-spaced.png';
+
+  var rightPropsImg = new Image();
+  rightPropsImg.src = 'assets/footer-right-props.png';
+
   var robotImg = new Image();
   robotImg.src = 'assets/pixel-terminator.png';
 
@@ -197,92 +251,107 @@ function toggleMenu() {
   var muzzleImg = new Image();
   muzzleImg.src = 'assets/muzzle-flash.png';
 
-  var badgeImages = {
-    python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
-    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 17 },
-    cpp:    { img: new Image(), src: 'assets/badge-cpp.png',    w: 22, h: 15 },
-    java:   { img: new Image(), src: 'assets/badge-java.png',   w: 22, h: 24 },
-    code:   { img: new Image(), src: 'assets/badge-code.png',   w: 18, h: 14 }
-  };
+  var projectileImg = new Image();
+  projectileImg.src = 'assets/combat-projectile-code.png';
 
-  var BADGE_SEQUENCE = ['code', 'java', 'cpp', 'js', 'python'];
-  for (var k in badgeImages) {
-    badgeImages[k].img.src = badgeImages[k].src;
-  }
+  // Constants
+  var ROBOT_DRAW_W = 48;
+  var ROBOT_DRAW_H = 53;
+  var BARREL_OFFSET_X = 2;   // Relative to droid when facing left
+  var BARREL_OFFSET_Y = 24;  // Rifle tip Y relative to droid top
 
-  // Animation constants
-  var ROBOT_DRAW_W = 50;
-  var ROBOT_DRAW_H = 55;
-  var BARREL_OFFSET_X = 1;  // Barrel tip relative to robot top-left
-  var BARREL_OFFSET_Y = 24; // Barrel tip relative to robot top-left
-  var BADGE_SPACING = 38;   // Distance between consecutive badges
-  var BASE_SPEED = 1.05;    // Pixels per frame badges move left
-  var WALK_SPEED = 0.62;    // Speed at which the robot patrols horizontally
-
-  // State variables
-  var frameCount = 0;
-  var recoilOffset = 0;
-  var isOverdrive = false;
-  var overdriveTimer = 0;
-  var nextBadgeIndex = 0;
-
-  // Robot Patrol State
-  var robotX = 380;
+  // Droid State Machine: WALK_LEFT -> AIM -> FIRE -> COOLDOWN -> WALK_RIGHT -> SCAN -> WALK_LEFT
+  var robotX = 640;
   var facing = -1; // -1 = left, 1 = right
-  var patrolState = 'PATROL_LEFT'; // 'PATROL_LEFT', 'SCAN', 'PATROL_RIGHT'
+  var patrolState = 'WALK_LEFT';
   var stateTimer = 0;
   var walkFrame = 0;
   var walkStepTimer = 0;
+  var recoilOffset = 0;
+  var showMuzzleFlash = false;
+  var muzzleTimer = 0;
 
-  // Stream items: array of { type: 'badge'|'dot', key: string, x: number, y: number, alpha: number, waveOffset: number }
-  var streamItems = [];
-  var pixelDust = [];
+  var WALK_SPEED = 0.58;
 
-  // Ground rubble stones distributed dynamically across baseline
-  function buildRubblePoints(w) {
-    var pts = [];
-    for (var rx = 35; rx < w - 15; rx += 38) {
-      pts.push({ x: rx, y: (rx % 76 === 0) ? 1 : 0 });
-    }
-    return pts;
-  }
-  var rubblePoints = buildRubblePoints(760);
+  // Active Projectiles & Spark Particles
+  var projectiles = [];
+  var sparks = [];
+
+  // Starry Sky
+  var stars = [
+    { x: 0.12, y: 16, size: 2, phase: 0.2, speed: 0.04 },
+    { x: 0.24, y: 12, size: 1, phase: 1.5, speed: 0.03 },
+    { x: 0.38, y: 22, size: 2, phase: 2.8, speed: 0.05 },
+    { x: 0.48, y: 10, size: 1, phase: 0.9, speed: 0.025 },
+    { x: 0.58, y: 18, size: 2, phase: 3.4, speed: 0.045 },
+    { x: 0.72, y: 14, size: 1, phase: 4.1, speed: 0.035 },
+    { x: 0.84, y: 20, size: 2, phase: 5.2, speed: 0.04 },
+    { x: 0.94, y: 12, size: 1, phase: 1.8, speed: 0.03 }
+  ];
+  var shootingStar = null;
+
+  // Workstation LEDs (4 bays on server rack, independent blinking intervals)
+  var serverLeds = [
+    { bay: 0, xOff: 11, yOff: 9,  period: 22, phase: 2,  color: '#10b981' },
+    { bay: 0, xOff: 18, yOff: 9,  period: 38, phase: 11, color: '#34d399' },
+    { bay: 0, xOff: 25, yOff: 9,  period: 50, phase: 24, color: '#f59e0b' },
+    { bay: 1, xOff: 11, yOff: 21, period: 28, phase: 7,  color: '#10b981' },
+    { bay: 1, xOff: 18, yOff: 21, period: 44, phase: 19, color: '#10b981' },
+    { bay: 1, xOff: 25, yOff: 21, period: 32, phase: 14, color: '#34d399' },
+    { bay: 2, xOff: 11, yOff: 33, period: 35, phase: 5,  color: '#34d399' },
+    { bay: 2, xOff: 18, yOff: 33, period: 26, phase: 17, color: '#10b981' },
+    { bay: 2, xOff: 25, yOff: 33, period: 55, phase: 31, color: '#f59e0b' },
+    { bay: 3, xOff: 11, yOff: 45, period: 40, phase: 9,  color: '#10b981' },
+    { bay: 3, xOff: 18, yOff: 45, period: 30, phase: 21, color: '#34d399' },
+    { bay: 3, xOff: 25, yOff: 45, period: 48, phase: 3,  color: '#10b981' }
+  ];
+
+  var frameCount = 0;
 
   function resize() {
-    if (!container) return;
-    var rect = container.getBoundingClientRect();
-    width = Math.round(rect.width) || 760;
-    height = Math.round(rect.height) || 58;
+    var rect = canvas.getBoundingClientRect();
+    width = Math.max(320, Math.floor(rect.width));
+    height = Math.max(54, Math.floor(rect.height || 96));
+    canvas.width = width;
+    canvas.height = height;
 
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
+    // Keep droid in reasonable patrol range
+    var minPatrolX = Math.max(340, Math.min(width * 0.42, width - 220));
+    var maxPatrolX = Math.min(width - 100, Math.max(minPatrolX + 60, width * 0.8));
+    if (robotX < minPatrolX) robotX = minPatrolX;
+    if (robotX > maxPatrolX) robotX = maxPatrolX;
+  }
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-    ctx.imageSmoothingEnabled = false;
-
-    rubblePoints = buildRubblePoints(width);
-
-    // Keep robot in bounds
-    var maxX = width - ROBOT_DRAW_W - 8;
-    if (robotX > maxX) {
-      robotX = maxX;
+  function spawnMuzzleSparks(x, y) {
+    for (var i = 0; i < 6; i++) {
+      var angle = Math.PI + (Math.random() - 0.5) * 0.9;
+      var speed = 1.5 + Math.random() * 2.8;
+      sparks.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: Math.random() > 0.3 ? '#22d3ee' : '#38bdf8',
+        life: 14 + Math.floor(Math.random() * 8),
+        maxLife: 22,
+        size: Math.random() > 0.5 ? 2 : 1
+      });
     }
   }
 
-  function spawnMuzzleSparks(muzzleTipX, muzzleTipY) {
-    var count = isOverdrive ? 4 : 2;
-    for (var i = 0; i < count; i++) {
-      pixelDust.push({
-        x: muzzleTipX - 8 + (Math.random() - 0.5) * 6,
-        y: muzzleTipY + (Math.random() - 0.5) * 6,
-        vx: -0.6 - Math.random() * 1.2,
-        vy: (Math.random() - 0.5) * 1.0,
-        color: Math.random() > 0.3 ? '#22D3EE' : '#CFC6B5',
-        alpha: 1,
-        size: Math.random() > 0.5 ? 2 : 1,
-        decay: 0.05 + Math.random() * 0.03
+  function spawnImpactBurst(x, y) {
+    for (var i = 0; i < 12; i++) {
+      var angle = Math.random() * Math.PI * 2;
+      var speed = 1.2 + Math.random() * 2.5;
+      sparks.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.5,
+        color: Math.random() > 0.4 ? '#22d3ee' : (Math.random() > 0.5 ? '#f97316' : '#ffffff'),
+        life: 16 + Math.floor(Math.random() * 10),
+        maxLife: 26,
+        size: Math.random() > 0.4 ? 2 : 1
       });
     }
   }
@@ -290,262 +359,338 @@ function toggleMenu() {
   function update() {
     frameCount++;
 
-    if (isOverdrive) {
-      overdriveTimer--;
-      if (overdriveTimer <= 0) {
-        isOverdrive = false;
-      }
-    }
+    var groundY = height - 4;
+    var minPatrolX = Math.max(330, Math.min(width * 0.42, width - 210));
+    var maxPatrolX = Math.min(width - 95, Math.max(minPatrolX + 60, width * 0.78));
 
-    // Smoothly relax recoil spring
-    recoilOffset *= 0.82;
-
-    var speed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
-    var wSpeed = isOverdrive ? WALK_SPEED * 1.6 : WALK_SPEED;
-    var groundY = height - 3;
-    var robotY = groundY - ROBOT_DRAW_H;
-
-    var maxX = width - ROBOT_DRAW_W - 8;
-    var minX = 45;
-
-    // ── ROBOT PATROL MOVEMENT ──
-    if (patrolState === 'PATROL_LEFT') {
+    // Droid Patrol State Machine
+    if (patrolState === 'WALK_LEFT') {
       facing = -1;
-      robotX -= wSpeed;
+      robotX -= WALK_SPEED;
       walkStepTimer++;
       if (walkStepTimer >= 8) {
         walkStepTimer = 0;
         walkFrame = (walkFrame + 1) % 2;
       }
-      if (robotX <= minX) {
-        robotX = minX;
-        patrolState = 'SCAN';
-        stateTimer = 48; // pause and scan
+      if (robotX <= minPatrolX) {
+        robotX = minPatrolX;
+        patrolState = 'AIM';
+        stateTimer = 40; // Aim pause
+        walkFrame = 0;
       }
-    } else if (patrolState === 'PATROL_RIGHT') {
-      facing = 1;
-      robotX += wSpeed;
-      walkStepTimer++;
-      if (walkStepTimer >= 8) {
-        walkStepTimer = 0;
-        walkFrame = (walkFrame + 1) % 2;
-      }
-      if (robotX >= maxX) {
-        robotX = maxX;
-        patrolState = 'SCAN';
-        stateTimer = 40; // pause at post
-      }
-    } else if (patrolState === 'SCAN') {
-      walkFrame = 0;
+    } else if (patrolState === 'AIM') {
+      facing = -1;
       stateTimer--;
       if (stateTimer <= 0) {
-        // Toggle direction
-        if (facing === -1) {
-          patrolState = 'PATROL_RIGHT';
-          facing = 1;
-        } else {
-          patrolState = 'PATROL_LEFT';
-          facing = -1;
-        }
+        patrolState = 'FIRE';
+        stateTimer = 6;
+      }
+    } else if (patrolState === 'FIRE') {
+      showMuzzleFlash = true;
+      muzzleTimer = 5;
+      recoilOffset = 3.6;
+
+      var stepBob = 0;
+      var rx = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
+      var ry = groundY - ROBOT_DRAW_H + 2;
+      var muzzleTipX = rx + BARREL_OFFSET_X;
+      var muzzleTipY = ry + BARREL_OFFSET_Y;
+
+      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
+
+      // Launch < / > projectile
+      projectiles.push({
+        x: muzzleTipX - 20,
+        y: muzzleTipY - 14,
+        vx: -5.2,
+        life: 68,
+        maxLife: 68
+      });
+
+      patrolState = 'COOLDOWN';
+      stateTimer = 55;
+    } else if (patrolState === 'COOLDOWN') {
+      stateTimer--;
+      if (stateTimer <= 0) {
+        patrolState = 'WALK_RIGHT';
+        facing = 1;
+      }
+    } else if (patrolState === 'WALK_RIGHT') {
+      facing = 1;
+      robotX += WALK_SPEED;
+      walkStepTimer++;
+      if (walkStepTimer >= 8) {
+        walkStepTimer = 0;
+        walkFrame = (walkFrame + 1) % 2;
+      }
+      if (robotX >= maxPatrolX) {
+        robotX = maxPatrolX;
+        patrolState = 'SCAN';
+        stateTimer = 42;
+        walkFrame = 0;
+      }
+    } else if (patrolState === 'SCAN') {
+      facing = -1; // Turn back left to survey
+      stateTimer--;
+      if (stateTimer <= 0) {
+        patrolState = 'WALK_LEFT';
       }
     }
 
-    var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
-    var stepBob = isMoving ? (Math.sin(frameCount * 0.3) * 1.5) : 0;
-    var muzzleTipX = robotX + BARREL_OFFSET_X;
-    var muzzleTipY = robotY + BARREL_OFFSET_Y + stepBob;
+    // Damp recoil
+    if (recoilOffset > 0) {
+      recoilOffset *= 0.82;
+      if (recoilOffset < 0.1) recoilOffset = 0;
+    }
 
-    // ── BADGE CONVEYOR STREAM ──
-    // Move existing stream items leftward
-    for (var i = streamItems.length - 1; i >= 0; i--) {
-      var item = streamItems[i];
-      item.x -= speed;
+    // Muzzle timer
+    if (muzzleTimer > 0) {
+      muzzleTimer--;
+      if (muzzleTimer === 0) showMuzzleFlash = false;
+    }
 
-      // When approaching the left edge, dissolve and spawn pixel dust
-      if (item.x < 50) {
-        item.alpha = Math.max(0, (item.x - 12) / 38);
-        if (Math.random() < 0.45) {
-          pixelDust.push({
-            x: item.x + Math.random() * 12,
-            y: item.y + (Math.random() - 0.5) * 12,
-            vx: -0.8 - Math.random() * 0.8,
-            vy: (Math.random() - 0.5) * 1.4,
-            color: Math.random() > 0.4 ? '#22D3EE' : '#CFC6B5',
-            alpha: 1,
-            size: Math.random() > 0.5 ? 2 : 1,
-            decay: 0.04 + Math.random() * 0.03
-          });
-        }
+    // Update Projectiles
+    for (var pIdx = projectiles.length - 1; pIdx >= 0; pIdx--) {
+      var p = projectiles[pIdx];
+      p.x += p.vx;
+      p.life--;
+
+      // Spawn trail particle
+      if (frameCount % 2 === 0) {
+        sparks.push({
+          x: p.x + 22,
+          y: p.y + 16 + (Math.random() * 4 - 2),
+          vx: Math.random() * 0.6 + 0.2,
+          vy: (Math.random() - 0.5) * 0.8,
+          color: Math.random() > 0.3 ? '#22d3ee' : '#38bdf8',
+          life: 10 + Math.floor(Math.random() * 6),
+          maxLife: 16,
+          size: 1
+        });
       }
 
-      if (item.x < 8 || item.alpha <= 0) {
-        streamItems.splice(i, 1);
+      // Detonate near workstation edge (x ≈ 362) or when life expires
+      if (p.x <= 362 || p.life <= 0) {
+        spawnImpactBurst(p.x + 10, p.y + 14);
+        projectiles.splice(pIdx, 1);
       }
     }
 
-    // Firing logic: only fire from muzzle when facing left or paused left
-    if (facing === -1) {
-      var rightmost = streamItems.length > 0 ? streamItems[streamItems.length - 1] : null;
-      var spawnStartX = muzzleTipX - 18;
-
-      if (!rightmost || (spawnStartX - rightmost.x) >= (BADGE_SPACING / 2)) {
-        if (!rightmost || rightmost.type === 'dot') {
-          // Spawn next badge
-          var key = BADGE_SEQUENCE[nextBadgeIndex];
-          nextBadgeIndex = (nextBadgeIndex + 1) % BADGE_SEQUENCE.length;
-          streamItems.push({
-            type: 'badge',
-            key: key,
-            x: spawnStartX,
-            y: muzzleTipY,
-            alpha: 1,
-            waveOffset: Math.random() * 6.28
-          });
-          recoilOffset = isOverdrive ? 2.4 : 1.4;
-          spawnMuzzleSparks(muzzleTipX, muzzleTipY);
-        } else {
-          // Spawn separator dot between badges
-          streamItems.push({
-            type: 'dot',
-            x: spawnStartX,
-            y: muzzleTipY,
-            alpha: 1,
-            waveOffset: Math.random() * 6.28
-          });
-        }
+    // Update Sparks
+    for (var sIdx = sparks.length - 1; sIdx >= 0; sIdx--) {
+      var s = sparks[sIdx];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.life--;
+      if (s.life <= 0) {
+        sparks.splice(sIdx, 1);
       }
     }
 
-    // Update pixel dust particles
-    for (var j = pixelDust.length - 1; j >= 0; j--) {
-      var d = pixelDust[j];
-      d.x += d.vx;
-      d.y += d.vy;
-      d.alpha -= d.decay;
-      if (d.alpha <= 0) {
-        pixelDust.splice(j, 1);
-      }
+    // Random Shooting Star
+    if (!shootingStar && (frameCount % 480 === 120)) {
+      shootingStar = {
+        x: width * (0.35 + Math.random() * 0.3),
+        y: 4 + Math.random() * 12,
+        vx: -(2.8 + Math.random() * 1.5),
+        vy: 1.2 + Math.random() * 0.8,
+        life: 22,
+        maxLife: 22
+      };
+    } else if (shootingStar) {
+      shootingStar.x += shootingStar.vx;
+      shootingStar.y += shootingStar.vy;
+      shootingStar.life--;
+      if (shootingStar.life <= 0) shootingStar = null;
     }
   }
 
   function render() {
-    ctx.clearRect(0, 0, width, height);
+    ctx.imageSmoothingEnabled = false;
 
-    var groundY = height - 3;
-    var robotY = groundY - ROBOT_DRAW_H;
-    var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
-    var stepBob = isMoving ? (Math.sin(frameCount * 0.3) * 1.5) : 0;
-    var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
-    var muzzleTipX = drawRobotX + BARREL_OFFSET_X;
-    var muzzleTipY = robotY + BARREL_OFFSET_Y + stepBob;
+    // 1. Dark almost-black retro background
+    ctx.fillStyle = '#08090d';
+    ctx.fillRect(0, 0, width, height);
 
-    // 1. Draw subtle pixel ground baseline
-    ctx.fillStyle = '#1A1A1D';
-    ctx.fillRect(0, groundY, width, 1);
-    ctx.fillStyle = '#2A2A2E';
-    ctx.fillRect(0, groundY + 1, width, 1);
+    var groundY = height - 4;
 
-    // Rubble dots along the baseline
-    ctx.fillStyle = '#3A3A40';
-    for (var r = 0; r < rubblePoints.length; r++) {
-      var pt = rubblePoints[r];
-      if (pt.x < width) {
-        ctx.fillRect(pt.x, groundY - pt.y - 1, 2, 1);
-      }
+    // 2. Starry Sky
+    for (var i = 0; i < stars.length; i++) {
+      var st = stars[i];
+      var sx = Math.floor(st.x * width);
+      var sy = st.y;
+      var alpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(frameCount * st.speed + st.phase));
+      ctx.fillStyle = 'rgba(226, 232, 240, ' + alpha.toFixed(2) + ')';
+      ctx.fillRect(sx, sy, st.size, st.size);
     }
 
-    // 2. Draw scattered pixel dust
-    for (var d = 0; d < pixelDust.length; d++) {
-      var dust = pixelDust[d];
-      if (dust.alpha > 0) {
-        ctx.save();
-        ctx.fillStyle = dust.color;
-        ctx.globalAlpha = Math.max(0, dust.alpha);
-        ctx.fillRect(Math.round(dust.x), Math.round(dust.y), dust.size, dust.size);
-        ctx.restore();
-      }
+    // Shooting star trail
+    if (shootingStar) {
+      var sLifeRatio = shootingStar.life / shootingStar.maxLife;
+      ctx.strokeStyle = 'rgba(56, 189, 248, ' + (sLifeRatio * 0.8).toFixed(2) + ')';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(shootingStar.x, shootingStar.y);
+      ctx.lineTo(shootingStar.x - shootingStar.vx * 3.5, shootingStar.y - shootingStar.vy * 3.5);
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(Math.round(shootingStar.x), Math.round(shootingStar.y), 2, 2);
     }
 
-    // 3. Draw streaming badges and glowing dots
-    for (var i = 0; i < streamItems.length; i++) {
-      var item = streamItems[i];
-      if (item.alpha <= 0.02) continue;
+    // 3. Platform Ground Lines across full width
+    ctx.fillStyle = '#2c2f38';
+    ctx.fillRect(0, groundY, width, 2);
+    ctx.fillStyle = '#16181f';
+    ctx.fillRect(0, groundY + 2, width, 2);
 
-      var floatY = Math.sin(item.x * 0.05 + item.waveOffset) * 1.2;
-      var drawCenterY = Math.round(muzzleTipY + floatY);
+    // Subtle platform grass/stone specs in open stretch
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(Math.floor(width * 0.52), groundY - 1, 3, 1);
+    ctx.fillRect(Math.floor(width * 0.78), groundY - 1, 4, 1);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(Math.floor(width * 0.44), groundY - 1, 2, 1);
+    ctx.fillRect(Math.floor(width * 0.68), groundY - 1, 3, 1);
 
-      if (item.type === 'dot') {
-        // Glowing cyan separator dot
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, item.alpha);
-        ctx.fillStyle = '#22D3EE';
-        ctx.shadowColor = '#22D3EE';
-        ctx.shadowBlur = 4;
-        ctx.fillRect(Math.round(item.x) - 1, drawCenterY - 1, 3, 3);
-        ctx.restore();
-      } else if (item.type === 'badge') {
-        var bInfo = badgeImages[item.key];
-        if (bInfo && bInfo.img.complete && bInfo.img.naturalWidth > 0) {
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, item.alpha);
-          var bw = bInfo.img.naturalWidth;
-          var bh = bInfo.img.naturalHeight;
-          var bx = Math.round(item.x - bw / 2);
-          var by = Math.round(drawCenterY - bh / 2);
-          ctx.drawImage(bInfo.img, bx, by, bw, bh);
-          ctx.restore();
+    // 4. Spaced Workstation Sprite (Left Side)
+    if (workstationImg.complete && workstationImg.naturalWidth > 0) {
+      var wsY = groundY - 92;
+      ctx.drawImage(workstationImg, 0, wsY, 366, 95);
+
+      // Independent Workstation Life:
+      // A) Street Lamp Amber Pulse
+      var lampX = 112;
+      var lampY = wsY + 20;
+      var lampGlow = 0.14 + 0.05 * Math.sin(frameCount * 0.045);
+      var lampGrad = ctx.createRadialGradient(lampX, lampY, 2, lampX, lampY, 28);
+      lampGrad.addColorStop(0, 'rgba(245, 158, 11, ' + lampGlow.toFixed(2) + ')');
+      lampGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = lampGrad;
+      ctx.beginPath();
+      ctx.arc(lampX, lampY, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // B) R2-D2 Droid Sensor Pulse
+      var r2X = 138;
+      var r2Y = wsY + 54;
+      if (Math.sin(frameCount * 0.08) > 0.4) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(r2X, r2Y, 2, 2);
+      }
+      if ((frameCount % 120) < 18) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(r2X + 6, r2Y, 1, 1);
+      }
+
+      // C) Coding Screen Blinking Terminal Cursor & Refresh
+      var crtX = 188;
+      var crtY = wsY + 41;
+      if ((frameCount % 50) < 26) {
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(crtX + 22, crtY + 13, 3, 3);
+      }
+      if ((frameCount % 160) < 20) {
+        ctx.fillStyle = 'rgba(74, 222, 128, 0.45)';
+        ctx.fillRect(crtX + 4, crtY + 7, 24, 2);
+      }
+
+      // D) 4-Tier Server Rack Asynchronous Blinking LEDs
+      var rackX = 265;
+      var rackY = wsY + 31;
+      for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
+        var led = serverLeds[lIdx];
+        var isLedOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
+        if (isLedOn) {
+          ctx.fillStyle = led.color;
+          ctx.fillRect(rackX + led.xOff, rackY + led.yOff, 2, 2);
         }
       }
     }
 
-    // 4. Draw cyan muzzle flash (when facing left and firing)
-    if (facing === -1 && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
-      ctx.save();
-      var mPulse = isOverdrive ? (1.1 + 0.2 * Math.sin(frameCount * 0.6)) : (0.85 + 0.15 * Math.sin(frameCount * 0.35));
-      var mWidth = Math.round(20 * mPulse);
-      var mHeight = Math.round(18 * mPulse);
-      var mJitterX = (Math.random() - 0.5) * 0.8;
-      var mJitterY = (Math.random() - 0.5) * 0.8;
-      var mX = Math.round(muzzleTipX - mWidth + 2 + mJitterX);
-      var mY = Math.round(muzzleTipY - mHeight / 2 + mJitterY);
+    // 5. Right Props (Tech Crate & Torch Post on Far Right)
+    if (rightPropsImg.complete && rightPropsImg.naturalWidth > 0) {
+      var rpX = width - 106;
+      var rpY = groundY - 92;
+      ctx.drawImage(rightPropsImg, rpX, rpY, 106, 95);
 
-      ctx.globalAlpha = isOverdrive ? 1 : 0.92;
-      ctx.shadowColor = '#22D3EE';
-      ctx.shadowBlur = isOverdrive ? 10 : 6;
-      ctx.drawImage(muzzleImg, mX, mY, mWidth, mHeight);
-      ctx.restore();
+      // Flickering Torch Flame
+      var torchX = rpX + 57;
+      var torchY = rpY + 47;
+      var flameBob = Math.sin(frameCount * 0.28) * 1.5;
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(torchX - 1, torchY - 2 + flameBob, 3, 4);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(torchX, torchY - 4 + flameBob, 2, 3);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(torchX, torchY + 1 + flameBob, 2, 2);
     }
 
-    // 5. Draw Terminator robot (with 2-frame walking step and direction mirroring)
-    var sprite = (walkFrame === 1 && robotStepImg.complete && robotStepImg.naturalWidth > 0) ? robotStepImg : robotImg;
-    if (sprite.complete && sprite.naturalWidth > 0) {
-      ctx.save();
-      var rx = Math.round(drawRobotX);
-      var ry = Math.round(robotY + stepBob);
+    // 6. Combat Droid (2-frame alternating stride, aim, and recoil)
+    var isMoving = (patrolState === 'WALK_LEFT' || patrolState === 'WALK_RIGHT');
+    var stepBob = isMoving ? (Math.sin(frameCount * 0.35) * 1.4) : 0;
+    var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
+    var rx = Math.round(drawRobotX);
+    var ry = Math.round(groundY - ROBOT_DRAW_H + 2 + stepBob);
 
+    var droidSprite = (walkFrame === 1 && robotStepImg.complete && robotStepImg.naturalWidth > 0)
+      ? robotStepImg
+      : robotImg;
+
+    if (droidSprite.complete && droidSprite.naturalWidth > 0) {
+      ctx.save();
       if (facing === -1) {
-        // Facing left
-        ctx.drawImage(sprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
-        // Cyan visor glint
-        if (Math.sin(frameCount * 0.08) > 0.65) {
-          ctx.fillStyle = '#22D3EE';
-          ctx.globalAlpha = 0.75;
-          ctx.fillRect(rx + 9, ry + 15, 3, 2);
+        // Facing Left
+        ctx.drawImage(droidSprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
+
+        // Glowing Cyan Visor Glint
+        if (patrolState === 'AIM' || Math.sin(frameCount * 0.1) > 0.3) {
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillRect(rx + 15, ry + 16, 5, 2);
+        }
+
+        // Muzzle Flash
+        if (showMuzzleFlash && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
+          ctx.drawImage(muzzleImg, rx - 18, ry + BARREL_OFFSET_Y - 11, 24, 22);
         }
       } else {
-        // Mirrored for facing right
+        // Facing Right (Mirrored)
         ctx.translate(rx + ROBOT_DRAW_W, ry);
         ctx.scale(-1, 1);
-        ctx.drawImage(sprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
-        // Cyan visor glint
-        if (Math.sin(frameCount * 0.08) > 0.65) {
-          ctx.fillStyle = '#22D3EE';
-          ctx.globalAlpha = 0.75;
-          ctx.fillRect(9, 15, 3, 2);
+        ctx.drawImage(droidSprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
+
+        // Glowing Cyan Visor Glint
+        if (patrolState === 'AIM' || Math.sin(frameCount * 0.1) > 0.3) {
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillRect(15, 16, 5, 2);
         }
       }
       ctx.restore();
     }
+
+    // 7. Active Code Projectiles (< / >)
+    for (var prj = 0; prj < projectiles.length; prj++) {
+      var proj = projectiles[prj];
+      var px = Math.round(proj.x);
+      var py = Math.round(proj.y);
+
+      if (projectileImg.complete && projectileImg.naturalWidth > 0) {
+        ctx.drawImage(projectileImg, px, py, 38, 28);
+      } else {
+        // Fallback crisp pixel projectile
+        ctx.fillStyle = '#22d3ee';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText('</>', px, py + 12);
+      }
+    }
+
+    // 8. Spark Particles
+    for (var spk = 0; spk < sparks.length; spk++) {
+      var spark = sparks[spk];
+      var sparkAlpha = (spark.life / spark.maxLife);
+      ctx.fillStyle = spark.color;
+      ctx.globalAlpha = Math.max(0, Math.min(1, sparkAlpha));
+      ctx.fillRect(Math.round(spark.x), Math.round(spark.y), spark.size, spark.size);
+    }
+    ctx.globalAlpha = 1.0;
   }
 
   function loop() {
@@ -555,84 +700,29 @@ function toggleMenu() {
     rafId = requestAnimationFrame(loop);
   }
 
-  // Interactive Click Easter Egg: Overdrive rapid fire burst
-  if (container) {
-    container.addEventListener('click', function () {
-      isOverdrive = true;
-      overdriveTimer = 90; // ~1.5 seconds of overdrive
-      recoilOffset = 3.2;
-      var groundY = height - 3;
-      var robotY = groundY - ROBOT_DRAW_H;
-      var muzzleTipX = robotX + BARREL_OFFSET_X;
-      var muzzleTipY = robotY + BARREL_OFFSET_Y;
-      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
-      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
-    });
-  }
-
   function drawStaticFallback() {
     resize();
-    ctx.clearRect(0, 0, width, height);
-
-    var groundY = height - 3;
-    var robotY = groundY - ROBOT_DRAW_H;
-    var robotStaticX = width - ROBOT_DRAW_W - 8;
-    var muzzleTipX = robotStaticX + BARREL_OFFSET_X;
-    var muzzleTipY = robotY + BARREL_OFFSET_Y;
-
-    // Ground line
-    ctx.fillStyle = '#1A1A1D';
-    ctx.fillRect(0, groundY, width, 1);
-    ctx.fillStyle = '#2A2A2E';
-    ctx.fillRect(0, groundY + 1, width, 1);
-
-    // Robot
-    if (robotImg.complete) {
-      ctx.drawImage(robotImg, robotStaticX, robotY, ROBOT_DRAW_W, ROBOT_DRAW_H);
-    }
-
-    // Muzzle
-    if (muzzleImg.complete) {
-      ctx.drawImage(muzzleImg, muzzleTipX - 18, muzzleTipY - 9, 20, 18);
-    }
-
-    // Static badges
-    var staticBadges = ['code', 'java', 'cpp', 'js', 'python'];
-    var curX = muzzleTipX - 36;
-    for (var i = 0; i < staticBadges.length; i++) {
-      var bInfo = badgeImages[staticBadges[i]];
-      if (bInfo && bInfo.img.complete) {
-        var bw = bInfo.img.naturalWidth || bInfo.w;
-        var bh = bInfo.img.naturalHeight || bInfo.h;
-        ctx.drawImage(bInfo.img, curX - Math.round(bw / 2), muzzleTipY - Math.round(bh / 2), bw, bh);
-      }
-      // Dot
-      ctx.fillStyle = '#22D3EE';
-      ctx.fillRect(curX - 18, muzzleTipY - 1, 3, 3);
-      curX -= BADGE_SPACING;
-    }
+    render();
   }
 
   function init() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Render immediately once images load so canvas is NEVER blank
-    robotImg.onload = render;
-    if (robotImg.complete) render();
-
     if (prefersReducedMotion) {
+      workstationImg.onload = drawStaticFallback;
+      rightPropsImg.onload = drawStaticFallback;
       robotImg.onload = drawStaticFallback;
-      if (robotImg.complete) drawStaticFallback();
+      if (workstationImg.complete) drawStaticFallback();
       return;
     }
 
-    // Start loop immediately
+    // Start loop
     isRunning = true;
     rafId = requestAnimationFrame(loop);
 
-    // IntersectionObserver to pause loop when far off-screen
-    if ('IntersectionObserver' in window) {
+    // Performance: Pause when scrolled off-screen
+    if ('IntersectionObserver' in window && container) {
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -645,237 +735,30 @@ function toggleMenu() {
             if (rafId) cancelAnimationFrame(rafId);
           }
         });
-      }, { rootMargin: '200px' });
+      }, { rootMargin: '150px' });
       observer.observe(container);
     }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        isRunning = false;
+        if (rafId) cancelAnimationFrame(rafId);
+      } else {
+        if (!isRunning && (!container || container.getBoundingClientRect().bottom > 0)) {
+          isRunning = true;
+          rafId = requestAnimationFrame(loop);
+        }
+      }
+    });
   }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  })();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-     RETRO PIXEL-ART TECHNOLOGY WORKSHOP SCENE
-     Compact 8-bit/16-bit sci-fi environment in the footer (middle/center-left)
-     featuring an R2-D2 cylindrical droid, 5-tier server rack with blinking LEDs,
-     workstation computer displaying pixel code, conduit data packet transfer,
-     retro lamp, potted plants, and ambient industrial floor lights.
-     ═══════════════════════════════════════════════════════════════════════════ */
-  (function initFooterWorkshop() {
-    var canvas = document.getElementById('footer-workshop-canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    var workshopImg = new Image();
-    workshopImg.src = 'assets/footer-workshop.png';
-
-    var container = canvas.parentElement;
-    var width = 328;
-    var height = 84;
-    var frameCount = 0;
-    var isRunning = true;
-    var rafId = null;
-
-    // Sprite native dimensions: 328 x 99
-    var SPRITE_W = 328;
-    var SPRITE_H = 99;
-
-    // Server rack LEDs coordinates on native sprite (328x99):
-    var serverLeds = [
-      { x: 146, y: 29, color: '#FBBF24', dimColor: '#78350F', interval: 28, phase: 0 },
-      { x: 154, y: 30, color: '#4ADE80', dimColor: '#14532D', interval: 20, phase: 4 },
-      { x: 167, y: 28, color: '#FBBF24', dimColor: '#78350F', interval: 34, phase: 12 },
-      { x: 146, y: 44, color: '#4ADE80', dimColor: '#14532D', interval: 22, phase: 8 },
-      { x: 167, y: 44, color: '#FBBF24', dimColor: '#78350F', interval: 40, phase: 16 },
-      { x: 146, y: 57, color: '#FBBF24', dimColor: '#78350F', interval: 18, phase: 2 },
-      { x: 160, y: 58, color: '#4ADE80', dimColor: '#14532D', interval: 26, phase: 9 },
-      { x: 167, y: 57, color: '#4ADE80', dimColor: '#14532D', interval: 32, phase: 21 },
-      { x: 142, y: 70, color: '#FBBF24', dimColor: '#78350F', interval: 36, phase: 14 },
-      { x: 167, y: 70, color: '#FBBF24', dimColor: '#78350F', interval: 21, phase: 6 },
-      { x: 146, y: 83, color: '#FBBF24', dimColor: '#78350F', interval: 30, phase: 18 },
-      { x: 167, y: 83, color: '#FBBF24', dimColor: '#78350F', interval: 16, phase: 11 }
-    ];
-
-    function resize() {
-      if (!container) return;
-      var rect = container.getBoundingClientRect();
-      width = Math.round(rect.width) || 328;
-      height = Math.round(rect.height) || 84;
-
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-      ctx.imageSmoothingEnabled = false;
-    }
-
-    function render() {
-      ctx.clearRect(0, 0, width, height);
-
-      if (!workshopImg.complete || workshopImg.naturalWidth === 0) return;
-
-      frameCount++;
-
-      // Responsive drawing calculation:
-      // If width < 220 (narrow mobile), clip to core scene: R2-D2 + Server + Workstation
-      var isCompactMobile = width < 220;
-      var srcX = isCompactMobile ? 80 : 0;
-      var srcW = isCompactMobile ? 165 : SPRITE_W;
-      var srcY = 0;
-      var srcH = SPRITE_H;
-
-      // Scale to fit canvas height with baseline at ground level
-      var scale = height / SPRITE_H;
-      var drawW = Math.round(srcW * scale);
-      var drawH = Math.round(srcH * scale);
-      var drawX = isCompactMobile ? 0 : Math.max(0, Math.round((width - drawW) * 0.45));
-      var drawY = height - drawH;
-
-      // 1. Draw base workshop sprite
-      ctx.drawImage(
-        workshopImg,
-        srcX, srcY, srcW, srcH,
-        drawX, drawY, drawW, drawH
-      );
-
-      // Coordinate converter from native sprite (328x99) to canvas draw space
-      function toCanvasX(nativeX) {
-        return drawX + Math.round((nativeX - srcX) * scale);
-      }
-      function toCanvasY(nativeY) {
-        return drawY + Math.round(nativeY * scale);
-      }
-
-      var pxSize = Math.max(1, Math.round(scale * 1.5));
-
-      // 2. Server Rack Blinking Status LEDs (Green & Amber)
-      for (var i = 0; i < serverLeds.length; i++) {
-        var led = serverLeds[i];
-        if (led.x < srcX || led.x > srcX + srcW) continue;
-
-        var cycle = (frameCount + led.phase) % led.interval;
-        var isOn = cycle < (led.interval * 0.52);
-        ctx.fillStyle = isOn ? led.color : led.dimColor;
-        ctx.fillRect(toCanvasX(led.x), toCanvasY(led.y), pxSize, pxSize);
-      }
-
-      // 3. Conduit Data Packets between Server Rack and Workstation
-      // Overhead pipe from (174, 37) to (206, 37) then drops down to (206, 43)
-      var packetCycle = frameCount % 130;
-      if (packetCycle < 50) {
-        var t = packetCycle / 50; // 0 to 1
-        var pX, pY;
-        if (t < 0.75) {
-          // Horizontal along conduit pipe
-          var ht = t / 0.75;
-          pX = 174 + ht * (206 - 174);
-          pY = 37;
-        } else {
-          // Drops down into monitor
-          var vt = (t - 0.75) / 0.25;
-          pX = 206;
-          pY = 37 + vt * 6;
-        }
-        if (pX >= srcX && pX <= srcX + srcW) {
-          ctx.fillStyle = packetCycle % 4 < 2 ? '#4ADE80' : '#22D3EE';
-          ctx.fillRect(toCanvasX(pX), toCanvasY(pY), pxSize, pxSize);
-        }
-      }
-
-      // 4. Workstation Monitor Active Code Line & Blinking Cursor
-      var monCursorX = 208;
-      var monCursorY = 53;
-      if (monCursorX >= srcX && monCursorX <= srcX + srcW) {
-        var cursorBlink = (frameCount % 44) < 22;
-        if (cursorBlink) {
-          ctx.fillStyle = '#4ADE80';
-          ctx.fillRect(toCanvasX(monCursorX), toCanvasY(monCursorY), Math.max(1, pxSize), Math.max(1, pxSize));
-        }
-      }
-
-      // 5. R2-D2 Droid Idle Animation (optic sensor pulse & head tilt)
-      var r2OpticX = 105;
-      var r2OpticY = 62;
-      if (r2OpticX >= srcX && r2OpticX <= srcX + srcW) {
-        // Every 200 frames (~3.3s), brief scan blink
-        var r2Cycle = frameCount % 200;
-        var opticColor = (r2Cycle > 180 && r2Cycle < 196) ? '#EF4444' : '#22D3EE';
-        // Subtle 1px tilt shift during scan
-        var tiltOffset = (r2Cycle > 180 && r2Cycle < 196) ? -1 : 0;
-        ctx.fillStyle = opticColor;
-        ctx.fillRect(toCanvasX(r2OpticX + tiltOffset), toCanvasY(r2OpticY), pxSize, pxSize);
-      }
-
-      // 6. Subtle Floor Runway Lights Pulse (stepped warm amber glow)
-      var floorLight1X = 69;
-      var floorLight2X = 298;
-      var floorLightY = 94;
-      var glowStep = Math.floor(((Math.sin(frameCount * 0.05) + 1) * 0.5) * 3); // 0, 1, 2
-      var glowAlpha = 0.65 + glowStep * 0.15; // 0.65, 0.80, 0.95
-
-      ctx.save();
-      ctx.globalAlpha = glowAlpha;
-      ctx.fillStyle = '#F59E0B';
-      if (floorLight1X >= srcX && floorLight1X <= srcX + srcW) {
-        ctx.fillRect(toCanvasX(floorLight1X), toCanvasY(floorLightY), Math.round(pxSize * 2), Math.max(1, pxSize));
-      }
-      if (floorLight2X >= srcX && floorLight2X <= srcX + srcW) {
-        ctx.fillRect(toCanvasX(floorLight2X), toCanvasY(floorLightY), Math.round(pxSize * 2), Math.max(1, pxSize));
-      }
-      ctx.restore();
-    }
-
-    function loop() {
-      if (!isRunning) return;
-      render();
-      rafId = requestAnimationFrame(loop);
-    }
-
-    function init() {
-      resize();
-      window.addEventListener('resize', resize, { passive: true });
-
-      if (prefersReducedMotion) {
-        workshopImg.onload = render;
-        if (workshopImg.complete) render();
-        return;
-      }
-
-      workshopImg.onload = function () {
-        if (!isRunning) return;
-        render();
-      };
-
-      document.addEventListener('visibilitychange', function () {
-        if (document.hidden) {
-          isRunning = false;
-          if (rafId) cancelAnimationFrame(rafId);
-        } else {
-          if (!isRunning) {
-            isRunning = true;
-            rafId = requestAnimationFrame(loop);
-          }
-        }
-      });
-
-      isRunning = true;
-      rafId = requestAnimationFrame(loop);
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  })();
 
   /* ═══════════════════════════════════════════════════════════════════════════
      PIXELATED COSMIC STARFIELD BACKGROUND
