@@ -1525,4 +1525,110 @@ function toggleMenu() {
     } else {
       init();
     }
-  })();
+  })();
+
+/* ── 10. AI PIXEL MASCOTS INTERACTION ──────────────────────────────────── */
+(function () {
+  var mascots = [
+    { id: 'mascot-chatgpt', clickDuration: 750 },
+    { id: 'mascot-claude',  clickDuration: 1050 },
+    { id: 'mascot-gemini',  clickDuration: 850 }
+  ];
+
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  mascots.forEach(function (m) {
+    var el = document.getElementById(m.id);
+    if (!el) return;
+
+    // Click / Tap reaction with bounce & kick re-triggers
+    var timer = null;
+    function triggerAction(e) {
+      el.classList.remove('is-acting');
+      void el.offsetWidth; // Force reflow to restart CSS keyframe
+      el.classList.add('is-acting');
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        el.classList.remove('is-acting');
+      }, m.clickDuration);
+    }
+
+    el.addEventListener('click', triggerAction);
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerAction();
+      }
+    });
+
+    // Mobile touch handling (non-intrusive tap detection)
+    var touchStartX = 0;
+    var touchStartY = 0;
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function (e) {
+      if (e.changedTouches && e.changedTouches[0]) {
+        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        if (dx < 12 && dy < 12) {
+          triggerAction(e);
+        }
+      }
+    }, { passive: true });
+  });
+
+  // Pointer Proximity: subtle interactive tilt when cursor approaches (fine pointer only)
+  if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
+    var ticking = false;
+    var mascotEls = mascots.map(function (m) { return document.getElementById(m.id); }).filter(Boolean);
+
+    window.addEventListener('mousemove', function (e) {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var mouseX = e.clientX;
+        var mouseY = e.clientY;
+
+        mascotEls.forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dist = Math.hypot(mouseX - cx, mouseY - cy);
+
+          if (dist < 150) {
+            var tilt = ((mouseX - cx) / 150) * 4;
+            el.style.setProperty('--tilt-x', tilt.toFixed(2) + 'deg');
+          } else {
+            el.style.setProperty('--tilt-x', '0deg');
+          }
+        });
+      });
+    }, { passive: true });
+  }
+
+  // IntersectionObserver: pause animations when scrolled out of view to save CPU/battery
+  if ('IntersectionObserver' in window) {
+    var mascotObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('mascot-offscreen');
+        } else {
+          entry.target.classList.add('mascot-offscreen');
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '120px 0px 120px 0px' });
+
+    mascots.forEach(function (m) {
+      var el = document.getElementById(m.id);
+      if (el) mascotObserver.observe(el);
+    });
+  }
+})();
+
