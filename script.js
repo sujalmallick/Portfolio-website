@@ -1514,4 +1514,329 @@ function toggleMenu() {
     });
   }
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RETRO LINUX TUX PENGUIN — CONTACT FORM FIELD HOPPER
+   Waddles along Name, Email, and Message dividers; executes graceful
+   parabolic hops between form fields with landing squash and natural pauses.
+═══════════════════════════════════════════════════════════════════════════ */
+(function initContactTux() {
+  var form = document.getElementById('contact-form');
+  var sprite = document.getElementById('contact-tux-sprite');
+  if (!form || !sprite) return;
+
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Field configuration: 0 = Name, 1 = Email, 2 = Message
+  var fields = [
+    { id: 'contact-name', labelText: 'NAME' },
+    { id: 'contact-email', labelText: 'EMAIL' },
+    { id: 'contact-message', labelText: 'MESSAGE' }
+  ];
+
+  var tuxWidth = 32;
+  var tuxHeight = 33;
+
+  // Sprite frames (36x37 frames in 144x37 sheet)
+  var FRAMES = {
+    STRIDE_1: '0% 0',
+    MID_STEP: '33.333% 0',
+    STRIDE_2: '66.666% 0',
+    AIRBORNE: '100% 0'
+  };
+  var WALK_CYCLE = [FRAMES.STRIDE_1, FRAMES.MID_STEP, FRAMES.STRIDE_2, FRAMES.MID_STEP];
+
+  function getFieldMetrics(index) {
+    var field = fields[index];
+    if (!field) return { lineY: 0, minX: 80, maxX: 260 };
+
+    var input = document.getElementById(field.id);
+    var group = input ? input.closest('.form-group') : null;
+    var label = group ? group.querySelector('label') : null;
+
+    if (!group || !label) {
+      return { lineY: 0, minX: 80, maxX: 260 };
+    }
+
+    // Vertical line position relative to form
+    var lineY = label.offsetTop + Math.floor(label.offsetHeight / 2);
+
+    // Horizontal boundaries: never overlap label text, never overflow form
+    var span = label.querySelector('.form-label-text');
+    var labelTextRight = span ? (span.offsetLeft + span.offsetWidth) : 60;
+    var formWidth = form.offsetWidth || 300;
+
+    var minX = Math.max(72, labelTextRight + 14);
+    var maxX = Math.max(minX + 35, formWidth - tuxWidth - 10);
+
+    return { lineY: lineY, minX: minX, maxX: maxX };
+  }
+
+  // State variables
+  var currentField = 0;       // 0 = Name, 1 = Email, 2 = Message
+  var targetField = 0;
+  var journeyDir = 1;         // +1 = going down (Name -> Email -> Message), -1 = returning up
+  var state = 'WALK';         // 'WALK', 'PAUSE', 'HOP', 'LAND'
+
+  var posX = 90;
+  var posY = 0;
+  var facing = 1;             // +1 = facing right, -1 = facing left
+  var speed = 0.42;           // slow waddle speed (~25px/sec)
+
+  var walkAnimTimer = 0;
+  var walkFrameIndex = 0;
+  var walkDistanceRemaining = 0;
+
+  var pauseTimer = 0;
+  var fieldTimeElapsed = 0;
+  var fieldTimeLimit = 6500;  // 6.5s exploration before next hop
+
+  // Hop trajectory
+  var hopStartTime = 0;
+  var hopDuration = 1000;     // 1000ms slow, graceful arc
+  var hopStartX = 0;
+  var hopStartY = 0;
+  var hopEndX = 0;
+  var hopEndY = 0;
+  var hopPeakH = 24;
+
+  var landTimer = 0;
+  var isVisible = true;
+  var isRunning = true;
+  var rafId = null;
+  var lastTime = 0;
+
+  function setFrame(framePosition) {
+    sprite.style.backgroundPosition = framePosition;
+  }
+
+  function renderTux(extraScaleX, extraScaleY, extraRotate) {
+    var sX = (extraScaleX !== undefined ? extraScaleX : 1.0) * facing;
+    var sY = extraScaleY !== undefined ? extraScaleY : 1.0;
+    var rot = extraRotate ? ' rotate(' + extraRotate.toFixed(1) + 'deg)' : '';
+
+    sprite.style.left = Math.round(posX) + 'px';
+    sprite.style.top = Math.round(posY) + 'px';
+    sprite.style.transform = 'scale(' + sX.toFixed(3) + ', ' + sY.toFixed(3) + ')' + rot;
+  }
+
+  function chooseNewWalk() {
+    var m = getFieldMetrics(currentField);
+    // Pick distance: 30 to 65px
+    var dist = 30 + Math.random() * 35;
+    if (Math.random() < 0.45) {
+      facing = -facing;
+    }
+    // Ensure we don't walk outside bounds
+    if (facing > 0 && posX + dist > m.maxX) {
+      facing = -1;
+    } else if (facing < 0 && posX - dist < m.minX) {
+      facing = 1;
+    }
+    walkDistanceRemaining = dist;
+    state = 'WALK';
+  }
+
+  function startPause(duration) {
+    state = 'PAUSE';
+    pauseTimer = duration || (1800 + Math.random() * 1600);
+    setFrame(FRAMES.STRIDE_1);
+    renderTux(1.0, 1.0);
+  }
+
+  function triggerNextHop() {
+    // Determine next field
+    var nextField;
+    if (journeyDir > 0) {
+      // Going downwards: 0 -> 1 -> 2
+      if (currentField === 0) {
+        nextField = 1;
+      } else if (currentField === 1) {
+        nextField = 2;
+        journeyDir = -1; // Next journey will be return
+      }
+    } else {
+      // Going upwards: 2 -> 1 -> 0
+      if (currentField === 2) {
+        nextField = 1;
+      } else if (currentField === 1) {
+        nextField = 0;
+        journeyDir = 1;  // Cycle repeats
+      }
+    }
+
+    var startMetrics = getFieldMetrics(currentField);
+    var endMetrics = getFieldMetrics(nextField);
+
+    hopStartX = posX;
+    hopStartY = startMetrics.lineY - tuxHeight + 1;
+
+    // Choose a gentle landing X on target field
+    var targetX = endMetrics.minX + 20 + Math.random() * (endMetrics.maxX - endMetrics.minX - 40);
+    hopEndX = Math.min(Math.max(targetX, endMetrics.minX), endMetrics.maxX);
+    hopEndY = endMetrics.lineY - tuxHeight + 1;
+
+    facing = hopEndX >= hopStartX ? 1 : -1;
+
+    // Arc peak: upward jumps need more vertical clearance
+    if (nextField < currentField) {
+      hopPeakH = 34; // Leaping up
+      hopDuration = 1100;
+    } else {
+      hopPeakH = 22; // Leaping down
+      hopDuration = 950;
+    }
+
+    hopStartTime = performance.now();
+    targetField = nextField;
+    state = 'HOP';
+    setFrame(FRAMES.AIRBORNE);
+  }
+
+  function update(dt) {
+    if (prefersReduced) return;
+
+    if (state === 'WALK') {
+      fieldTimeElapsed += dt;
+      var step = speed * (dt / 16.666);
+      posX += facing * step;
+      walkDistanceRemaining -= step;
+
+      var m = getFieldMetrics(currentField);
+      if (posX < m.minX) {
+        posX = m.minX;
+        facing = 1;
+      } else if (posX > m.maxX) {
+        posX = m.maxX;
+        facing = -1;
+      }
+
+      // Animate waddle frames
+      walkAnimTimer += dt;
+      if (walkAnimTimer >= 135) {
+        walkAnimTimer = 0;
+        walkFrameIndex = (walkFrameIndex + 1) % WALK_CYCLE.length;
+        setFrame(WALK_CYCLE[walkFrameIndex]);
+      }
+
+      renderTux(1.0, 1.0);
+
+      if (walkDistanceRemaining <= 0) {
+        startPause();
+      } else if (fieldTimeElapsed >= fieldTimeLimit) {
+        fieldTimeElapsed = 0;
+        fieldTimeLimit = 6000 + Math.random() * 3000;
+        triggerNextHop();
+      }
+    } else if (state === 'PAUSE') {
+      fieldTimeElapsed += dt;
+      pauseTimer -= dt;
+      if (pauseTimer <= 0) {
+        if (fieldTimeElapsed >= fieldTimeLimit) {
+          fieldTimeElapsed = 0;
+          fieldTimeLimit = 6000 + Math.random() * 3000;
+          triggerNextHop();
+        } else {
+          chooseNewWalk();
+        }
+      }
+    } else if (state === 'HOP') {
+      var elapsed = performance.now() - hopStartTime;
+      var t = Math.min(1.0, elapsed / hopDuration);
+
+      // Parabolic trajectory: y(t) = y0 + (y1 - y0)*t - 4*peak*t*(1-t)
+      posX = hopStartX + (hopEndX - hopStartX) * t;
+      posY = hopStartY + (hopEndY - hopStartY) * t - 4 * hopPeakH * t * (1.0 - t);
+
+      // Airborne flight tilt
+      var tilt = facing * Math.sin(t * Math.PI) * 7.5;
+      renderTux(1.0, 1.0, tilt);
+
+      if (t >= 1.0) {
+        // Land precisely on target divider
+        posX = hopEndX;
+        posY = hopEndY;
+        currentField = targetField;
+        state = 'LAND';
+        landTimer = 140; // 140ms squash duration
+        setFrame(FRAMES.STRIDE_1);
+        // Squash: widen and flatten slightly
+        renderTux(1.15, 0.85, 0);
+      }
+    } else if (state === 'LAND') {
+      landTimer -= dt;
+      if (landTimer <= 0) {
+        // Recover from squash back to normal scale
+        renderTux(1.0, 1.0, 0);
+        startPause(1400 + Math.random() * 1000);
+      }
+    }
+  }
+
+  function loop(now) {
+    if (!isRunning) return;
+    if (!lastTime) lastTime = now;
+    var dt = Math.min(100, now - lastTime);
+    lastTime = now;
+
+    if (isVisible) {
+      update(dt);
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function snapToField() {
+    var m = getFieldMetrics(currentField);
+    posY = m.lineY - tuxHeight + 1;
+    posX = Math.min(Math.max(posX, m.minX), m.maxX);
+    renderTux(1.0, 1.0);
+  }
+
+  function init() {
+    // Initial positioning on Name divider line
+    var m = getFieldMetrics(0);
+    currentField = 0;
+    journeyDir = 1;
+    posX = m.minX + 24;
+    posY = m.lineY - tuxHeight + 1;
+    facing = 1;
+
+    setFrame(FRAMES.STRIDE_1);
+    renderTux(1.0, 1.0);
+
+    if (prefersReduced) return;
+
+    window.addEventListener('resize', snapToField, { passive: true });
+
+    // Pause when scrolled off-screen or tab hidden
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          isVisible = e.isIntersecting;
+        });
+      }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
+      obs.observe(form);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        isVisible = false;
+      } else {
+        isVisible = true;
+        lastTime = performance.now();
+      }
+    });
+
+    lastTime = performance.now();
+    startPause(2000);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 
