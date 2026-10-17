@@ -172,7 +172,7 @@ function toggleMenu() {
   });
 })();
 
-/* ── 10. RETRO PIXEL AI ROBOT PATROL (FOOTER SENTRY) ──────── */
+/* ── 10. RETRO PIXEL AI ROBOT & FIRING CONVEYOR (FOOTER SENTRY) ──────── */
 (function () {
   var canvas = document.getElementById('footer-robot-canvas');
   if (!canvas) return;
@@ -180,43 +180,64 @@ function toggleMenu() {
   var ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  var width = 280;
-  var height = 50;
+  var width = 440;
+  var height = 58;
   var isRunning = false;
   var rafId = null;
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Load sprite sheet
+  // Load Sprite Assets
   var robotImg = new Image();
-  robotImg.src = 'assets/pixel-footer-robot.png';
+  robotImg.src = 'assets/pixel-terminator.png';
 
-  // Constants
-  var FRAME_W = 36;
-  var FRAME_H = 40;
-  var SPEED = 0.65;
-  var CODE_SYMBOLS = ['Python', 'JS', 'C++', 'Java', '</>', '{}', '01', '=>'];
-  var WALK_FRAMES = [1, 2, 3, 2];
+  var muzzleImg = new Image();
+  muzzleImg.src = 'assets/muzzle-flash.png';
 
-  // Robot State
-  var x = 200;
-  var facing = -1; // -1 = moving left, 1 = moving right
-  var state = 'PATROL'; // 'PATROL', 'SCAN', 'FIRE'
-  var stateTimer = 0;
-  var walkStep = 0;
-  var walkTimer = 0;
+  var badgeImages = {
+    python: { img: new Image(), src: 'assets/badge-python.png', w: 20, h: 22 },
+    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 18, h: 18 },
+    cpp:    { img: new Image(), src: 'assets/badge-cpp.png',    w: 20, h: 18 },
+    java:   { img: new Image(), src: 'assets/badge-java.png',   w: 18, h: 24 },
+    code:   { img: new Image(), src: 'assets/badge-code.png',   w: 20, h: 20 }
+  };
+
+  var BADGE_SEQUENCE = ['code', 'java', 'cpp', 'js', 'python'];
+  for (var k in badgeImages) {
+    badgeImages[k].img.src = badgeImages[k].src;
+  }
+
+  // Animation constants
+  var ROBOT_DRAW_W = 50;
+  var ROBOT_DRAW_H = 55;
+  var BARREL_OFFSET_X = 1;  // Barrel tip relative to robot top-left
+  var BARREL_OFFSET_Y = 24; // Barrel tip relative to robot top-left
+  var BADGE_SPACING = 38;   // Distance between consecutive badges
+  var BASE_SPEED = 1.05;    // Pixels per frame badges move left
+
+  // State variables
+  var frameCount = 0;
   var recoilOffset = 0;
-  var scanGlint = 0;
+  var isOverdrive = false;
+  var overdriveTimer = 0;
+  var nextBadgeIndex = 0;
 
-  // Particle System
-  var projectiles = [];
+  // Stream items: array of { type: 'badge'|'dot', key: string, x: number, y: number, alpha: number, waveOffset: number }
+  var streamItems = [];
   var pixelDust = [];
+
+  // Ground rubble stones (fixed relative x positions)
+  var rubblePoints = [
+    { x: 38, y: 1 }, { x: 74, y: 0 }, { x: 125, y: 1 }, { x: 168, y: 0 },
+    { x: 215, y: 1 }, { x: 260, y: 0 }, { x: 305, y: 1 }, { x: 350, y: 0 },
+    { x: 395, y: 1 }, { x: 420, y: 0 }
+  ];
 
   function resize() {
     if (!container) return;
     var rect = container.getBoundingClientRect();
-    width = Math.round(rect.width) || 280;
-    height = Math.round(rect.height) || 50;
+    width = Math.round(rect.width) || 440;
+    height = Math.round(rect.height) || 58;
 
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(width * dpr);
@@ -225,139 +246,110 @@ function toggleMenu() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     ctx.imageSmoothingEnabled = false;
-
-    // Keep robot in bounds
-    if (x > width - FRAME_W - 8) {
-      x = Math.max(8, width - FRAME_W - 8);
-    }
   }
 
-  function spawnBurst(isManual) {
-    var count = isManual ? 2 : 1;
+  function spawnMuzzleSparks(muzzleTipX, muzzleTipY) {
+    var count = isOverdrive ? 4 : 2;
     for (var i = 0; i < count; i++) {
-      var symbol = CODE_SYMBOLS[Math.floor(Math.random() * CODE_SYMBOLS.length)];
-      var spawnX = facing === 1 ? x + 35 : x + 1;
-      var spawnY = height - FRAME_H - 2 + 15 + (i * 2 - 1);
-      var pVx = facing * (1.8 + Math.random() * 0.7);
-      var pVy = (Math.random() - 0.5) * 0.4;
-      projectiles.push({
-        text: symbol,
-        x: spawnX,
-        y: spawnY,
-        vx: pVx,
-        vy: pVy,
-        life: 0,
-        maxLife: 45 + Math.floor(Math.random() * 15),
-        scattered: false,
+      pixelDust.push({
+        x: muzzleTipX - 8 + (Math.random() - 0.5) * 6,
+        y: muzzleTipY + (Math.random() - 0.5) * 6,
+        vx: -0.6 - Math.random() * 1.2,
+        vy: (Math.random() - 0.5) * 1.0,
         color: Math.random() > 0.3 ? '#22D3EE' : '#CFC6B5',
-        alpha: 1
+        alpha: 1,
+        size: Math.random() > 0.5 ? 2 : 1,
+        decay: 0.05 + Math.random() * 0.03
       });
     }
   }
 
   function update() {
-    var minX = 8;
-    var maxX = Math.max(minX + 20, width - FRAME_W - 8);
+    frameCount++;
 
-    if (state === 'PATROL') {
-      recoilOffset = 0;
-      x += facing * SPEED;
-      walkTimer++;
-      if (walkTimer >= 7) {
-        walkTimer = 0;
-        walkStep = (walkStep + 1) % WALK_FRAMES.length;
-      }
-
-      // Check boundary turn
-      if (facing === -1 && x <= minX) {
-        x = minX;
-        state = 'SCAN';
-        stateTimer = 55;
-      } else if (facing === 1 && x >= maxX) {
-        x = maxX;
-        state = 'SCAN';
-        stateTimer = 55;
-      } else if (Math.random() < 0.0035) {
-        // Occasional mid-patrol pause & scan
-        state = 'SCAN';
-        stateTimer = 45 + Math.floor(Math.random() * 30);
-      }
-    } else if (state === 'SCAN') {
-      recoilOffset = 0;
-      stateTimer--;
-      scanGlint = Math.sin(stateTimer * 0.15);
-
-      if (stateTimer <= 0) {
-        // 60% chance to fire code burst, 40% chance to turn or patrol
-        if (Math.random() < 0.6) {
-          state = 'FIRE';
-          stateTimer = 20;
-          recoilOffset = facing === 1 ? -2.5 : 2.5;
-          spawnBurst(false);
-        } else {
-          // Turn if at boundary
-          if (x <= minX) facing = 1;
-          else if (x >= maxX) facing = -1;
-          state = 'PATROL';
-        }
-      }
-    } else if (state === 'FIRE') {
-      stateTimer--;
-      // Dampen recoil
-      if (stateTimer <= 10) {
-        recoilOffset *= 0.7;
-      }
-      if (stateTimer <= 0) {
-        recoilOffset = 0;
-        if (x <= minX) facing = 1;
-        else if (x >= maxX) facing = -1;
-        state = 'PATROL';
+    if (isOverdrive) {
+      overdriveTimer--;
+      if (overdriveTimer <= 0) {
+        isOverdrive = false;
       }
     }
 
-    // Update projectiles
-    var isMobile = window.innerWidth <= 600;
-    for (var i = projectiles.length - 1; i >= 0; i--) {
-      var p = projectiles[i];
-      p.life++;
+    // Smoothly relax recoil spring
+    recoilOffset *= 0.82;
 
-      if (!p.scattered) {
-        p.x += p.vx;
-        p.y += p.vy;
+    var speed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
+    var groundY = height - 3;
+    var robotY = groundY - ROBOT_DRAW_H;
+    var stepBob = Math.sin(frameCount * 0.12) * 1.0;
+    var robotX = width - ROBOT_DRAW_W - 8 + recoilOffset;
+    var muzzleTipX = robotX + BARREL_OFFSET_X;
+    var muzzleTipY = robotY + BARREL_OFFSET_Y + stepBob;
 
-        // Disperse into pixels after 55% of life
-        if (p.life >= p.maxLife * 0.55) {
-          p.scattered = true;
-          var dustCount = isMobile ? 5 : 8;
-          for (var d = 0; d < dustCount; d++) {
-            pixelDust.push({
-              x: p.x + (Math.random() - 0.5) * 12,
-              y: p.y + (Math.random() - 0.5) * 6,
-              vx: p.vx * 0.35 + (Math.random() - 0.5) * 1.6,
-              vy: (Math.random() - 0.5) * 1.4,
-              size: Math.random() > 0.5 ? 2 : 1,
-              color: Math.random() > 0.3 ? '#22D3EE' : '#CFC6B5',
-              alpha: 1,
-              decay: 0.04 + Math.random() * 0.02
-            });
-          }
+    // Move existing stream items leftward
+    for (var i = streamItems.length - 1; i >= 0; i--) {
+      var item = streamItems[i];
+      item.x -= speed;
+
+      // When approaching the left edge, dissolve and spawn pixel dust
+      if (item.x < 50) {
+        item.alpha = Math.max(0, (item.x - 12) / 38);
+        if (Math.random() < 0.45) {
+          pixelDust.push({
+            x: item.x + Math.random() * 12,
+            y: item.y + (Math.random() - 0.5) * 12,
+            vx: -0.8 - Math.random() * 0.8,
+            vy: (Math.random() - 0.5) * 1.4,
+            color: Math.random() > 0.4 ? '#22D3EE' : '#CFC6B5',
+            alpha: 1,
+            size: Math.random() > 0.5 ? 2 : 1,
+            decay: 0.04 + Math.random() * 0.03
+          });
         }
+      }
+
+      if (item.x < 8 || item.alpha <= 0) {
+        streamItems.splice(i, 1);
+      }
+    }
+
+    // Spawning conveyor logic
+    var rightmost = streamItems.length > 0 ? streamItems[streamItems.length - 1] : null;
+    var spawnStartX = muzzleTipX - 18;
+
+    if (!rightmost || (spawnStartX - rightmost.x) >= (BADGE_SPACING / 2)) {
+      if (!rightmost || rightmost.type === 'dot') {
+        // Spawn next badge
+        var key = BADGE_SEQUENCE[nextBadgeIndex];
+        nextBadgeIndex = (nextBadgeIndex + 1) % BADGE_SEQUENCE.length;
+        streamItems.push({
+          type: 'badge',
+          key: key,
+          x: spawnStartX,
+          y: muzzleTipY,
+          alpha: 1,
+          waveOffset: Math.random() * 6.28
+        });
+        recoilOffset = isOverdrive ? 2.4 : 1.4;
+        spawnMuzzleSparks(muzzleTipX, muzzleTipY);
       } else {
-        p.alpha -= 0.15;
-      }
-
-      if (p.life >= p.maxLife || p.alpha <= 0) {
-        projectiles.splice(i, 1);
+        // Spawn separator dot between badges
+        streamItems.push({
+          type: 'dot',
+          x: spawnStartX,
+          y: muzzleTipY,
+          alpha: 1,
+          waveOffset: Math.random() * 6.28
+        });
       }
     }
 
-    // Update pixel dust
+    // Update pixel dust particles
     for (var j = pixelDust.length - 1; j >= 0; j--) {
-      var dust = pixelDust[j];
-      dust.x += dust.vx;
-      dust.y += dust.vy;
-      dust.alpha -= dust.decay;
-      if (dust.alpha <= 0) {
+      var d = pixelDust[j];
+      d.x += d.vx;
+      d.y += d.vy;
+      d.alpha -= d.decay;
+      if (d.alpha <= 0) {
         pixelDust.splice(j, 1);
       }
     }
@@ -366,77 +358,102 @@ function toggleMenu() {
   function render() {
     ctx.clearRect(0, 0, width, height);
 
-    var drawY = height - FRAME_H - 2;
+    var groundY = height - 3;
+    var robotY = groundY - ROBOT_DRAW_H;
+    var stepBob = Math.sin(frameCount * 0.12) * 1.0;
+    var robotX = width - ROBOT_DRAW_W - 8 + recoilOffset;
+    var muzzleTipX = robotX + BARREL_OFFSET_X;
+    var muzzleTipY = robotY + BARREL_OFFSET_Y + stepBob;
 
-    // Draw robot sprite
-    if (robotImg.complete && robotImg.naturalWidth > 0) {
-      var frame = 0;
-      if (state === 'PATROL') {
-        frame = WALK_FRAMES[walkStep];
-      } else if (state === 'SCAN') {
-        frame = 0;
-      } else if (state === 'FIRE') {
-        frame = 4;
+    // 1. Draw subtle pixel ground baseline
+    ctx.fillStyle = '#1A1A1D';
+    ctx.fillRect(0, groundY, width, 1);
+    ctx.fillStyle = '#2A2A2E';
+    ctx.fillRect(0, groundY + 1, width, 1);
+
+    // Rubble dots along the baseline
+    ctx.fillStyle = '#3A3A40';
+    for (var r = 0; r < rubblePoints.length; r++) {
+      var pt = rubblePoints[r];
+      if (pt.x < width) {
+        ctx.fillRect(pt.x, groundY - pt.y - 1, 2, 1);
       }
+    }
 
-      var drawX = Math.round(x + recoilOffset);
-
-      ctx.save();
-      if (facing === 1) {
-        ctx.drawImage(
-          robotImg,
-          frame * FRAME_W, 0, FRAME_W, FRAME_H,
-          drawX, drawY, FRAME_W, FRAME_H
-        );
-      } else {
-        // Mirrored for left-facing
-        ctx.translate(drawX + Math.round(FRAME_W / 2), drawY);
-        ctx.scale(-1, 1);
-        ctx.drawImage(
-          robotImg,
-          frame * FRAME_W, 0, FRAME_W, FRAME_H,
-          -Math.round(FRAME_W / 2), 0, FRAME_W, FRAME_H
-        );
-      }
-      ctx.restore();
-
-      // Scan glint on visor during SCAN
-      if (state === 'SCAN' && scanGlint > 0.3) {
+    // 2. Draw scattered pixel dust
+    for (var d = 0; d < pixelDust.length; d++) {
+      var dust = pixelDust[d];
+      if (dust.alpha > 0) {
         ctx.save();
-        ctx.fillStyle = '#22D3EE';
-        ctx.globalAlpha = 0.8;
-        var eyeX = facing === 1 ? drawX + 20 : drawX + (FRAME_W - 20 - 2);
-        var eyeY = drawY + 15;
-        ctx.fillRect(eyeX, eyeY, 2, 2);
+        ctx.fillStyle = dust.color;
+        ctx.globalAlpha = Math.max(0, dust.alpha);
+        ctx.fillRect(Math.round(dust.x), Math.round(dust.y), dust.size, dust.size);
         ctx.restore();
       }
     }
 
-    // Draw floating code projectiles
-    for (var i = 0; i < projectiles.length; i++) {
-      var p = projectiles[i];
-      if (!p.scattered && p.alpha > 0.05) {
+    // 3. Draw streaming badges and glowing dots
+    for (var i = 0; i < streamItems.length; i++) {
+      var item = streamItems[i];
+      if (item.alpha <= 0.02) continue;
+
+      var floatY = Math.sin(item.x * 0.05 + item.waveOffset) * 1.2;
+      var drawCenterY = Math.round(muzzleTipY + floatY);
+
+      if (item.type === 'dot') {
+        // Glowing cyan separator dot
         ctx.save();
-        ctx.font = 'bold 9px "Courier New", monospace';
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.globalAlpha = Math.max(0, item.alpha);
+        ctx.fillStyle = '#22D3EE';
         ctx.shadowColor = '#22D3EE';
         ctx.shadowBlur = 4;
-        ctx.fillText(p.text, Math.round(p.x), Math.round(p.y));
+        ctx.fillRect(Math.round(item.x) - 1, drawCenterY - 1, 3, 3);
         ctx.restore();
+      } else if (item.type === 'badge') {
+        var bInfo = badgeImages[item.key];
+        if (bInfo && bInfo.img.complete && bInfo.img.naturalWidth > 0) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, item.alpha);
+          var bx = Math.round(item.x - bInfo.w / 2);
+          var by = Math.round(drawCenterY - bInfo.h / 2);
+          ctx.drawImage(bInfo.img, bx, by, bInfo.w, bInfo.h);
+          ctx.restore();
+        }
       }
     }
 
-    // Draw scattered pixel dust
-    for (var j = 0; j < pixelDust.length; j++) {
-      var d = pixelDust[j];
-      if (d.alpha > 0) {
-        ctx.save();
-        ctx.fillStyle = d.color;
-        ctx.globalAlpha = Math.max(0, d.alpha);
-        ctx.fillRect(Math.round(d.x), Math.round(d.y), d.size, d.size);
-        ctx.restore();
+    // 4. Draw cyan muzzle flash
+    if (muzzleImg.complete && muzzleImg.naturalWidth > 0) {
+      ctx.save();
+      var mPulse = isOverdrive ? (1.1 + 0.2 * Math.sin(frameCount * 0.6)) : (0.85 + 0.15 * Math.sin(frameCount * 0.35));
+      var mWidth = Math.round(20 * mPulse);
+      var mHeight = Math.round(18 * mPulse);
+      var mJitterX = (Math.random() - 0.5) * 0.8;
+      var mJitterY = (Math.random() - 0.5) * 0.8;
+      var mX = Math.round(muzzleTipX - mWidth + 2 + mJitterX);
+      var mY = Math.round(muzzleTipY - mHeight / 2 + mJitterY);
+
+      ctx.globalAlpha = isOverdrive ? 1 : 0.92;
+      ctx.shadowColor = '#22D3EE';
+      ctx.shadowBlur = isOverdrive ? 10 : 6;
+      ctx.drawImage(muzzleImg, mX, mY, mWidth, mHeight);
+      ctx.restore();
+    }
+
+    // 5. Draw Terminator robot
+    if (robotImg.complete && robotImg.naturalWidth > 0) {
+      ctx.save();
+      var rx = Math.round(robotX);
+      var ry = Math.round(robotY + stepBob);
+      ctx.drawImage(robotImg, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
+
+      // Cyan visor glint
+      if (Math.sin(frameCount * 0.08) > 0.65) {
+        ctx.fillStyle = '#22D3EE';
+        ctx.globalAlpha = 0.75;
+        ctx.fillRect(rx + 9, ry + 15, 3, 2);
       }
+      ctx.restore();
     }
   }
 
@@ -447,17 +464,60 @@ function toggleMenu() {
     rafId = requestAnimationFrame(loop);
   }
 
-  // Interactive Click Easter Egg
+  // Interactive Click Easter Egg: Overdrive rapid fire burst
   if (container) {
-    container.addEventListener('click', function (e) {
-      var rect = canvas.getBoundingClientRect();
-      var clickX = e.clientX - rect.left;
-      facing = clickX < x ? -1 : 1;
-      state = 'FIRE';
-      stateTimer = 24;
-      recoilOffset = facing === 1 ? -3 : 3;
-      spawnBurst(true);
+    container.addEventListener('click', function () {
+      isOverdrive = true;
+      overdriveTimer = 90; // ~1.5 seconds of overdrive
+      recoilOffset = 3.2;
+      var groundY = height - 3;
+      var robotY = groundY - ROBOT_DRAW_H;
+      var muzzleTipX = width - ROBOT_DRAW_W - 8 + BARREL_OFFSET_X;
+      var muzzleTipY = robotY + BARREL_OFFSET_Y;
+      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
+      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
     });
+  }
+
+  function drawStaticFallback() {
+    resize();
+    ctx.clearRect(0, 0, width, height);
+
+    var groundY = height - 3;
+    var robotY = groundY - ROBOT_DRAW_H;
+    var robotX = width - ROBOT_DRAW_W - 8;
+    var muzzleTipX = robotX + BARREL_OFFSET_X;
+    var muzzleTipY = robotY + BARREL_OFFSET_Y;
+
+    // Ground line
+    ctx.fillStyle = '#1A1A1D';
+    ctx.fillRect(0, groundY, width, 1);
+    ctx.fillStyle = '#2A2A2E';
+    ctx.fillRect(0, groundY + 1, width, 1);
+
+    // Robot
+    if (robotImg.complete) {
+      ctx.drawImage(robotImg, robotX, robotY, ROBOT_DRAW_W, ROBOT_DRAW_H);
+    }
+
+    // Muzzle
+    if (muzzleImg.complete) {
+      ctx.drawImage(muzzleImg, muzzleTipX - 18, muzzleTipY - 9, 20, 18);
+    }
+
+    // Static badges
+    var staticBadges = ['code', 'java', 'cpp', 'js', 'python'];
+    var curX = muzzleTipX - 36;
+    for (var i = 0; i < staticBadges.length; i++) {
+      var bInfo = badgeImages[staticBadges[i]];
+      if (bInfo && bInfo.img.complete) {
+        ctx.drawImage(bInfo.img, curX - Math.round(bInfo.w / 2), muzzleTipY - Math.round(bInfo.h / 2), bInfo.w, bInfo.h);
+      }
+      // Dot
+      ctx.fillStyle = '#22D3EE';
+      ctx.fillRect(curX - 18, muzzleTipY - 1, 3, 3);
+      curX -= BADGE_SPACING;
+    }
   }
 
   function init() {
@@ -465,16 +525,8 @@ function toggleMenu() {
     window.addEventListener('resize', resize);
 
     if (prefersReducedMotion) {
-      // Draw static guard pose fallback without animation loop
-      robotImg.onload = function () {
-        ctx.clearRect(0, 0, width, height);
-        var drawX = Math.round(width - FRAME_W - 12);
-        var drawY = height - FRAME_H - 2;
-        ctx.drawImage(robotImg, 0, 0, FRAME_W, FRAME_H, drawX, drawY, FRAME_W, FRAME_H);
-      };
-      if (robotImg.complete) {
-        robotImg.onload();
-      }
+      robotImg.onload = drawStaticFallback;
+      if (robotImg.complete) drawStaticFallback();
       return;
     }
 

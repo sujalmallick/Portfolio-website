@@ -30,13 +30,13 @@
   /* Terminal mascot: scale down for tablet */
   .hero-terminal-mascot {
     width: 60px;
-    height: 46px;
-    top: -10px;
-    right: -18px;
+    height: 60px;
+    top: -6px;
+    right: -2px;
   }
   .mascot-bubble {
     width: 44px;
-    right: -4px;
+    right: 4px;
   }
 
   /* About: single column */
@@ -137,13 +137,13 @@
   /* Terminal mascot: scale down for mobile */
   .hero-terminal-mascot {
     width: 52px;
-    height: 40px;
-    top: -8px;
-    right: -14px;
+    height: 52px;
+    top: -5px;
+    right: -2px;
   }
   .mascot-bubble {
     width: 38px;
-    right: -2px;
+    right: 2px;
   }
 
   /* Verified credentials bar on mobile */
@@ -168,12 +168,12 @@
     gap: 1rem;
   }
   .footer-robot-patrol {
-    width: 170px;
-    height: 44px;
+    width: 300px;
+    height: 52px;
   }
   #footer-robot-canvas {
-    width: 170px;
-    height: 44px;
+    width: 300px;
+    height: 52px;
   }
 }
 
@@ -186,11 +186,12 @@
     text-align: center;
   }
   .footer-robot-patrol {
-    width: 220px;
-    height: 46px;
+    width: 280px;
+    height: 52px;
+    margin: 0 auto;
   }
   #footer-robot-canvas {
-    width: 220px;
-    height: 46px;
+    width: 280px;
+    height: 52px;
   }
 }

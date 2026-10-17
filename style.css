@@ -333,12 +333,15 @@ section {
   height: 100%;
   object-fit: cover;
   border-radius: 50%; /* Circular photo */
+  border: 3px solid #CFC6B5;
+  box-shadow: 0 0 0 1px #1A1A1D, 0 12px 32px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
   filter: grayscale(15%);
   transition: filter 0.4s ease;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2; /* Sits above canvas */
+  z-index: 2; /* Sits above background */
 }
 
 .profile-photo:hover { filter: grayscale(0%); }
@@ -1204,8 +1207,8 @@ footer {
 /* Terminator-Inspired Pixel AI Robot Patrol */
 .footer-robot-patrol {
   position: relative;
-  width: 280px;
-  height: 50px;
+  width: 440px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1214,8 +1217,8 @@ footer {
 }
 
 #footer-robot-canvas {
-  width: 280px;
-  height: 50px;
+  width: 440px;
+  height: 58px;
   display: block;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
@@ -1227,12 +1230,10 @@ footer {
 /* 1. Theme-Matched Floating Pixel Terminal Mascot */
 .hero-terminal-mascot {
   position: absolute;
-  top: -12px;
-  right: -24px;
-  width: 74px;
-  height: 57px;
-  transform: rotate(14deg);
-  transform-origin: center center;
+  top: -8px;
+  right: -4px;
+  width: 72px;
+  height: 72px;
   z-index: 10;
   pointer-events: none;
   image-rendering: pixelated;
@@ -1243,10 +1244,10 @@ footer {
 .mascot-sprite {
   display: block;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   pointer-events: none;
@@ -1267,10 +1268,6 @@ footer {
 
 /* Happy frame (with sparks) shows on hover */
 .mascot-sprite--happy {
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 102%;
   opacity: 0;
   transition: opacity 0.1s steps(1);
 }
@@ -1278,13 +1275,13 @@ footer {
 /* Pixel speech bubble 'hi!' */
 .mascot-bubble {
   position: absolute;
-  bottom: 96%;
-  right: -6px;
+  bottom: 84%;
+  right: 6px;
   width: 52px;
   height: auto;
   opacity: 0;
   transform: scale(0.6) translateY(6px);
-  transform-origin: bottom right;
+  transform-origin: bottom center;
   transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
@@ -1316,10 +1313,10 @@ footer {
 /* Vertical 2.5px bobbing animation */
 @keyframes mascot-bob {
   0% {
-    transform: rotate(14deg) translateY(0);
+    transform: translateY(0);
   }
   100% {
-    transform: rotate(14deg) translateY(-2.5px);
+    transform: translateY(-3px);
   }
 }
 
