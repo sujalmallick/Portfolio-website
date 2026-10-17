@@ -190,36 +190,34 @@
     width: 100%;
     height: 52px;
   }
-  .edu-divider-character {
-    right: 8%;
-    transform: scale(0.9);
-    transform-origin: top right;
-  }
-
   /* AI Pixel Mascots — Mobile adjustments */
   .mascot-chatgpt {
-    right: 12px;
-    top: -12px;
-    width: 40px;
+    right: 8px;
+    top: -16px;
+    width: 56px;
+  }
+  .chatgpt-bubble {
+    width: 36px;
+    top: -38px;
   }
   .mascot-claude {
     left: 16px;
-    width: 46px;
-    height: 58px;
+    width: 66px;
+    top: -50px;
+  }
+  .claude-bubble {
+    width: 36px;
     top: -38px;
-  }
-  .claude-legs {
-    top: 34px;
-    height: 22px;
-  }
-  .claude-leg {
-    width: 8px;
-    height: 18px;
+    left: 18px;
   }
   .mascot-gemini {
     right: 16px;
-    width: 42px;
-    top: -50px;
+    width: 58px;
+    top: -66px;
+  }
+  .gemini-bubble {
+    width: 36px;
+    top: -38px;
   }
 }
 
@@ -251,9 +249,28 @@
     width: 100%;
     height: 48px;
   }
-  .edu-divider-character {
-    right: 6%;
-    transform: scale(0.8);
-    transform-origin: top right;
+  .mascot-chatgpt {
+    width: 48px;
+  }
+  .chatgpt-bubble {
+    width: 32px;
+    top: -34px;
+  }
+  .mascot-claude {
+    width: 58px;
+    top: -44px;
+  }
+  .claude-bubble {
+    width: 32px;
+    top: -34px;
+    left: 14px;
+  }
+  .mascot-gemini {
+    width: 50px;
+    top: -58px;
+  }
+  .gemini-bubble {
+    width: 32px;
+    top: -34px;
   }
 }
