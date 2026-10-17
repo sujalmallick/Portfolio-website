@@ -1900,11 +1900,46 @@ footer {
 .mascot-bubble {
   position: absolute;
   pointer-events: none;
-  z-index: 4;
+  z-index: 6;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   transition: transform 0.22s ease-out;
+}
+
+/* Common Mascot Eye Stacking & Blinking */
+.mascot-eyes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mascot-eye {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
+.mascot-eye--open {
+  opacity: 1;
+}
+
+.mascot-eye--blink {
+  opacity: 0;
+}
+
+.mascot-eye--happy {
+  opacity: 0;
 }
 
 /* ── 1. CHATGPT MASCOT (About Bio Margin) ────────────────────────────── */
@@ -1933,6 +1968,55 @@ footer {
   transition: transform 0.22s ease-out;
 }
 
+.chatgpt-core-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Cybernetic Wings / Floating Limbs */
+.chatgpt-wing {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.chatgpt-wing--left {
+  left: 0%;
+  top: 25.8%;
+  width: 26.6%;
+  height: 48.4%;
+  transform-origin: 90% 40%;
+  animation: chatgpt-wing-l 2.8s ease-in-out infinite;
+}
+
+.chatgpt-wing--right {
+  right: 0%;
+  top: 25.8%;
+  width: 24.8%;
+  height: 48.4%;
+  transform-origin: 10% 40%;
+  animation: chatgpt-wing-r 3.2s ease-in-out infinite;
+}
+
+/* Blinking Eye Cycle */
+.chatgpt-eyes .mascot-eye--open {
+  animation: chatgpt-blink-open 4.2s steps(1) infinite;
+}
+
+.chatgpt-eyes .mascot-eye--blink {
+  animation: chatgpt-blink-closed 4.2s steps(1) infinite;
+}
+
+@keyframes chatgpt-blink-open {
+  0%, 91.99%, 100% { opacity: 1; }
+  92%, 95.99%      { opacity: 0; }
+}
+
+@keyframes chatgpt-blink-closed {
+  0%, 91.99%, 100% { opacity: 0; }
+  92%, 95.99%      { opacity: 1; }
+}
+
 /* Pointer proximity / hover tilt */
 .mascot-chatgpt:hover .chatgpt-body {
   transform: translateY(-4px) rotate(calc(var(--tilt-x, 0deg) - 4deg)) scale(1.06);
@@ -1940,6 +2024,29 @@ footer {
 
 .mascot-chatgpt:hover .chatgpt-bubble {
   transform: translateX(-50%) translateY(-3px) scale(1.08);
+}
+
+.mascot-chatgpt:hover .chatgpt-eyes .mascot-eye--open,
+.mascot-chatgpt:hover .chatgpt-eyes .mascot-eye--blink,
+.mascot-chatgpt.is-acting .chatgpt-eyes .mascot-eye--open,
+.mascot-chatgpt.is-acting .chatgpt-eyes .mascot-eye--blink {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.mascot-chatgpt:hover .chatgpt-eyes .mascot-eye--happy,
+.mascot-chatgpt.is-acting .chatgpt-eyes .mascot-eye--happy {
+  opacity: 1 !important;
+}
+
+.mascot-chatgpt:hover .chatgpt-wing--left,
+.mascot-chatgpt.is-acting .chatgpt-wing--left {
+  animation: chatgpt-wing-l-fast 0.5s ease-in-out infinite;
+}
+
+.mascot-chatgpt:hover .chatgpt-wing--right,
+.mascot-chatgpt.is-acting .chatgpt-wing--right {
+  animation: chatgpt-wing-r-fast 0.5s ease-in-out infinite;
 }
 
 /* Thruster flare beneath ChatGPT */
@@ -1984,6 +2091,28 @@ footer {
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
+@keyframes chatgpt-wing-l {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30%      { transform: rotate(7deg) translateY(-2px); }
+  75%      { transform: rotate(-5deg) translateY(1px); }
+}
+
+@keyframes chatgpt-wing-r {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  35%      { transform: rotate(-7deg) translateY(-2px); }
+  80%      { transform: rotate(5deg) translateY(1px); }
+}
+
+@keyframes chatgpt-wing-l-fast {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(14deg); }
+}
+
+@keyframes chatgpt-wing-r-fast {
+  0%, 100% { transform: rotate(6deg); }
+  50%      { transform: rotate(-14deg); }
+}
+
 @keyframes chatgpt-thruster-pulse {
   0%, 100% { opacity: 0.45; transform: translateX(-50%) scale(0.9); }
   50%      { opacity: 0.95; transform: translateX(-50%) scale(1.25); }
@@ -1997,10 +2126,9 @@ footer {
   100% { transform: translateY(0) scale(1); }
 }
 
-
 /* ── 2. CLAUDE MASCOT (Perched on About/Exp Divider) ─────────────────── */
 .mascot-claude {
-  top: -63px; /* Feet sit directly on the section divider line */
+  top: -46px; /* Torso perched directly on divider line */
   left: clamp(36px, 12vw, 130px);
   width: 84px;
   height: auto;
@@ -2023,18 +2151,115 @@ footer {
   transition: transform 0.22s ease-out;
 }
 
+.claude-torso {
+  position: relative;
+  width: 100%;
+  z-index: 3;
+}
+
 .claude-main-img {
   width: 100%;
   height: auto;
 }
 
-/* Hover reaction: antenna spring, happy bounce */
+/* Dangling legs hanging below divider line */
+.claude-legs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1; /* Sits behind bottom torso perch */
+}
+
+.claude-leg {
+  position: absolute;
+  width: 12.7%;
+  height: 42.2%;
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+.claude-leg--left {
+  left: 29%;
+  top: 80%;
+  animation: claude-leg-swing-l 2.7s ease-in-out infinite;
+}
+
+.claude-leg--right {
+  left: 51%;
+  top: 80%;
+  animation: claude-leg-swing-r 3.3s ease-in-out infinite;
+}
+
+/* Front waving right arm / hand */
+.claude-arm {
+  position: absolute;
+  right: -7%;
+  bottom: 4%;
+  width: 21.8%;
+  height: 36.6%;
+  transform-origin: 20% 90%;
+  pointer-events: none;
+  z-index: 5;
+  animation: claude-hand-wave 2.4s ease-in-out infinite;
+}
+
+/* Blinking Eye Cycle */
+.claude-eyes .mascot-eye--open {
+  animation: claude-blink-open 3.8s steps(1) infinite;
+}
+
+.claude-eyes .mascot-eye--blink {
+  animation: claude-blink-closed 3.8s steps(1) infinite;
+}
+
+@keyframes claude-blink-open {
+  0%, 87.99%, 100% { opacity: 1; }
+  88%, 91.99%      { opacity: 0; }
+}
+
+@keyframes claude-blink-closed {
+  0%, 87.99%, 100% { opacity: 0; }
+  88%, 91.99%      { opacity: 1; }
+}
+
+/* Hover reaction: antenna spring, happy bounce, excited hand wave & leg kicks */
 .mascot-claude:hover .claude-body {
   transform: translateY(-3px) rotate(calc(var(--tilt-x, 0deg) + 3deg)) scale(1.05);
 }
 
 .mascot-claude:hover .claude-bubble {
   transform: translateY(-4px) scale(1.08);
+}
+
+.mascot-claude:hover .claude-eyes .mascot-eye--open,
+.mascot-claude:hover .claude-eyes .mascot-eye--blink,
+.mascot-claude.is-acting .claude-eyes .mascot-eye--open,
+.mascot-claude.is-acting .claude-eyes .mascot-eye--blink {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.mascot-claude:hover .claude-eyes .mascot-eye--happy,
+.mascot-claude.is-acting .claude-eyes .mascot-eye--happy {
+  opacity: 1 !important;
+}
+
+.mascot-claude:hover .claude-leg--left,
+.mascot-claude.is-acting .claude-leg--left {
+  animation: claude-leg-kick-l 0.65s ease-in-out infinite;
+}
+
+.mascot-claude:hover .claude-leg--right,
+.mascot-claude.is-acting .claude-leg--right {
+  animation: claude-leg-kick-r 0.65s ease-in-out infinite;
+}
+
+.mascot-claude:hover .claude-arm,
+.mascot-claude.is-acting .claude-arm {
+  animation: claude-hand-wave-fast 0.5s ease-in-out infinite;
 }
 
 /* Click reaction: cheerful jump! */
@@ -2064,6 +2289,40 @@ footer {
   65%      { transform: translateY(0.5px) rotate(-0.8deg); }
 }
 
+@keyframes claude-leg-swing-l {
+  0%, 100% { transform: rotate(0deg); }
+  35%      { transform: rotate(-11deg); }
+  75%      { transform: rotate(7deg); }
+}
+
+@keyframes claude-leg-swing-r {
+  0%, 100% { transform: rotate(0deg); }
+  40%      { transform: rotate(10deg); }
+  85%      { transform: rotate(-8deg); }
+}
+
+@keyframes claude-leg-kick-l {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(18deg); }
+}
+
+@keyframes claude-leg-kick-r {
+  0%, 100% { transform: rotate(4deg); }
+  50%      { transform: rotate(-18deg); }
+}
+
+@keyframes claude-hand-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-14deg); }
+  50%      { transform: rotate(6deg); }
+  75%      { transform: rotate(-16deg); }
+}
+
+@keyframes claude-hand-wave-fast {
+  0%, 100% { transform: rotate(-22deg); }
+  50%      { transform: rotate(10deg); }
+}
+
 @keyframes claude-click-jump {
   0%   { transform: scale(1); }
   28%  { transform: translateY(-15px) scale(1.12) rotate(-3deg); }
@@ -2072,8 +2331,7 @@ footer {
   100% { transform: translateY(0) scale(1); }
 }
 
-
-/* ── 3. GEMINI MASCOT (Floating above Exp/Projects Divider) ───────────── */
+/* ── 3. GEMINI MASCOT (Floating beside Google Skills Badge) ──────────── */
 .mascot-gemini {
   top: -16px;
   right: -68px;
@@ -2103,13 +2361,57 @@ footer {
   transition: transform 0.24s ease-out, filter 0.24s ease-out;
 }
 
-/* Interactive constellation sparkle container positioned near Gemini's hand */
+.gemini-explorer-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.gemini-main-img {
+  width: 100%;
+  height: auto;
+}
+
+/* Gesturing left hand */
+.gemini-hand {
+  position: absolute;
+  left: 18%;
+  top: 50.5%;
+  width: 20.7%;
+  height: 25.3%;
+  transform-origin: 85% 50%;
+  pointer-events: none;
+  z-index: 4;
+  animation: gemini-hand-gesture 3.2s ease-in-out infinite;
+}
+
+/* Independent Levitating Cosmic Star Companion */
+.gemini-star-companion {
+  position: absolute;
+  left: -10%;
+  top: 12%;
+  width: 32.4%;
+  height: 34%;
+  pointer-events: none;
+  z-index: 5;
+  animation: gemini-star-levitate 3.8s ease-in-out infinite;
+}
+
+.gemini-star-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
 .gemini-star-sparkler {
   position: absolute;
-  top: 14%;
-  left: 2%;
-  width: 24px;
-  height: 24px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
@@ -2128,6 +2430,25 @@ footer {
 .c-spark-3 { top: 16px; left: 12px; background: #3B82F6; }
 .c-spark-4 { top: 6px; left: 0px; background: #F59E0B; }
 
+/* Blinking Eye Cycle */
+.gemini-eyes .mascot-eye--open {
+  animation: gemini-blink-open 4.6s steps(1) infinite;
+}
+
+.gemini-eyes .mascot-eye--blink {
+  animation: gemini-blink-closed 4.6s steps(1) infinite;
+}
+
+@keyframes gemini-blink-open {
+  0%, 84.99%, 100% { opacity: 1; }
+  85%, 88.99%      { opacity: 0; }
+}
+
+@keyframes gemini-blink-closed {
+  0%, 84.99%, 100% { opacity: 0; }
+  85%, 88.99%      { opacity: 1; }
+}
+
 /* Hover: Visor gleam & star shimmer */
 .mascot-gemini:hover .gemini-body {
   transform: translateY(-4px) rotate(calc(var(--tilt-x, 0deg) + 4deg)) scale(1.07);
@@ -2136,6 +2457,29 @@ footer {
 
 .mascot-gemini:hover .gemini-bubble {
   transform: translateY(-4px) scale(1.08);
+}
+
+.mascot-gemini:hover .gemini-eyes .mascot-eye--open,
+.mascot-gemini:hover .gemini-eyes .mascot-eye--blink,
+.mascot-gemini.is-acting .gemini-eyes .mascot-eye--open,
+.mascot-gemini.is-acting .gemini-eyes .mascot-eye--blink {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.mascot-gemini:hover .gemini-eyes .mascot-eye--happy,
+.mascot-gemini.is-acting .gemini-eyes .mascot-eye--happy {
+  opacity: 1 !important;
+}
+
+.mascot-gemini:hover .gemini-hand,
+.mascot-gemini.is-acting .gemini-hand {
+  animation: gemini-hand-gesture-fast 0.6s ease-in-out infinite;
+}
+
+.mascot-gemini:hover .gemini-star-companion,
+.mascot-gemini.is-acting .gemini-star-companion {
+  animation: gemini-star-burst 0.7s ease-in-out infinite;
 }
 
 /* Click: Constellation sparkle animation */
@@ -2175,6 +2519,43 @@ footer {
   100% { transform: translate(0px, 0px) rotate(0deg); }
 }
 
+@keyframes gemini-hand-gesture {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  40%      { transform: rotate(-10deg) translateY(-2px); }
+  75%      { transform: rotate(5deg) translateY(1px); }
+}
+
+@keyframes gemini-hand-gesture-fast {
+  0%, 100% { transform: rotate(-18deg) translateY(-3px); }
+  50%      { transform: rotate(8deg) translateY(1px); }
+}
+
+@keyframes gemini-star-levitate {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 3px rgba(34, 211, 238, 0.45));
+  }
+  35% {
+    transform: translate(2px, -6px) scale(1.08) rotate(8deg);
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.75));
+  }
+  75% {
+    transform: translate(-3px, -2px) scale(0.96) rotate(-6deg);
+    filter: drop-shadow(0 0 3px rgba(139, 92, 246, 0.5));
+  }
+}
+
+@keyframes gemini-star-burst {
+  0%, 100% {
+    transform: scale(1.1) rotate(0deg);
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.9));
+  }
+  50% {
+    transform: scale(1.3) rotate(18deg);
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 1));
+  }
+}
+
 @keyframes gemini-celestial-surge {
   0%   { transform: scale(1); }
   35%  { transform: translateY(-12px) scale(1.14) rotate(-3deg); filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.7)); }
@@ -2207,10 +2588,19 @@ footer {
   .chatgpt-body,
   .chatgpt-bubble,
   .chatgpt-thruster-glow,
+  .chatgpt-wing--left,
+  .chatgpt-wing--right,
   .claude-body,
   .claude-bubble,
+  .claude-leg--left,
+  .claude-leg--right,
+  .claude-arm,
   .gemini-orbit-wrap,
-  .gemini-bubble {
+  .gemini-bubble,
+  .gemini-hand,
+  .gemini-star-companion,
+  .mascot-eye--open,
+  .mascot-eye--blink {
     animation: none !important;
   }
   .mascot-chatgpt:hover .chatgpt-body,
