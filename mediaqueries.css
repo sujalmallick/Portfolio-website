@@ -37,9 +37,11 @@
 
   /* AI Pixel Mascots — Tablet adjustments */
   .mascot-chatgpt {
-    top: -18px;
-    right: 8px;
-    width: 44px;
+    left: 16px;
+    bottom: -4px;
+    right: auto;
+    top: auto;
+    width: 56px;
   }
   .mascot-claude {
     left: clamp(20px, 6vw, 48px);
@@ -181,13 +183,15 @@
   }
   /* AI Pixel Mascots — Mobile adjustments */
   .mascot-chatgpt {
-    right: 8px;
-    top: -16px;
-    width: 56px;
+    left: 14px;
+    bottom: -4px;
+    right: auto;
+    top: auto;
+    width: 50px;
   }
   .chatgpt-bubble {
-    width: 36px;
-    top: -38px;
+    width: 34px;
+    top: -36px;
   }
   .mascot-claude {
     left: 16px;
@@ -237,11 +241,13 @@
     height: 56px;
   }
   .mascot-chatgpt {
-    width: 48px;
+    left: 12px;
+    bottom: -2px;
+    width: 44px;
   }
   .chatgpt-bubble {
-    width: 32px;
-    top: -34px;
+    width: 30px;
+    top: -32px;
   }
   .mascot-claude {
     width: 56px;

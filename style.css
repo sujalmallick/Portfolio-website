@@ -1907,11 +1907,19 @@ footer {
   transition: transform 0.22s ease-out;
 }
 
-/* ── 1. CHATGPT MASCOT (About Bio Margin) ────────────────────────────── */
+/* ── 1. CHATGPT MASCOT (Beside About Heading 'systems & intelligence') ─ */
+.chatgpt-heading-anchor {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+  vertical-align: baseline;
+}
+
 .mascot-chatgpt {
-  top: 8%;
-  right: -76px;
-  width: 74px;
+  left: 20px;
+  bottom: -6px;
+  width: 68px;
   height: auto;
   z-index: 6;
   pointer-events: auto;
