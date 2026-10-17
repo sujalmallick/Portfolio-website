@@ -387,7 +387,7 @@ document.addEventListener('keydown', function (e) {
 
     var streamSpeed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
     var wSpeed = isOverdrive ? WALK_SPEED * 1.5 : WALK_SPEED;
-    var groundY = height - 4;
+    var groundY = height - 2;
     var robotY = groundY - ROBOT_DRAW_H + 2;
 
     var minPatrolX = Math.max(380, Math.min(width * 0.45, width - 210));
@@ -542,7 +542,7 @@ document.addEventListener('keydown', function (e) {
     // 1. Transparent Clear (Matches page background seamlessly with ZERO rectangular boundary!)
     ctx.clearRect(0, 0, width, height);
 
-    var groundY = height - 4;
+    var groundY = height - 2;
 
     // 2. Integrated Thin Ground Line across full footer
     ctx.fillStyle = '#1c1e24';
@@ -578,238 +578,263 @@ document.addEventListener('keydown', function (e) {
     }
     ctx.globalAlpha = 1.0;
 
-    // 4. LEFT WORKSTATION — pure canvas pixel art (no PNG, no background)
+    // 4. LEFT WORKSTATION — pure canvas pixel art, all elements bottomed at groundY
     (function drawWorkstation() {
-      var gY = groundY; // ground y
-      var S  = 2;       // pixel scale
+      var gY = groundY;
 
-      // ── Amber street lamp (far left) ───────────────────────────────────
-      var lampBaseX = 18, lampPoleH = 52;
-      // pole
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(lampBaseX, gY - lampPoleH, S, lampPoleH);
-      // arm
-      ctx.fillRect(lampBaseX, gY - lampPoleH, 16, S);
-      // housing
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(lampBaseX + 12, gY - lampPoleH - 6, 10, 6);
-      // lens glow
-      var lampGlow = 0.55 + 0.20 * Math.sin(frameCount * 0.045);
-      ctx.fillStyle = 'rgba(245,158,11,' + lampGlow.toFixed(2) + ')';
-      ctx.fillRect(lampBaseX + 14, gY - lampPoleH - 4, 6, 4);
-      // ambient bloom
-      var lg = ctx.createRadialGradient(lampBaseX+17, gY-lampPoleH-2, 1, lampBaseX+17, gY-lampPoleH-2, 28);
-      lg.addColorStop(0, 'rgba(245,158,11,0.14)');
-      lg.addColorStop(1, 'rgba(245,158,11,0)');
-      ctx.fillStyle = lg;
-      ctx.beginPath();
-      ctx.arc(lampBaseX+17, gY-lampPoleH-2, 28, 0, Math.PI*2);
-      ctx.fill();
-
-      // ── Potted plant ────────────────────────────────────────────────────
-      var pX = 46;
-      // pot
-      ctx.fillStyle = '#92400e';
-      ctx.fillRect(pX, gY - 14, 14, 10);
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(pX + 2, gY - 16, 10, 4);
-      // soil
-      ctx.fillStyle = '#451a03';
-      ctx.fillRect(pX + 2, gY - 14, 10, 3);
-      // stems & leaves
-      ctx.fillStyle = '#16a34a';
-      ctx.fillRect(pX + 6, gY - 26, 2, 12);
-      ctx.fillRect(pX + 2, gY - 30, 6, 4);
-      ctx.fillRect(pX + 8, gY - 32, 6, 4);
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(pX + 3, gY - 28, 4, 3);
-      ctx.fillRect(pX + 9, gY - 30, 4, 3);
-
-      // ── Small barrel / crate box (between plant and droid) ─────────────
-      var bX = 74;
+      // ── Amber street lamp ────────────────────────────────────────────────
+      var lmpX = 14, lmpH = 60;
+      // base plate
       ctx.fillStyle = '#374151';
-      ctx.fillRect(bX, gY - 18, 14, 18);
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(bX + 2, gY - 16, 10, 2);
-      ctx.fillRect(bX + 2, gY - 10, 10, 2);
-      ctx.fillRect(bX + 2, gY -  4, 10, 2);
-
-      // ── Mini R2-style droid ─────────────────────────────────────────────
-      var dX = 104;
-      // dome
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(dX + 4, gY - 38, 12, 10);
-      ctx.fillStyle = '#cbd5e1';
-      ctx.fillRect(dX + 2, gY - 30, 16, 2);
-      // body
-      ctx.fillStyle = '#d1d5db';
-      ctx.fillRect(dX + 2, gY - 28, 16, 16);
-      ctx.fillStyle = '#9ca3af';
-      ctx.fillRect(dX + 6, gY - 26, 8, 12);
-      // legs
+      ctx.fillRect(lmpX - 4, gY - 6, 14, 6);
+      // pole
       ctx.fillStyle = '#6b7280';
-      ctx.fillRect(dX + 2, gY - 12, 4, 12);
-      ctx.fillRect(dX + 14, gY - 12, 4, 12);
-      // optic sensor (blinks)
-      if (Math.sin(frameCount * 0.08) > 0.4) {
+      ctx.fillRect(lmpX + 2, gY - lmpH, 4, lmpH - 6);
+      // horizontal arm
+      ctx.fillStyle = '#4b5563';
+      ctx.fillRect(lmpX + 2, gY - lmpH, 22, 3);
+      // lamp head
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(lmpX + 18, gY - lmpH - 10, 14, 10);
+      ctx.fillStyle = '#1f2937';
+      ctx.fillRect(lmpX + 20, gY - lmpH - 8, 10, 6);
+      // amber lens (pulses)
+      var lampGlow = 0.75 + 0.22 * Math.sin(frameCount * 0.045);
+      ctx.fillStyle = 'rgba(251,191,36,' + lampGlow.toFixed(2) + ')';
+      ctx.fillRect(lmpX + 21, gY - lmpH - 7, 8, 4);
+      // bloom
+      var lg = ctx.createRadialGradient(lmpX+25, gY-lmpH-5, 1, lmpX+25, gY-lmpH-5, 32);
+      lg.addColorStop(0, 'rgba(251,191,36,0.18)');
+      lg.addColorStop(1, 'rgba(251,191,36,0)');
+      ctx.fillStyle = lg;
+      ctx.beginPath(); ctx.arc(lmpX+25, gY-lmpH-5, 32, 0, Math.PI*2); ctx.fill();
+
+      // ── Potted plant ─────────────────────────────────────────────────────
+      var pX = 54;
+      // pot body — bottomed at gY
+      ctx.fillStyle = '#f5f5f4';
+      ctx.fillRect(pX,     gY - 16, 18, 12);
+      ctx.fillStyle = '#d6d3d1';
+      ctx.fillRect(pX + 2, gY - 18, 14, 4);
+      // soil
+      ctx.fillStyle = '#3f2d1e';
+      ctx.fillRect(pX + 2, gY - 16, 14, 4);
+      // stem
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(pX + 8, gY - 34, 2, 18);
+      // leaves
+      ctx.fillStyle = '#16a34a';
+      ctx.fillRect(pX + 2, gY - 40, 8, 6);
+      ctx.fillRect(pX + 10, gY - 44, 8, 6);
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(pX + 4,  gY - 38, 6, 4);
+      ctx.fillRect(pX + 12, gY - 42, 6, 4);
+      ctx.fillStyle = '#166534';
+      ctx.fillRect(pX + 2,  gY - 36, 4, 3);
+      ctx.fillRect(pX + 14, gY - 40, 4, 3);
+
+      // ── R2-style droid ───────────────────────────────────────────────────
+      var dX = 92;
+      // legs — bottom at gY
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(dX + 2,  gY - 14, 6, 14);
+      ctx.fillRect(dX + 16, gY - 14, 6, 14);
+      // feet
+      ctx.fillStyle = '#6b7280';
+      ctx.fillRect(dX,      gY - 4, 8, 4);
+      ctx.fillRect(dX + 16, gY - 4, 8, 4);
+      // body — bottom at gY-14
+      ctx.fillStyle = '#d1d5db';
+      ctx.fillRect(dX + 2, gY - 34, 20, 20);
+      ctx.fillStyle = '#e5e7eb';
+      ctx.fillRect(dX + 4, gY - 32, 16, 16);
+      // chest panel
+      ctx.fillStyle = '#6b7280';
+      ctx.fillRect(dX + 7, gY - 30, 10, 12);
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(dX + 9, gY - 28, 6, 8);
+      // shoulder collar
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(dX, gY - 36, 24, 4);
+      // dome
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(dX + 4, gY - 48, 16, 14);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(dX + 2, gY - 38, 20, 4);
+      // visor band
+      ctx.fillStyle = '#1e3a5f';
+      ctx.fillRect(dX + 4, gY - 46, 16, 5);
+      // optic (blinks)
+      if (Math.sin(frameCount * 0.08) > 0.3) {
         ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(dX + 8, gY - 36, 4, 3);
+        ctx.fillRect(dX + 9, gY - 44, 6, 3);
       }
       if ((frameCount % 120) < 18) {
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(dX + 14, gY - 34, 2, 2);
+        ctx.fillRect(dX + 17, gY - 43, 2, 2);
       }
 
-      // ── Green-code CRT monitor on desk ──────────────────────────────────
-      var mX = 148;
-      var deskH = 18; // desk surface height from ground
-      // desk surface
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(mX - 4, gY - deskH, 52, 4);
+      // ── CRT monitor on desk ──────────────────────────────────────────────
+      var mX = 138;
+      var dkH = 14; // desk height
+      // desk top
       ctx.fillStyle = '#92400e';
-      ctx.fillRect(mX - 4, gY - deskH + 2, 52, 2);
-      // desk legs
+      ctx.fillRect(mX - 6, gY - dkH, 58, 4);
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(mX - 2, gY - deskH + 4, 4, deskH - 4);
-      ctx.fillRect(mX + 42, gY - deskH + 4, 4, deskH - 4);
-      // monitor bezel (sits on desk)
+      ctx.fillRect(mX - 6, gY - dkH, 58, 2);
+      // desk legs
+      ctx.fillStyle = '#6b3a1f';
+      ctx.fillRect(mX - 4,  gY - dkH + 4, 5, dkH - 4);
+      ctx.fillRect(mX + 45, gY - dkH + 4, 5, dkH - 4);
+      // monitor neck / stand
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(mX + 20, gY - dkH - 6, 6, 6);
+      ctx.fillRect(mX + 16, gY - dkH - 8, 14, 3);
+      // monitor outer bezel
       ctx.fillStyle = '#1f2937';
-      ctx.fillRect(mX, gY - deskH - 42, 42, 42);
+      ctx.fillRect(mX + 2, gY - dkH - 52, 42, 46);
+      // inner bezel
       ctx.fillStyle = '#111827';
-      ctx.fillRect(mX + 2, gY - deskH - 40, 38, 38);
-      // screen (green)
+      ctx.fillRect(mX + 4, gY - dkH - 50, 38, 42);
+      // screen
       ctx.fillStyle = '#052e16';
-      ctx.fillRect(mX + 4, gY - deskH - 38, 34, 34);
-      // scanlines shimmer
-      if ((frameCount % 160) < 20) {
-        ctx.fillStyle = 'rgba(74,222,128,0.18)';
-        ctx.fillRect(mX + 4, gY - deskH - 24, 34, 3);
-      }
+      ctx.fillRect(mX + 6, gY - dkH - 48, 34, 38);
       // code lines
-      ctx.fillStyle = 'rgba(74,222,128,0.6)';
-      ctx.fillRect(mX + 6,  gY - deskH - 36, 16, 2);
-      ctx.fillRect(mX + 6,  gY - deskH - 32, 22, 2);
-      ctx.fillRect(mX + 6,  gY - deskH - 28, 12, 2);
-      ctx.fillRect(mX + 10, gY - deskH - 24, 20, 2);
-      ctx.fillRect(mX + 6,  gY - deskH - 20, 18, 2);
-      ctx.fillRect(mX + 6,  gY - deskH - 16, 10, 2);
+      ctx.fillStyle = 'rgba(74,222,128,0.65)';
+      ctx.fillRect(mX + 8,  gY - dkH - 46, 18, 2);
+      ctx.fillRect(mX + 8,  gY - dkH - 42, 26, 2);
+      ctx.fillRect(mX + 8,  gY - dkH - 38, 14, 2);
+      ctx.fillRect(mX + 12, gY - dkH - 34, 22, 2);
+      ctx.fillRect(mX + 8,  gY - dkH - 30, 20, 2);
+      ctx.fillRect(mX + 8,  gY - dkH - 26, 10, 2);
+      ctx.fillRect(mX + 8,  gY - dkH - 22, 16, 2);
+      // scan shimmer
+      if ((frameCount % 160) < 20) {
+        ctx.fillStyle = 'rgba(74,222,128,0.15)';
+        ctx.fillRect(mX + 6, gY - dkH - 36, 34, 3);
+      }
       // blinking cursor
       if ((frameCount % 50) < 26) {
         ctx.fillStyle = '#4ade80';
-        ctx.fillRect(mX + 6, gY - deskH - 12, 6, 3);
+        ctx.fillRect(mX + 8, gY - dkH - 18, 6, 3);
       }
-      // monitor neck
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(mX + 18, gY - deskH - 2, 6, 4);
+      // power LED
+      ctx.fillStyle = (frameCount % 60) < 30 ? '#22d3ee' : '#164e63';
+      ctx.fillRect(mX + 38, gY - dkH - 8, 2, 2);
 
-      // ── Server rack ─────────────────────────────────────────────────────
-      var rX = 212;
-      // chassis
+      // ── Server rack ──────────────────────────────────────────────────────
+      var rX = 206;
+      var rkH = 80; // rack height — bottom at gY
+      // outer chassis
       ctx.fillStyle = '#1e293b';
-      ctx.fillRect(rX, gY - 70, 40, 70);
+      ctx.fillRect(rX, gY - rkH, 46, rkH);
+      // inner panel
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(rX + 2, gY - 68, 36, 66);
-      // rack bays (4)
+      ctx.fillRect(rX + 2, gY - rkH + 2, 42, rkH - 4);
+      // 4 rack bays
       for (var bay = 0; bay < 4; bay++) {
-        var byY = gY - 66 + bay * 16;
+        var byY = gY - rkH + 4 + bay * 18;
+        // bay face
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(rX + 3, byY, 34, 14);
+        ctx.fillRect(rX + 3, byY, 40, 16);
+        // bay top stripe
         ctx.fillStyle = '#334155';
-        ctx.fillRect(rX + 4, byY + 1, 32, 2);
-        // LEDs per bay
+        ctx.fillRect(rX + 4, byY + 1, 38, 2);
+        // drive slot
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(rX + 28, byY + 5, 12, 7);
+        // LED indicators
         for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
           var led = serverLeds[lIdx];
           if (Math.floor(led.yOff / 12) === bay) {
             var isOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
             if (isOn) {
               ctx.fillStyle = led.color;
-              ctx.fillRect(rX + 4 + led.xOff, byY + 4, 2, 2);
+              ctx.fillRect(rX + 5 + led.xOff, byY + 5, 2, 2);
             }
           }
         }
-        // drive slot
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(rX + 24, byY + 4, 10, 6);
       }
-      // vent holes
+      // vent strip at bottom
       ctx.fillStyle = '#0f172a';
-      for (var vh = 0; vh < 5; vh++) {
-        ctx.fillRect(rX + 6 + vh * 6, gY - 6, 3, 4);
+      for (var vt = 0; vt < 6; vt++) {
+        ctx.fillRect(rX + 4 + vt * 7, gY - 8, 4, 5);
       }
-
-      // ground shadow (thin, subtle)
-      ctx.fillStyle = 'rgba(0,0,0,0.18)';
-      ctx.fillRect(lampBaseX - 4, gY, 270, 2);
+      // rack handles
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(rX + 2, gY - rkH + 4, 2, rkH - 12);
+      ctx.fillRect(rX + 42, gY - rkH + 4, 2, rkH - 12);
     })();
 
-    // 5. RIGHT PROPS — pure canvas pixel art (no PNG, no background)
+    // 5. RIGHT PROPS — pure canvas pixel art, all elements bottomed at groundY
     (function drawRightProps() {
       var gY = groundY;
-      var rBase = width - 160; // anchor
+      var rBase = width - 148;
 
-      // ── Rocks / rubble ──────────────────────────────────────────────────
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(rBase,      gY - 6,  14, 6);
-      ctx.fillRect(rBase + 18, gY - 4,  10, 4);
+      // ── Scattered rocks ──────────────────────────────────────────────────
       ctx.fillStyle = '#4b5563';
-      ctx.fillRect(rBase + 2,  gY - 8,  8,  4);
-      ctx.fillRect(rBase + 20, gY - 6,  6,  3);
+      ctx.fillRect(rBase,      gY - 8,  16, 8);
+      ctx.fillRect(rBase + 20, gY - 5,  12, 5);
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(rBase + 4,  gY - 10,  8, 4);
+      ctx.fillRect(rBase + 22, gY - 7,   6, 3);
+      ctx.fillStyle = '#6b7280';
+      ctx.fillRect(rBase + 2,  gY - 6,   6, 2);
 
       // ── Wooden crate ─────────────────────────────────────────────────────
       var cX = rBase + 36;
-      ctx.fillStyle = '#92400e';
-      ctx.fillRect(cX, gY - 28, 28, 28);
-      ctx.fillStyle = '#78350f';
-      // cross planks
-      ctx.fillRect(cX, gY - 16, 28, 3);
-      ctx.fillRect(cX + 12, gY - 28, 3, 28);
-      // corner braces
-      ctx.fillStyle = '#6b7280';
-      ctx.fillRect(cX, gY - 28, 4, 4);
-      ctx.fillRect(cX + 24, gY - 28, 4, 4);
-      ctx.fillRect(cX, gY - 4, 4, 4);
-      ctx.fillRect(cX + 24, gY - 4, 4, 4);
+      // main body
+      ctx.fillStyle = '#a16207';
+      ctx.fillRect(cX, gY - 32, 32, 32);
+      // wood grain planks
+      ctx.fillStyle = '#854d0e';
+      ctx.fillRect(cX,      gY - 20, 32, 3);
+      ctx.fillRect(cX + 14, gY - 32, 3, 32);
+      // metal corner braces
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(cX,      gY - 32, 5, 5);
+      ctx.fillRect(cX + 27, gY - 32, 5, 5);
+      ctx.fillRect(cX,      gY - 5,  5, 5);
+      ctx.fillRect(cX + 27, gY - 5,  5, 5);
+      // highlight top edge
+      ctx.fillStyle = '#ca8a04';
+      ctx.fillRect(cX + 1, gY - 31, 30, 2);
 
-      // ── Sparse grass tufts ───────────────────────────────────────────────
-      ctx.fillStyle = '#15803d';
-      ctx.fillRect(rBase + 72, gY - 4, 2, 4);
-      ctx.fillRect(rBase + 76, gY - 6, 2, 6);
-      ctx.fillRect(rBase + 80, gY - 3, 2, 3);
-      ctx.fillStyle = '#16a34a';
-      ctx.fillRect(rBase + 74, gY - 8, 2, 4);
+      // ── Rocks right of crate ─────────────────────────────────────────────
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(rBase + 72, gY - 7, 14, 7);
+      ctx.fillRect(rBase + 90, gY - 4,  8, 4);
+      ctx.fillStyle = '#4b5563';
+      ctx.fillRect(rBase + 76, gY - 9,  6, 4);
 
-      // ── Standing lantern ─────────────────────────────────────────────────
-      var lX = rBase + 88;
-      var lPoleH = 50;
+      // ── Amber standing lantern ────────────────────────────────────────────
+      var lX = rBase + 108;
+      var lH  = 62;
+      // base plate
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(lX - 4, gY - 6, 16, 6);
       // pole
+      ctx.fillStyle = '#6b7280';
+      ctx.fillRect(lX + 2, gY - lH, 4, lH - 6);
+      // horizontal arm
       ctx.fillStyle = '#4b5563';
-      ctx.fillRect(lX + 4, gY - lPoleH, 2, lPoleH);
-      // base
+      ctx.fillRect(lX - 8, gY - lH, 4, 3);
+      ctx.fillRect(lX - 8, gY - lH, 22, 3);
+      // lamp head
       ctx.fillStyle = '#374151';
-      ctx.fillRect(lX, gY - 8, 10, 8);
-      // housing
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(lX + 1, gY - lPoleH - 10, 8, 10);
-      ctx.fillStyle = '#4b5563';
-      ctx.fillRect(lX + 3, gY - lPoleH - 8, 4, 8);
+      ctx.fillRect(lX - 10, gY - lH - 10, 14, 10);
+      ctx.fillStyle = '#1f2937';
+      ctx.fillRect(lX - 8,  gY - lH - 8,  10, 6);
       // flame flicker
-      var flameBob = Math.sin(frameCount * 0.28) * 1.5;
-      ctx.fillStyle = '#f59e0b';
-      ctx.fillRect(lX + 3, Math.round(gY - lPoleH - 8 + flameBob), 4, 5);
-      ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(lX + 4, Math.round(gY - lPoleH - 10 + flameBob), 2, 4);
-      // warm bloom
-      var tg = ctx.createRadialGradient(lX+5, gY-lPoleH-8, 1, lX+5, gY-lPoleH-8, 22);
-      tg.addColorStop(0, 'rgba(245,158,11,0.18)');
-      tg.addColorStop(1, 'rgba(245,158,11,0)');
+      var flameBob = Math.round(Math.sin(frameCount * 0.28) * 1.5);
+      ctx.fillStyle = 'rgba(251,191,36,' + (0.75 + 0.22 * Math.sin(frameCount * 0.045)).toFixed(2) + ')';
+      ctx.fillRect(lX - 7, gY - lH - 7 + flameBob, 8, 4);
+      // bloom
+      var tg = ctx.createRadialGradient(lX-3, gY-lH-5, 1, lX-3, gY-lH-5, 28);
+      tg.addColorStop(0, 'rgba(251,191,36,0.16)');
+      tg.addColorStop(1, 'rgba(251,191,36,0)');
       ctx.fillStyle = tg;
-      ctx.beginPath();
-      ctx.arc(lX+5, gY-lPoleH-8, 22, 0, Math.PI*2);
-      ctx.fill();
-
-      // ground shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.14)';
-      ctx.fillRect(rBase - 4, gY, 130, 2);
+      ctx.beginPath(); ctx.arc(lX-3, gY-lH-5, 28, 0, Math.PI*2); ctx.fill();
     })();
 
     // 6. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Stream)
@@ -939,7 +964,7 @@ document.addEventListener('keydown', function (e) {
       isOverdrive = true;
       overdriveTimer = 90; // ~1.5s overdrive
       recoilOffset = 3.6;
-      var groundY = height - 4;
+      var groundY = height - 2;
       var ry = groundY - ROBOT_DRAW_H + 2;
       var muzzleTipX = robotX + BARREL_OFFSET_X;
       var muzzleTipY = ry + BARREL_OFFSET_Y;
