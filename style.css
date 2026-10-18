@@ -202,6 +202,14 @@ section {
   max-width: fit-content;
 }
 
+.section-header--with-mascot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: clamp(1.5rem, 3.5vw, 3rem);
+  max-width: 100%;
+}
+
 .section-label {
   display: block;
   font-size: 0.68rem;
@@ -561,10 +569,10 @@ section {
 /* Retro Pixel Programmer Sitting on Education Divider */
 .edu-divider-character {
   position: absolute;
-  top: -50px; /* Ground contact aligned precisely with top divider line */
+  top: -39px; /* Ground contact aligned precisely with top divider line */
   right: 6%;
-  width: 63px;
-  height: 84px;
+  width: 51px;
+  height: 68px;
   pointer-events: none;
   z-index: 5;
 }
@@ -577,8 +585,6 @@ section {
   background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
   animation: edu-programmer-anim 2.4s steps(1) infinite;
 }
 
@@ -1321,6 +1327,7 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
+  padding-top: 1.25rem;
 }
 
 /* Roaming Retro Linux Tux Penguin Track & Sprite */
@@ -1339,15 +1346,13 @@ section {
   position: absolute;
   top: 0;
   left: 0;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   background-image: url('./assets/pixel-tux-sheet.png');
-  background-size: 176px 264px; /* 4 columns (176px) x 6 rows (264px) */
+  background-size: 144px 216px; /* 4 columns (144px) x 6 rows (216px) */
   background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
   transform-origin: bottom center;
   transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1);
   pointer-events: auto;
@@ -1573,41 +1578,138 @@ footer {
   z-index: 4;
 }
 
-/* Interactive Autonomous Retro Droid (Patrols 5% to 30%) */
-.prop-droid {
-  position: absolute;
-  bottom: -5px;
+/* ==========================================================================
+   WASTELAND SERVICE DROID (Articulated 16-Bit Caterpillar Unit)
+   ========================================================================== */
+.footer-prop.prop-droid {
   left: 0;
-  width: 32px;
-  height: 36px;
+  bottom: 0;
+  width: 58px;
+  height: 60px;
   z-index: 5;
   pointer-events: auto;
   cursor: pointer;
+  transform: translate3d(65px, 0, 0);
+  will-change: transform;
 }
 
 .footer-droid-inner {
   position: relative;
-  width: 32px;
-  height: 36px;
+  width: 58px;
+  height: 60px;
 }
 
 .footer-droid-flipper {
   position: relative;
-  width: 32px;
-  height: 36px;
+  width: 58px;
+  height: 60px;
   transform-origin: 50% 100%;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .footer-droid-sprite {
-  width: 32px;
-  height: 36px;
-  background-image: url('./assets/footer-droid-sheet.png');
-  background-size: 288px 36px;
+  width: 58px;
+  height: 60px;
+  background-image: url('./assets/mascot-service-droid-sheet.png');
+  background-size: 232px 60px; /* 4 frames x 58px width */
   background-repeat: no-repeat;
   background-position: 0px 0px;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65));
+  transition: filter 0.3s ease;
+}
+
+/* 1. Moving State: 4-Frame Articulated Stepping & Tread Roll */
+.footer-droid-inner.is-moving .footer-droid-sprite {
+  animation: droidWalkSteps 0.76s steps(4) infinite;
+}
+
+@keyframes droidWalkSteps {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -232px;
+  }
+}
+
+/* 2. Idle State: Rest on Neutral Frame with Gentle Chassis Breathing */
+.footer-droid-inner.is-idle .footer-droid-sprite {
+  background-position-x: 0px;
+  animation: droidIdleBreath 3.4s infinite ease-in-out;
+}
+
+@keyframes droidIdleBreath {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 4px rgba(56, 189, 248, 0.35));
+  }
+  50% {
+    transform: translateY(-2.5px) scale(1.015);
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.85));
+  }
+}
+
+/* 3. Interactive Happy Hop on Click */
+.footer-droid-inner.is-happy {
+  animation: droidHappyHop 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes droidHappyHop {
+  0% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-12px) rotate(-3deg) scale(1.05); }
+  50% { transform: translateY(-6px) rotate(3deg) scale(1.02); }
+  75% { transform: translateY(-2px) rotate(-1deg); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* Responsive Scaling */
+@media (max-width: 899px) {
+  .footer-prop.prop-droid,
+  .footer-droid-inner,
+  .footer-droid-flipper,
+  .footer-droid-sprite {
+    width: 48px;
+    height: 50px;
+  }
+  .footer-droid-sprite {
+    background-size: 192px 50px; /* 4 x 48px */
+  }
+  @keyframes droidWalkSteps {
+    from { background-position-x: 0px; }
+    to { background-position-x: -192px; }
+  }
+}
+
+@media (max-width: 599px) {
+  .footer-prop.prop-droid,
+  .footer-droid-inner,
+  .footer-droid-flipper,
+  .footer-droid-sprite {
+    width: 40px;
+    height: 42px;
+  }
+  .footer-droid-sprite {
+    background-size: 160px 42px; /* 4 x 40px */
+  }
+  @keyframes droidWalkSteps {
+    from { background-position-x: 0px; }
+    to { background-position-x: -160px; }
+  }
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  .footer-droid-inner.is-moving .footer-droid-sprite,
+  .footer-droid-inner.is-idle .footer-droid-sprite,
+  .footer-droid-inner.is-happy {
+    animation: none !important;
+  }
+  .footer-droid-sprite {
+    background-position-x: 0px !important;
+  }
 }
 
 /* Terminator Character & Code Projectiles Wrapper (Patrols clear gap 32% to 54%) */
@@ -2556,67 +2658,136 @@ footer {
   -ms-interpolation-mode: nearest-neighbor;
 }
 
-/* ── 1. STAR WARS STARFIGHTER DEEP-SPACE ASSET ────────────────────────── */
-.pixel-starfighter-drift-wrap {
+/* ── 1. STAR WARS STARFIGHTER DEEP-SPACE ASSET (PROJECTS SECTION) ──────── */
+.pixel-starfighter-flight-wrap {
   position: absolute;
-  top: 14%;
-  right: 14%;
-  width: 105px;
-  height: 60px;
+  top: 135px;
+  right: 4%;
+  width: 84px;
+  height: 48px;
   pointer-events: none;
-  z-index: 1; /* Sits behind profile-inner (z-index 2) */
-  animation: starfighterDrift 24s ease-in-out infinite alternate;
+  z-index: 1; /* Sits in background behind project cards (z-index 2) */
+  animation: starfighterPoweredFlight 22s cubic-bezier(0.42, 0.05, 0.58, 0.95) infinite;
 }
 
 .pixel-starfighter-bank-wrap {
+  position: relative;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
-  animation: starfighterBank 12s ease-in-out infinite alternate;
+  filter: none !important; /* STRICT: Broad cyan glow completely removed */
 }
 
 .pixel-starfighter-img {
-  width: 105px;
-  height: 60px;
+  width: 84px;
+  height: 48px;
   display: block;
 }
 
-@keyframes starfighterDrift {
-  0%   { transform: translate3d(0, 0, 0); }
-  35%  { transform: translate3d(-18px, 12px, 0); }
-  70%  { transform: translate3d(-8px, -14px, 0); }
-  100% { transform: translate3d(-26px, 6px, 0); }
+/* Directional Thruster Exhaust Plumes (Trailing behind rear engine bells along -145° vector) */
+.starfighter-thruster {
+  position: absolute;
+  width: 12px;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0) 0%, rgba(56, 189, 248, 0.75) 35%, #ffffff 88%, #ffffff 100%);
+  border-radius: 2px 4px 4px 2px;
+  transform-origin: 100% 50%;
+  transform: rotate(35deg);
+  animation: starfighterThrusterFlicker 0.18s ease-in-out infinite alternate;
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(34, 211, 238, 0.6);
 }
 
-@keyframes starfighterBank {
-  0%   { transform: rotate(0deg); }
-  50%  { transform: rotate(2.5deg); }
-  100% { transform: rotate(-2.5deg); }
+.starfighter-thruster.plume-upper {
+  top: 5%;
+  left: 41%;
+  margin-left: -12px;
+  margin-top: -2px;
+}
+
+.starfighter-thruster.plume-lower {
+  top: 38%;
+  left: 5%;
+  margin-left: -12px;
+  margin-top: -2px;
+}
+
+@keyframes starfighterThrusterFlicker {
+  0% {
+    transform: rotate(35deg) scaleX(0.85) scaleY(0.9);
+    opacity: 0.82;
+  }
+  50% {
+    transform: rotate(35deg) scaleX(1.25) scaleY(1.15);
+    opacity: 1.0;
+  }
+  100% {
+    transform: rotate(35deg) scaleX(0.92) scaleY(0.95);
+    opacity: 0.88;
+  }
+}
+
+@keyframes starfighterPoweredFlight {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  20% {
+    /* Powered acceleration burn: forward-right with subtle bank */
+    transform: translate3d(22px, 12px, 0) rotate(2.5deg);
+  }
+  40% {
+    /* Gentle port banking / level cruise */
+    transform: translate3d(36px, 4px, 0) rotate(-3.5deg);
+  }
+  60% {
+    /* Gentle climbing glide */
+    transform: translate3d(16px, -18px, 0) rotate(-5deg);
+  }
+  80% {
+    /* Trajectory turn back toward start */
+    transform: translate3d(-12px, -8px, 0) rotate(2deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
 }
 
 @media (max-width: 768px) {
-  .pixel-starfighter-drift-wrap {
-    top: 10%;
-    right: 8%;
-    width: 75px;
-    height: 43px;
+  .pixel-starfighter-flight-wrap {
+    top: 105px;
+    right: 4%;
+    width: 68px;
+    height: 39px;
   }
   .pixel-starfighter-img {
-    width: 75px;
-    height: 43px;
+    width: 68px;
+    height: 39px;
+  }
+  .starfighter-thruster {
+    width: 10px;
+    height: 3px;
+  }
+  .starfighter-thruster.plume-upper {
+    margin-left: -10px;
+  }
+  .starfighter-thruster.plume-lower {
+    margin-left: -10px;
   }
 }
 
 @media (max-width: 480px) {
-  .pixel-starfighter-drift-wrap {
-    top: 7%;
-    right: 5%;
-    width: 60px;
-    height: 34px;
+  .pixel-starfighter-flight-wrap {
+    top: 85px;
+    right: 3%;
+    width: 54px;
+    height: 31px;
   }
   .pixel-starfighter-img {
-    width: 60px;
-    height: 34px;
+    width: 54px;
+    height: 31px;
+  }
+  .starfighter-thruster {
+    width: 8px;
+    height: 3px;
   }
 }
 
@@ -2761,14 +2932,14 @@ footer {
   z-index: 10;
   pointer-events: auto;
   cursor: pointer;
-  animation: claudePatrolTrack 28s linear infinite;
+  animation: claudePatrolTrack 52s linear infinite; /* Slower, natural patrol pace */
 }
 
 .mascot-claude-flip-wrap {
   width: 70px;
   height: 90px;
   transform-origin: 50% 100%;
-  animation: claudePatrolFlip 28s step-end infinite;
+  animation: claudePatrolFlip 52s step-end infinite;
 }
 
 .mascot-claude-sprite {
@@ -2777,7 +2948,7 @@ footer {
   background-image: url('./assets/mascot-claude-walk-sheet.png');
   background-size: 420px 90px;
   background-repeat: no-repeat;
-  animation: claudeWalk 0.72s steps(6) infinite;
+  animation: claudeWalk 1.5s steps(6) infinite; /* Slower deliberate step cadence */
 }
 
 @keyframes claudeWalk {
@@ -2803,15 +2974,18 @@ footer {
     top: -72px;
     width: 56px;
     height: 72px;
+    animation: claudePatrolTrack 52s linear infinite;
   }
   .mascot-claude-flip-wrap {
     width: 56px;
     height: 72px;
+    animation: claudePatrolFlip 52s step-end infinite;
   }
   .mascot-claude-sprite {
     width: 56px;
     height: 72px;
     background-size: 336px 72px;
+    animation: claudeWalk 1.5s steps(6) infinite;
   }
   @keyframes claudeWalk {
     to { background-position-x: -336px; }
@@ -2848,7 +3022,7 @@ footer {
 .mascot-chatgpt-float {
   width: 60px;
   height: 72px;
-  animation: chatgptFloat 2.6s ease-in-out infinite alternate;
+  animation: chatgptFloat 5.2s ease-in-out infinite alternate; /* Slower floating cycle */
 }
 
 .mascot-chatgpt-sprite {
@@ -2857,7 +3031,7 @@ footer {
   background-image: url('./assets/mascot-chatgpt-sheet.png');
   background-size: 360px 72px;
   background-repeat: no-repeat;
-  animation: chatgptBob 1.1s steps(6) infinite;
+  animation: chatgptBob 2.4s steps(6) infinite; /* Slower spritesheet bob cycle */
 }
 
 @keyframes chatgptBob {
@@ -2883,13 +3057,14 @@ footer {
     width: 50px;
     height: 60px;
     background-size: 300px 60px;
+    animation: chatgptBob 2.4s steps(6) infinite;
   }
   @keyframes chatgptBob {
     to { background-position-x: -300px; }
   }
 }
 
-/* ── 6. GEMINI FLOATING COSMONAUT IN PROJECTS SECTION ──────────────────── */
+/* ── 6. GEMINI FLOATING COSMONAUT (BESIDE ABOUT HEADING & GOOGLE BADGE) ── */
 .mascot-gemini-wrap {
   position: absolute;
   top: 48px;
@@ -2901,10 +3076,18 @@ footer {
   cursor: pointer;
 }
 
+.mascot-gemini-wrap.mascot-gemini-heading {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-bottom: 0.35rem;
+  flex-shrink: 0;
+}
+
 .mascot-gemini-float {
   width: 72px;
   height: 68px;
-  animation: geminiFloatHover 3.4s ease-in-out infinite alternate;
+  animation: geminiFloatHover 6.8s ease-in-out infinite alternate; /* Slower floating drift */
 }
 
 .mascot-gemini-sprite {
@@ -2913,7 +3096,7 @@ footer {
   background-image: url('./assets/mascot-gemini-sheet.png');
   background-size: 360px 68px;
   background-repeat: no-repeat;
-  animation: geminiFloat 0.95s steps(5) infinite;
+  animation: geminiFloat 2.2s steps(5) infinite; /* Slower gestures cycle */
 }
 
 @keyframes geminiFloat {
@@ -2926,6 +3109,23 @@ footer {
   100% { transform: translateY(-3px) rotate(-1.5deg); }
 }
 
+/* Compact Companion Gemini Near Google Skills Profile Button */
+.mascot-gemini-badge-companion {
+  position: absolute;
+  top: -24px;
+  right: -12px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.gemini-sprite-compact {
+  width: 36px;
+  height: 34px;
+  background-size: 180px 34px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  animation: geminiFloat 2.8s steps(5) infinite;
+}
+
 @media (max-width: 1024px) {
   .mascot-gemini-wrap {
     top: 40px;
@@ -2935,8 +3135,6 @@ footer {
 
 @media (max-width: 768px) {
   .mascot-gemini-wrap {
-    top: 30px;
-    right: 16%;
     width: 58px;
     height: 55px;
   }
@@ -2948,6 +3146,7 @@ footer {
     width: 58px;
     height: 55px;
     background-size: 290px 55px;
+    animation: geminiFloat 2.2s steps(5) infinite;
   }
   @keyframes geminiFloat {
     to { background-position-x: -290px; }

@@ -3,7 +3,32 @@
    Linked from index.html after style.css and mediaqueries.css
    ════════════════════════════════════════════════════════════════════ */
 
-.footer-wasteland { margin-top: 30px; }
+.footer-wasteland {
+  margin-top: 30px;
+  position: relative;
+}
+
+/* Atmospheric light gradient divider along the wasteland horizon */
+.footer-wasteland::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.05) 12%,
+    rgba(42, 75, 91, 0.40) 28%,
+    rgba(223, 141, 50, 0.65) 50%,
+    rgba(42, 75, 91, 0.40) 72%,
+    rgba(34, 211, 238, 0.05) 88%,
+    transparent 100%
+  );
+  z-index: 10;
+  pointer-events: none;
+}
 
 /* Override the base footer-scenery-strip height and background */
 .footer-scenery-strip.wasteland-scenery {
@@ -281,12 +306,109 @@
   .smoke-puff { animation: none; opacity: 0; }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   ABANDONED DROID HEAD RELIC (SAND BED BEDDING & OPTIC SENSOR)
+   ════════════════════════════════════════════════════════════════════ */
+.prop-droid-head {
+  position: absolute;
+  left: 81%;
+  bottom: var(--ground-y);
+  width: 33px;
+  height: 41px;
+  z-index: 3;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  outline: none;
+  transition: transform 0.2s ease;
+}
+
+.prop-droid-head:focus-visible {
+  outline: 2px dashed #ff3b3b;
+  outline-offset: 3px;
+}
+
+.prop-droid-head:hover {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.droid-head-img {
+  width: 33px;
+  height: 41px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* Localized Interactive Red-Eye Optic Sensor */
+.droid-head-eye {
+  position: absolute;
+  left: 52%;
+  top: 43.5%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: #7a1414;
+  box-shadow: 0 0 2px rgba(255, 30, 30, 0.4);
+  pointer-events: none;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Faint ambient idle sensor flicker */
+@keyframes droidEyeIdlePulse {
+  0%, 100% {
+    opacity: 0.65;
+    box-shadow: 0 0 2px rgba(255, 30, 30, 0.4);
+  }
+  50% {
+    opacity: 0.95;
+    box-shadow: 0 0 4px rgba(255, 40, 40, 0.7);
+  }
+}
+
+.prop-droid-head .droid-head-eye {
+  animation: droidEyeIdlePulse 3.8s ease-in-out infinite;
+}
+
+/* Active / Hover / Focus / Click state: Focused authentic deep-red sensor activation */
+.prop-droid-head:hover .droid-head-eye,
+.prop-droid-head:focus-visible .droid-head-eye,
+.prop-droid-head.active-sensor .droid-head-eye {
+  background: #ff2a2a;
+  box-shadow: 0 0 6px 2px rgba(255, 42, 42, 0.9), 0 0 12px rgba(255, 20, 20, 0.5);
+  animation: droidEyeActivePulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes droidEyeActivePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 5px 2px rgba(255, 42, 42, 0.8);
+  }
+  100% {
+    transform: scale(1.2);
+    box-shadow: 0 0 9px 3px rgba(255, 50, 50, 1.0), 0 0 16px rgba(255, 20, 20, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prop-droid-head,
+  .prop-droid-head .droid-head-eye {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .footer-scenery-strip.wasteland-scenery   { height: 190px !important; }
   .prop-wasteland-citadel                   { width: 115px; height: 153px; }
   .prop-wasteland-factory-left              { width: 105px; height: 150px; }
   .prop-wasteland-refinery-right            { width: 175px; height: 130px; }
+  .prop-droid-head                          { width: 29px; height: 36px; left: 81%; }
+  .droid-head-img                           { width: 29px; height: 36px; }
   .pole-pos-mid-left                        { display: none; }
   .prop-wasteland-buggy                     { display: none; }
 }
@@ -295,6 +417,8 @@
   .prop-wasteland-citadel                   { width: 95px; height: 126px; left: 55%; }
   .prop-wasteland-factory-left              { width: 85px; height: 120px; }
   .prop-wasteland-refinery-right            { width: 140px; height: 104px; }
+  .prop-droid-head                          { width: 25px; height: 31px; left: 81%; }
+  .droid-head-img                           { width: 25px; height: 31px; }
   .prop-wasteland-pole                      { display: none; }
   .prop-wasteland-car                       { display: none; }
   .wasteland-cables-svg                     { display: none; }
@@ -305,4 +429,6 @@
   .smoke-puff                               { display: none; }
   .prop-wasteland-refinery-right            { width: 110px; height: 82px; right: -8px; }
   .prop-wasteland-citadel                   { width: 80px; height: 106px; left: 62%; }
+  .prop-droid-head                          { width: 22px; height: 28px; left: 82%; }
+  .droid-head-img                           { width: 22px; height: 28px; }
 }
