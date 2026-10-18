@@ -8,39 +8,22 @@
   position: relative;
 }
 
-/* Atmospheric light gradient divider along the wasteland horizon */
-.footer-wasteland::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(34, 211, 238, 0.05) 12%,
-    rgba(42, 75, 91, 0.40) 28%,
-    rgba(223, 141, 50, 0.65) 50%,
-    rgba(42, 75, 91, 0.40) 72%,
-    rgba(34, 211, 238, 0.05) 88%,
-    transparent 100%
-  );
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* Override the base footer-scenery-strip height and background */
+/* Override the base footer-scenery-strip height and background:
+   Cinematic multi-stop vertical atmospheric gradient blending near-black charcoal sky
+   through muted deep teal into smoky amber and warm sunset orange at the horizon */
 .footer-scenery-strip.wasteland-scenery {
   height: 236px !important;
   background: linear-gradient(
     180deg,
     #0F0F0E 0%,
-    #14252e 15%,
-    #2a4b5b 35%,
-    #b46a28 65%,
-    #df8d32 82%,
-    #cf5e22 100%
+    #101719 12%,
+    #14252B 28%,
+    #1C3B46 46%,
+    #344047 62%,
+    #76503A 78%,
+    #B56A2F 90%,
+    #8A431C 96%,
+    #5C2A12 100%
   ) !important;
 }
 
