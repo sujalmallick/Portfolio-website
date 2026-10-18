@@ -259,14 +259,25 @@ document.addEventListener('keydown', function (e) {
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── 1. Load Transparent Foreground Sprites ─────────────────────────────────
-  // Isolated authentic 8-bit/16-bit pixel-art sprites (100% transparent sky)
-  var workstationImg = new Image();
-  workstationImg.src = 'assets/footer-workstation-spaced.png';
+  // ── 1. Load Transparent Foreground Prop Sprites ──────────────────────────────
+  // Authentic 8-bit/16-bit pixel-art props extracted cleanly with 100% transparent sky
+  var propImages = {
+    lampLeft:    { img: new Image(), src: 'assets/footer-prop-lamp-left.png',    w: 27, h: 78 },
+    plant:       { img: new Image(), src: 'assets/footer-prop-plant.png',        w: 16, h: 38 },
+    droid:       { img: new Image(), src: 'assets/footer-prop-droid.png',        w: 23, h: 47 },
+    desk:        { img: new Image(), src: 'assets/footer-prop-desk.png',         w: 51, h: 62 },
+    server:      { img: new Image(), src: 'assets/footer-prop-server.png',       w: 37, h: 77 },
+    cratesLeft:  { img: new Image(), src: 'assets/footer-prop-crates-left.png', w: 36, h: 45 },
+    rocks:       { img: new Image(), src: 'assets/footer-prop-rocks.png',        w: 44, h: 17 },
+    cratesRight: { img: new Image(), src: 'assets/footer-prop-crates-right.png',w: 30, h: 31 },
+    lampRight:   { img: new Image(), src: 'assets/footer-prop-lamp-right.png',   w: 27, h: 78 }
+  };
+  for (var pKey in propImages) {
+    propImages[pKey].img.src = propImages[pKey].src;
+  }
 
-  var rightPropsImg = new Image();
-  rightPropsImg.src = 'assets/footer-right-props.png';
-
+  // ── 2. PROTECTED Terminator Character & Code Projectiles ────────────────────
+  // STRICT RULE: Original Terminator sprites and projectile assets remain untouched
   var robotImg = new Image();
   robotImg.src = 'assets/pixel-terminator.png';
 
@@ -276,7 +287,6 @@ document.addEventListener('keydown', function (e) {
   var muzzleImg = new Image();
   muzzleImg.src = 'assets/muzzle-flash.png';
 
-  // Floating Code Badges (Restored Original Tech Badges)
   var badgeImages = {
     python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
     js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 17 },
@@ -289,29 +299,24 @@ document.addEventListener('keydown', function (e) {
     badgeImages[k].img.src = badgeImages[k].src;
   }
 
-  // ── 2. Scene Geometry & Constants ──────────────────────────────────────────
-  var WS_WIDTH = 259;
-  var WS_HEIGHT = 88;
-  var RP_WIDTH = 111;
-  var RP_HEIGHT = 88;
-  var SPRITE_GROUND_OFFSET = 79; // Baseline is 79px from top of 88px sprites
-
+  // Terminator Geometry & Motion Constants
   var ROBOT_DRAW_W = 50;
   var ROBOT_DRAW_H = 55;
-  var BARREL_OFFSET_X = 2;   // Relative to droid top-left when facing left
-  var BARREL_OFFSET_Y = 24;  // Plasma blaster tip Y relative to droid top
+  var BARREL_OFFSET_X = 2;
+  var BARREL_OFFSET_Y = 24;
   var BADGE_SPACING = 38;
   var BASE_SPEED = 1.05;
   var WALK_SPEED = 0.58;
 
-  // State variables
+  // Runtime State
   var frameCount = 0;
   var recoilOffset = 0;
   var isOverdrive = false;
   var overdriveTimer = 0;
   var nextBadgeIndex = 0;
+  var isHovered = false;
 
-  // Terminator Patrol State
+  // Protected Terminator Patrol State
   var robotX = 640;
   var facing = -1; // -1 = left, 1 = right
   var patrolState = 'PATROL_LEFT';
@@ -324,20 +329,20 @@ document.addEventListener('keydown', function (e) {
   var pixelDust = [];
   var muzzleSparks = [];
 
-  // Workstation Server Rack LEDs (4 tiers, staggered blinking intervals)
+  // Server Rack LEDs (4 tiers, local to 37x77 server sprite)
   var serverLeds = [
-    { xOff: 169, yOff: 26, period: 24, phase: 3,  color: '#10b981' },
-    { xOff: 175, yOff: 26, period: 36, phase: 11, color: '#34d399' },
-    { xOff: 181, yOff: 26, period: 48, phase: 23, color: '#f59e0b' },
-    { xOff: 169, yOff: 40, period: 28, phase: 7,  color: '#10b981' },
-    { xOff: 175, yOff: 40, period: 42, phase: 19, color: '#38bdf8' },
-    { xOff: 181, yOff: 40, period: 32, phase: 14, color: '#34d399' },
-    { xOff: 169, yOff: 54, period: 34, phase: 5,  color: '#34d399' },
-    { xOff: 175, yOff: 54, period: 26, phase: 17, color: '#10b981' },
-    { xOff: 181, yOff: 54, period: 52, phase: 31, color: '#f59e0b' },
-    { xOff: 169, yOff: 68, period: 40, phase: 9,  color: '#10b981' },
-    { xOff: 175, yOff: 68, period: 30, phase: 21, color: '#34d399' },
-    { xOff: 181, yOff: 68, period: 46, phase: 3,  color: '#10b981' }
+    { xOff: 9,  yOff: 21, period: 24, phase: 3,  color: '#10b981' },
+    { xOff: 15, yOff: 21, period: 36, phase: 11, color: '#34d399' },
+    { xOff: 21, yOff: 21, period: 48, phase: 23, color: '#f59e0b' },
+    { xOff: 9,  yOff: 35, period: 28, phase: 7,  color: '#10b981' },
+    { xOff: 15, yOff: 35, period: 42, phase: 19, color: '#38bdf8' },
+    { xOff: 21, yOff: 35, period: 32, phase: 14, color: '#34d399' },
+    { xOff: 9,  yOff: 49, period: 34, phase: 5,  color: '#34d399' },
+    { xOff: 15, yOff: 49, period: 26, phase: 17, color: '#10b981' },
+    { xOff: 21, yOff: 49, period: 52, phase: 31, color: '#f59e0b' },
+    { xOff: 9,  yOff: 63, period: 40, phase: 9,  color: '#10b981' },
+    { xOff: 15, yOff: 63, period: 30, phase: 21, color: '#34d399' },
+    { xOff: 21, yOff: 63, period: 46, phase: 3,  color: '#10b981' }
   ];
 
   // Twinkling Night Sky Stars (Matching Reference Image)
@@ -363,19 +368,83 @@ document.addEventListener('keydown', function (e) {
     { x: 978, y: 16, size: 2, color: '#f1f5f9', phase: 1.6 }
   ];
 
+  // Responsive scene layout calculation
+  function getSceneLayout(w, h) {
+    var gY = h - 9;
+    var isMobile = w < 600;
+    var isTablet = w >= 600 && w < 900;
+    var isDesktop = w >= 900;
+
+    var layout = {
+      groundY: gY,
+      isMobile: isMobile,
+      isTablet: isTablet,
+      isDesktop: isDesktop
+    };
+
+    if (isDesktop) {
+      layout.lampLeft = { show: true, x: 18, y: gY - 78, w: 27, h: 78, lanternX: 35, lanternY: gY - 58 };
+      layout.plant = { show: true, x: 56, y: gY - 38, w: 16, h: 38 };
+      layout.droid = { show: true, x: 80, y: gY - 47, w: 23, h: 47 };
+      layout.desk = { show: true, x: 112, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 172, y: gY - 77, w: 37, h: 77 };
+      layout.cratesLeft = { show: true, x: 217, y: gY - 43, w: 36, h: 43 };
+      layout.wsRight = 217 + 36; // 253
+
+      layout.rocks = { show: true, x: Math.max(layout.wsRight + 260, w - 145), y: gY - 17, w: 44, h: 17 };
+      layout.cratesRight = { show: true, x: Math.max(layout.wsRight + 310, w - 90), y: gY - 31, w: 30, h: 31 };
+      layout.lampRight = { show: true, x: Math.max(layout.wsRight + 348, w - 48), y: gY - 78, w: 27, h: 78, lanternX: Math.max(layout.wsRight + 348, w - 48) + 10, lanternY: gY - 58 };
+      layout.rpLeft = layout.rocks.x;
+
+      layout.minPatrolX = layout.wsRight + 45;
+      layout.maxPatrolX = Math.min(layout.rpLeft - 65, Math.max(layout.minPatrolX + 60, w * 0.78));
+    } else if (isTablet) {
+      layout.lampLeft = { show: false };
+      layout.plant = { show: true, x: 14, y: gY - 38, w: 16, h: 38 };
+      layout.droid = { show: false };
+      layout.desk = { show: true, x: 38, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 96, y: gY - 77, w: 37, h: 77 };
+      layout.cratesLeft = { show: true, x: 140, y: gY - 43, w: 36, h: 43 };
+      layout.wsRight = 140 + 36; // 176
+
+      layout.rocks = { show: false };
+      layout.cratesRight = { show: true, x: w - 82, y: gY - 31, w: 30, h: 31 };
+      layout.lampRight = { show: true, x: w - 44, y: gY - 78, w: 27, h: 78, lanternX: w - 44 + 10, lanternY: gY - 58 };
+      layout.rpLeft = layout.cratesRight.x;
+
+      layout.minPatrolX = layout.wsRight + 35;
+      layout.maxPatrolX = Math.min(layout.rpLeft - 60, Math.max(layout.minPatrolX + 50, w * 0.76));
+    } else {
+      // Dedicated Mobile arrangement (< 600px): Clean prioritized workstation on left
+      layout.lampLeft = { show: false };
+      layout.plant = { show: true, x: 8, y: gY - 38, w: 16, h: 38 };
+      layout.droid = { show: false };
+      layout.desk = { show: true, x: 28, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 84, y: gY - 77, w: 37, h: 77 };
+      layout.cratesLeft = { show: false };
+      layout.wsRight = 84 + 37; // 121
+
+      layout.rocks = { show: false };
+      layout.cratesRight = { show: false };
+      layout.lampRight = { show: false };
+      layout.rpLeft = w;
+
+      layout.minPatrolX = layout.wsRight + 22;
+      layout.maxPatrolX = Math.max(layout.minPatrolX + 45, w - 56);
+    }
+    return layout;
+  }
+
   function resize() {
     var rect = canvas.getBoundingClientRect();
     width = Math.max(320, Math.floor(rect.width));
-    height = Math.max(54, Math.floor(rect.height || 96));
+    height = Math.max(76, Math.floor(rect.height || 96));
     canvas.width = width;
     canvas.height = height;
 
-    var wsRight = 16 + WS_WIDTH;
-    var rpLeft = Math.max(width - RP_WIDTH - 16, wsRight + 80);
-    var minPatrolX = Math.max(wsRight + 20, Math.min(width * 0.44, width - 230));
-    var maxPatrolX = Math.min(rpLeft - 65, Math.max(minPatrolX + 60, width * 0.78));
-    if (robotX < minPatrolX) robotX = minPatrolX;
-    if (robotX > maxPatrolX) robotX = maxPatrolX;
+    var layout = getSceneLayout(width, height);
+    if (robotX < layout.minPatrolX) robotX = layout.minPatrolX;
+    if (robotX > layout.maxPatrolX) robotX = layout.maxPatrolX;
   }
 
   function spawnMuzzleSparks(x, y) {
@@ -409,15 +478,12 @@ document.addEventListener('keydown', function (e) {
 
     var streamSpeed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
     var wSpeed = isOverdrive ? WALK_SPEED * 1.5 : WALK_SPEED;
-    var groundY = height - 9; // Ground sits 9px above canvas bottom to anchor terrain cleanly
+    var layout = getSceneLayout(width, height);
+    var groundY = layout.groundY;
     var robotY = groundY - ROBOT_DRAW_H + 2;
+    var wsRight = layout.wsRight;
 
-    var wsRight = 16 + WS_WIDTH;
-    var rpLeft = Math.max(width - RP_WIDTH - 16, wsRight + 80);
-    var minPatrolX = Math.max(wsRight + 20, Math.min(width * 0.44, width - 230));
-    var maxPatrolX = Math.min(rpLeft - 65, Math.max(minPatrolX + 60, width * 0.78));
-
-    // Terminator Robot Patrol
+    // Terminator Robot Patrol (Strictly Preserved Behavior)
     if (patrolState === 'PATROL_LEFT') {
       facing = -1;
       robotX -= wSpeed;
@@ -426,8 +492,8 @@ document.addEventListener('keydown', function (e) {
         walkStepTimer = 0;
         walkFrame = (walkFrame + 1) % 2;
       }
-      if (robotX <= minPatrolX) {
-        robotX = minPatrolX;
+      if (robotX <= layout.minPatrolX) {
+        robotX = layout.minPatrolX;
         patrolState = 'SCAN';
         stateTimer = 48; // pause, scan, and fire
         walkFrame = 0;
@@ -440,8 +506,8 @@ document.addEventListener('keydown', function (e) {
         walkStepTimer = 0;
         walkFrame = (walkFrame + 1) % 2;
       }
-      if (robotX >= maxPatrolX) {
-        robotX = maxPatrolX;
+      if (robotX >= layout.maxPatrolX) {
+        robotX = layout.maxPatrolX;
         patrolState = 'SCAN';
         stateTimer = 44; // pause and turn around
         walkFrame = 0;
@@ -549,17 +615,27 @@ document.addEventListener('keydown', function (e) {
     }
   }
 
+  function drawStreetlampGlow(lampX, lampY, phase) {
+    var flicker = 0.18 + 0.08 * Math.sin(frameCount * 0.045 + phase);
+    if ((frameCount + Math.floor(phase * 20)) % 180 < 8) {
+      flicker *= 0.6; // subtle occasional flicker
+    }
+    var grad = ctx.createRadialGradient(lampX, lampY, 2, lampX, lampY, 26);
+    grad.addColorStop(0, 'rgba(245, 158, 11, ' + flicker.toFixed(3) + ')');
+    grad.addColorStop(0.6, 'rgba(251, 191, 36, ' + (flicker * 0.35).toFixed(3) + ')');
+    grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(lampX, lampY, 26, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   function render() {
     // 1. Transparent Clear (Matches page background seamlessly with ZERO rectangular boundary!)
     ctx.clearRect(0, 0, width, height);
 
-    var groundY = height - 9; // Ground baseline: terrain rests flush against bottom edge
-    var wsX = 16;
-    var wsY = groundY - SPRITE_GROUND_OFFSET;
-    var wsRight = wsX + WS_WIDTH;
-
-    var rpX = Math.max(width - RP_WIDTH - 16, wsRight + 80);
-    var rpY = groundY - SPRITE_GROUND_OFFSET;
+    var layout = getSceneLayout(width, height);
+    var gY = layout.groundY;
 
     // 2. Twinkling Night Sky Stars (Delicate, Authentic 8-bit Pixel Stars)
     for (var s = 0; s < nightStars.length; s++) {
@@ -571,127 +647,144 @@ document.addEventListener('keydown', function (e) {
       ctx.globalAlpha = Math.max(0, Math.min(1, starAlpha));
       ctx.fillRect(sx, star.y, star.size, star.size);
       if (star.size > 1 && starAlpha > 0.6) {
-        // Subtle cross glint
         ctx.fillRect(sx - 1, star.y, 3, 1);
         ctx.fillRect(sx, star.y - 1, 1, 3);
       }
     }
     ctx.globalAlpha = 1.0;
 
-    // 3. Middle Ground Seamless Terrain (Connects Workstation to Right Props with NO GAP)
-    if (rpX > wsRight) {
-      // Rocky ground line layers
-      ctx.fillStyle = '#3a3f4b';
-      ctx.fillRect(wsRight - 4, groundY, rpX - wsRight + 8, 1);
-      ctx.fillStyle = '#282b34';
-      ctx.fillRect(wsRight - 4, groundY + 1, rpX - wsRight + 8, 2);
-      ctx.fillStyle = '#181a20';
-      ctx.fillRect(wsRight - 4, groundY + 3, rpX - wsRight + 8, 3);
-      ctx.fillStyle = '#101216';
-      ctx.fillRect(wsRight - 4, groundY + 6, rpX - wsRight + 8, height - groundY - 6);
+    // 3. Continuous Ground Line across FULL Canvas Width (Cobblestone + Soil + Grass)
+    ctx.fillStyle = '#4D5357'; // Cobblestone top highlight edge
+    ctx.fillRect(0, gY, width, 1);
+    ctx.fillStyle = '#40464E'; // Stone mid tone
+    ctx.fillRect(0, gY + 1, width, 2);
+    ctx.fillStyle = '#1E272F'; // Stone shadow layer
+    ctx.fillRect(0, gY + 3, width, 2);
+    ctx.fillStyle = '#0B1218'; // Deep soil base
+    ctx.fillRect(0, gY + 5, width, height - gY - 5);
 
-      // Embedded pebbles and rock flecks
-      ctx.fillStyle = '#475569';
-      var midW = rpX - wsRight;
-      ctx.fillRect(wsRight + Math.floor(midW * 0.18), groundY + 1, 3, 2);
-      ctx.fillRect(wsRight + Math.floor(midW * 0.38), groundY, 4, 1);
-      ctx.fillRect(wsRight + Math.floor(midW * 0.62), groundY + 1, 3, 2);
-      ctx.fillRect(wsRight + Math.floor(midW * 0.82), groundY, 4, 1);
+    // Embedded stone joints / flecks along the ground line
+    ctx.fillStyle = '#5c636f';
+    for (var stX = 22; stX < width - 15; stX += 34) {
+      ctx.fillRect(stX, gY, 3, 1);
+      ctx.fillRect(stX + 14, gY + 1, 4, 1);
+    }
 
-      // Vibrant pixel-art grass tufts scattered in the middle stretch (matching reference image)
-      var grassPositions = [0.08, 0.22, 0.34, 0.48, 0.58, 0.72, 0.88];
-      for (var gp = 0; gp < grassPositions.length; gp++) {
-        var gx = Math.round(wsRight + midW * grassPositions[gp]);
-        ctx.fillStyle = '#16a34a';
-        ctx.fillRect(gx,     groundY - 5, 2, 5);
-        ctx.fillRect(gx + 3, groundY - 7, 2, 7);
-        ctx.fillRect(gx + 6, groundY - 4, 2, 4);
-        ctx.fillStyle = '#15803d';
-        ctx.fillRect(gx + 1, groundY - 3, 2, 3);
-        ctx.fillRect(gx + 5, groundY - 5, 2, 5);
+    // Scattered pixel-art grass tufts (matching reference image)
+    var grassInterval = 38;
+    for (var gx = 10; gx < width - 12; gx += grassInterval) {
+      var seed = (gx * 17) % 7;
+      ctx.fillStyle = '#16a34a';
+      ctx.fillRect(gx,     gY - 4 - (seed % 3), 2, 4 + (seed % 3));
+      ctx.fillRect(gx + 3, gY - 6 - (seed % 2), 2, 6 + (seed % 2));
+      ctx.fillRect(gx + 6, gY - 3, 2, 3);
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(gx + 1, gY - 2, 1, 2);
+      ctx.fillRect(gx + 4, gY - 4, 1, 4);
+    }
+
+    // 4. Environmental Props (Rendered independently with authentic transparency)
+    // Left Streetlamp
+    if (layout.lampLeft.show && propImages.lampLeft.img.complete && propImages.lampLeft.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.lampLeft.img, layout.lampLeft.x, layout.lampLeft.y, layout.lampLeft.w, layout.lampLeft.h);
+      drawStreetlampGlow(layout.lampLeft.lanternX, layout.lampLeft.lanternY, 0);
+    }
+
+    // Potted Plant (with subtle gentle sway)
+    if (layout.plant.show && propImages.plant.img.complete && propImages.plant.img.naturalWidth > 0) {
+      var plantSway = Math.sin(frameCount * 0.025) * 0.7;
+      ctx.save();
+      ctx.translate(layout.plant.x + layout.plant.w / 2, layout.plant.y + layout.plant.h);
+      ctx.rotate(plantSway * Math.PI / 180);
+      ctx.drawImage(propImages.plant.img, -layout.plant.w / 2, -layout.plant.h, layout.plant.w, layout.plant.h);
+      ctx.restore();
+    }
+
+    // Retro Capsule Droid
+    if (layout.droid.show && propImages.droid.img.complete && propImages.droid.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.droid.img, layout.droid.x, layout.droid.y, layout.droid.w, layout.droid.h);
+      // Cyan optic sensor pulse
+      var opticPulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08);
+      ctx.fillStyle = opticPulse > 0.35 ? '#38bdf8' : '#0284c7';
+      ctx.fillRect(layout.droid.x + 10, layout.droid.y + 19, 3, 3);
+      if ((frameCount % 160) < 14) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(layout.droid.x + 15, layout.droid.y + 19, 2, 2);
       }
     }
 
-    // 4. Authentic Workstation Sprite (Left Side, 100% Transparent Sky)
-    if (workstationImg.complete && workstationImg.naturalWidth > 0) {
-      ctx.drawImage(workstationImg, wsX, wsY, WS_WIDTH, WS_HEIGHT);
+    // Desk with CRT Monitor
+    if (layout.desk.show && propImages.desk.img.complete && propImages.desk.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.desk.img, layout.desk.x, layout.desk.y, layout.desk.w, layout.desk.h);
 
-      // A) Street Lamp Warm Amber Glow Pulse
-      var lampX = wsX + 26;
-      var lampY = wsY + 29;
-      var lampGlow = 0.18 + 0.08 * Math.sin(frameCount * 0.045);
-      var lampGrad = ctx.createRadialGradient(lampX, lampY, 2, lampX, lampY, 26);
-      lampGrad.addColorStop(0, 'rgba(245, 158, 11, ' + lampGlow.toFixed(2) + ')');
-      lampGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = lampGrad;
-      ctx.beginPath();
-      ctx.arc(lampX, lampY, 26, 0, Math.PI * 2);
-      ctx.fill();
+      // CRT Monitor Active Green Code Lines (with subtle scroll & hover refresh)
+      var screenX = layout.desk.x + 11;
+      var screenY = layout.desk.y + 11;
+      var scrollPhase = Math.floor(frameCount * (isHovered ? 0.12 : 0.04)) % 4;
+      var linePatterns = isHovered ? [
+        [15, 8], [9, 14], [17, 7], [11, 12]
+      ] : [
+        [13, 10], [17, 6], [8, 12], [14, 8]
+      ];
 
-      // B) Mini Droid Optic Sensor Pulse & Blink
-      var droidX = wsX + 82;
-      var droidY = wsY + 43;
-      if (Math.sin(frameCount * 0.08) > 0.35) {
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(droidX, droidY, 3, 2);
+      for (var cl = 0; cl < 4; cl++) {
+        var lIdx = (cl + scrollPhase) % 4;
+        var lp = linePatterns[lIdx];
+        var ly = screenY + cl * 5;
+        ctx.fillStyle = cl === 0 ? '#86efac' : '#22c55e';
+        ctx.fillRect(screenX, ly, lp[0], 2);
+        if (lp[1] > 0) {
+          ctx.fillStyle = '#15803d';
+          ctx.fillRect(screenX + lp[0] + 2, ly, lp[1], 2);
+        }
       }
-      if ((frameCount % 130) < 16) {
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(droidX + 5, droidY, 2, 2);
-      }
-
-      // C) Coding Screen Blinking Terminal Cursor & Refresh
-      var crtCursorX = wsX + 138;
-      var crtCursorY = wsY + 48;
-      if ((frameCount % 50) < 26) {
+      // Blinking terminal cursor
+      if ((frameCount % 44) < 22) {
         ctx.fillStyle = '#4ade80';
-        ctx.fillRect(crtCursorX, crtCursorY, 3, 2);
+        ctx.fillRect(screenX, screenY + 20, 3, 2);
       }
-      if ((frameCount % 160) < 20) {
-        ctx.fillStyle = 'rgba(74, 222, 128, 0.35)';
-        ctx.fillRect(wsX + 118, wsY + 38, 26, 2);
-      }
+    }
 
-      // D) 4-Tier Server Rack Blinking LEDs
+    // Server Rack (with 4 tiers of blinking LEDs)
+    if (layout.server.show && propImages.server.img.complete && propImages.server.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.server.img, layout.server.x, layout.server.y, layout.server.w, layout.server.h);
       for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
         var led = serverLeds[lIdx];
         var isLedOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
         if (isLedOn) {
           ctx.fillStyle = led.color;
-          ctx.fillRect(wsX + led.xOff, wsY + led.yOff, 2, 2);
+          ctx.fillRect(layout.server.x + led.xOff, layout.server.y + led.yOff, 2, 2);
         }
       }
     }
 
-    // 5. Authentic Right Props (Crate, Rocks & Standing Lantern, 100% Transparent Sky)
-    if (rightPropsImg.complete && rightPropsImg.naturalWidth > 0) {
-      ctx.drawImage(rightPropsImg, rpX, rpY, RP_WIDTH, RP_HEIGHT);
-
-      // Flickering Standing Lantern Warm Flame & Bloom
-      var torchX = rpX + 73;
-      var torchY = rpY + 40;
-      var flameBob = Math.sin(frameCount * 0.28) * 1.5;
-      ctx.fillStyle = '#f59e0b';
-      ctx.fillRect(torchX - 1, torchY - 2 + flameBob, 3, 4);
-      ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(torchX, torchY - 4 + flameBob, 2, 3);
-
-      var torchGlow = 0.16 + 0.06 * Math.sin(frameCount * 0.045);
-      var torchGrad = ctx.createRadialGradient(torchX, torchY, 2, torchX, torchY, 24);
-      torchGrad.addColorStop(0, 'rgba(251, 191, 36, ' + torchGlow.toFixed(2) + ')');
-      torchGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
-      ctx.fillStyle = torchGrad;
-      ctx.beginPath();
-      ctx.arc(torchX, torchY, 24, 0, Math.PI * 2);
-      ctx.fill();
+    // Left Wooden Crates (with retro terminal)
+    if (layout.cratesLeft.show && propImages.cratesLeft.img.complete && propImages.cratesLeft.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.cratesLeft.img, layout.cratesLeft.x, layout.cratesLeft.y, layout.cratesLeft.w, layout.cratesLeft.h);
     }
 
-    // 6. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Stream)
+    // Right Stepping Rocks
+    if (layout.rocks.show && propImages.rocks.img.complete && propImages.rocks.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.rocks.img, layout.rocks.x, layout.rocks.y, layout.rocks.w, layout.rocks.h);
+    }
+
+    // Right Wooden Crates
+    if (layout.cratesRight.show && propImages.cratesRight.img.complete && propImages.cratesRight.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.cratesRight.img, layout.cratesRight.x, layout.cratesRight.y, layout.cratesRight.w, layout.cratesRight.h);
+    }
+
+    // Right Streetlamp
+    if (layout.lampRight.show && propImages.lampRight.img.complete && propImages.lampRight.img.naturalWidth > 0) {
+      ctx.drawImage(propImages.lampRight.img, layout.lampRight.x, layout.lampRight.y, layout.lampRight.w, layout.lampRight.h);
+      drawStreetlampGlow(layout.lampRight.lanternX, layout.lampRight.lanternY, 2.5);
+    }
+
+    // 5. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Stream)
     var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
     var stepBob = isMoving ? (Math.sin(frameCount * 0.32) * 1.4) : 0;
     var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
     var rx = Math.round(drawRobotX);
-    var ry = Math.round(groundY - ROBOT_DRAW_H + 2 + stepBob);
+    var ry = Math.round(gY - ROBOT_DRAW_H + 2 + stepBob);
     var muzzleTipX = rx + BARREL_OFFSET_X;
     var muzzleTipY = ry + BARREL_OFFSET_Y;
 
@@ -703,7 +796,6 @@ document.addEventListener('keydown', function (e) {
       var drawCenterY = Math.round(muzzleTipY + floatY);
 
       if (item.type === 'dot') {
-        // Glowing cyan separator dot
         ctx.save();
         ctx.globalAlpha = Math.max(0, item.alpha);
         ctx.fillStyle = '#22d3ee';
@@ -726,7 +818,7 @@ document.addEventListener('keydown', function (e) {
       }
     }
 
-    // 7. Dissolving Pixel Dust
+    // 6. Dissolving Pixel Dust
     for (var pd = 0; pd < pixelDust.length; pd++) {
       var dust = pixelDust[pd];
       if (dust.alpha > 0) {
@@ -738,7 +830,7 @@ document.addEventListener('keydown', function (e) {
       }
     }
 
-    // 8. Cyan Muzzle Flash (When Terminator fires)
+    // 7. Cyan Muzzle Flash (When Terminator fires)
     if (facing === -1 && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
       ctx.save();
       var mPulse = isOverdrive ? (1.15 + 0.25 * Math.sin(frameCount * 0.6)) : (0.85 + 0.15 * Math.sin(frameCount * 0.35));
@@ -756,7 +848,7 @@ document.addEventListener('keydown', function (e) {
       ctx.restore();
     }
 
-    // 9. Muzzle Sparks
+    // 8. Muzzle Sparks
     for (var spkIdx = 0; spkIdx < muzzleSparks.length; spkIdx++) {
       var spk = muzzleSparks[spkIdx];
       var sAlpha = (spk.life / spk.maxLife);
@@ -766,7 +858,7 @@ document.addEventListener('keydown', function (e) {
     }
     ctx.globalAlpha = 1.0;
 
-    // 10. Preserved Authentic Terminator Character (Sprite & Animation)
+    // 9. Preserved Authentic Terminator Character (Sprite & Animation)
     var droidSprite = (walkFrame === 1 && robotStepImg.complete && robotStepImg.naturalWidth > 0)
       ? robotStepImg
       : robotImg;
@@ -813,12 +905,20 @@ document.addEventListener('keydown', function (e) {
       isOverdrive = true;
       overdriveTimer = 90; // ~1.5s overdrive
       recoilOffset = 3.6;
-      var groundY = height - 9;
+      var layout = getSceneLayout(width, height);
+      var groundY = layout.groundY;
       var ry = groundY - ROBOT_DRAW_H + 2;
       var muzzleTipX = robotX + BARREL_OFFSET_X;
       var muzzleTipY = ry + BARREL_OFFSET_Y;
       spawnMuzzleSparks(muzzleTipX, muzzleTipY);
       spawnMuzzleSparks(muzzleTipX, muzzleTipY);
+    });
+
+    container.addEventListener('mouseenter', function () {
+      isHovered = true;
+    });
+    container.addEventListener('mouseleave', function () {
+      isHovered = false;
     });
   }
 
@@ -832,8 +932,6 @@ document.addEventListener('keydown', function (e) {
     window.addEventListener('resize', resize);
 
     if (prefersReducedMotion) {
-      workstationImg.onload = drawStaticFallback;
-      rightPropsImg.onload = drawStaticFallback;
       robotImg.onload = drawStaticFallback;
       drawStaticFallback();
       return;
@@ -989,11 +1087,11 @@ document.addEventListener('keydown', function (e) {
     var ROCKET_H = Math.round(ROCKET_W * (508 / 216));
 
     // Flight & Landing State
-    var mode = 'ROAM'; // 'ROAM', 'APPROACH', 'LANDING', 'LANDED', 'LIFTOFF'
-    var roamCountdown = 450 + Math.floor(Math.random() * 350); // 7-13s roam before attempting landing
+    var mode = 'ROAM'; // 'ROAM', 'APPROACH', 'LANDING', 'LANDED', 'TOUCH_REACTION'
+    var roamCountdown = 280 + Math.floor(Math.random() * 200); // 4-8s roam before initiating descent
     var landingTarget = null;
     var legDeploy = 0; // 0 to 1
-    var landedTimer = 0;
+    var reactionTimer = 0;
 
     var x = width * 0.8;
     var y = height * 0.3;
@@ -1284,7 +1382,6 @@ document.addEventListener('keydown', function (e) {
           vx = 0;
           vy = 0;
           mode = 'LANDED';
-          landedTimer = 260; // 4.5 seconds
 
           for (var s = 0; s < 6; s++) {
             particles.push({
@@ -1310,49 +1407,54 @@ document.addEventListener('keydown', function (e) {
         angle = 0;
         vx = 0;
         vy = 0;
-        landedTimer--;
+        legDeploy = 1;
 
-        if (frameCount % 60 === 0) {
+        // Occasional faint idle coolant whisper (every 180 frames)
+        if (frameCount % 180 === 0) {
           particles.push({
-            x: x + (Math.random() - 0.5) * 8,
+            x: x + (Math.random() - 0.5) * 6,
             y: y + ROCKET_H * 0.42,
-            vx: (Math.random() - 0.5) * 0.6,
-            vy: -0.5,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: -0.4,
             color: '#CFC6B5',
             size: 1,
-            alpha: 0.7,
-            decay: 0.04
+            alpha: 0.5,
+            decay: 0.03
           });
         }
 
-        if (landedTimer <= 0) {
-          mode = 'LIFTOFF';
+      } else if (mode === 'TOUCH_REACTION') {
+        if (landingTarget && landingTarget.el) {
+          var r = landingTarget.el.getBoundingClientRect();
+          landingTarget.y = Math.round(r.top);
         }
+        angle = 0;
+        vx = 0;
+        vy = 0;
+        legDeploy = 1;
+        reactionTimer--;
 
-      } else if (mode === 'LIFTOFF') {
-        vy -= 0.16;
-        if (vy < -2.4) vy = -2.4;
-        y += vy;
+        // Gentle parabolic hop (max 4.5px up)
+        var bounceOffset = Math.sin((reactionTimer / 24) * Math.PI) * 4.5;
+        var baseY = landingTarget ? landingTarget.y - legDropDist : y;
+        y = baseY - bounceOffset;
 
-        if (legDeploy > 0) legDeploy = Math.max(0, legDeploy - 0.05);
-
-        for (var p = 0; p < 3; p++) {
-          particles.push({
-            x: x + (Math.random() - 0.5) * 8,
-            y: y + ROCKET_H * 0.44,
-            vx: (Math.random() - 0.5) * 1.5,
-            vy: 2.2 + Math.random() * 1.4,
-            color: Math.random() > 0.5 ? '#FFFFFF' : '#22D3EE',
-            size: 2,
-            alpha: 1,
-            decay: 0.04
-          });
-        }
-
-        if (landingTarget && (y < landingTarget.y - legDropDist - 90)) {
-          mode = 'ROAM';
-          roamCountdown = 700 + Math.floor(Math.random() * 400);
-          pickNewWaypoint();
+        if (reactionTimer <= 0) {
+          mode = 'LANDED';
+          y = baseY;
+          // Soft settle dust puff
+          for (var s = 0; s < 3; s++) {
+            particles.push({
+              x: x + (Math.random() - 0.5) * 10,
+              y: y + legDropDist,
+              vx: (Math.random() - 0.5) * 0.8,
+              vy: -0.3,
+              color: '#CFC6B5',
+              size: 1,
+              alpha: 0.7,
+              decay: 0.04
+            });
+          }
         }
       }
 
@@ -1492,17 +1594,31 @@ document.addEventListener('keydown', function (e) {
         mouseActive = 90;
       }, { passive: true });
 
-      // Interactive Click: Fun speed burst / liftoff
+      // Interactive Click: Fun speed burst when flying, or gentle bounce reaction when landed
       window.addEventListener('click', function (e) {
         var clickDist = Math.hypot(x - e.clientX, y - e.clientY);
-        if (mode === 'LANDED' || clickDist < 250) {
-          if (mode === 'LANDED') {
-            mode = 'LIFTOFF';
-          } else {
-            boostTimer = 40;
-            targetX = Math.random() > 0.5 ? width * 0.2 : width * 0.8;
-            targetY = Math.random() > 0.5 ? height * 0.2 : height * 0.8;
+        if (mode === 'LANDED' || mode === 'TOUCH_REACTION') {
+          if (clickDist < 160) {
+            mode = 'TOUCH_REACTION';
+            reactionTimer = 24;
+            // Small puff of exhaust
+            for (var p = 0; p < 4; p++) {
+              particles.push({
+                x: x + (Math.random() - 0.5) * 8,
+                y: y + ROCKET_H * 0.44,
+                vx: (Math.random() - 0.5) * 1.2,
+                vy: 0.6 + Math.random() * 0.6,
+                color: Math.random() > 0.5 ? '#22D3EE' : '#CFC6B5',
+                size: Math.random() > 0.5 ? 2 : 1,
+                alpha: 0.85,
+                decay: 0.05
+              });
+            }
           }
+        } else if (clickDist < 200) {
+          boostTimer = 40;
+          targetX = Math.random() > 0.5 ? width * 0.2 : width * 0.8;
+          targetY = Math.random() > 0.5 ? height * 0.2 : height * 0.8;
         }
       }, { passive: true });
 
@@ -1532,47 +1648,37 @@ document.addEventListener('keydown', function (e) {
 
 /* ── 10. AI PIXEL MASCOTS CONTROLLER ──────────────────────────────────── */
 (function initMascots() {
-  var mascotConfigs = [
-    { id: 'mascot-chatgpt', duration: 650, cooldown: 850 },
-    { id: 'mascot-claude',  duration: 600, cooldown: 800 },
-    { id: 'mascot-gemini',  duration: 650, cooldown: 850 }
-  ];
-
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hasFinePointer = window.matchMedia('(pointer: fine)').matches;
 
-  var mascotControllers = [];
-
-  mascotConfigs.forEach(function (cfg) {
-    var el = document.getElementById(cfg.id);
+  // 1. ChatGPT Companion Controller
+  (function initChatGPT() {
+    var el = document.getElementById('mascot-chatgpt');
     if (!el) return;
 
-    var tiltWrap = el.querySelector('.mascot-tilt-wrap');
     var isActing = false;
     var cooldownUntil = 0;
     var actionTimer = null;
+    var schedulerTimer = null;
 
-    // Authoritative interaction trigger with strict cooldown protection
+    function clearStateClasses() {
+      el.classList.remove('state-blink', 'state-wave-l', 'state-wave-r', 'state-think', 'state-happy');
+    }
+
     function triggerAction() {
-      if (prefersReduced) return;
       var now = Date.now();
-      if (isActing || now < cooldownUntil) return; // Prevent repeated triggers
-
+      if (isActing || now < cooldownUntil) return;
       isActing = true;
-      cooldownUntil = now + cfg.cooldown;
+      cooldownUntil = now + 900;
 
-      // Reset any active proximity tilt during special action
-      if (tiltWrap) {
-        tiltWrap.style.transform = 'rotate(0deg)';
-      }
-
+      clearStateClasses();
       el.classList.add('is-acting');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
         el.classList.remove('is-acting');
         isActing = false;
-      }, cfg.duration);
+      }, 750);
     }
 
     el.addEventListener('click', function (e) {
@@ -1587,9 +1693,7 @@ document.addEventListener('keydown', function (e) {
       }
     });
 
-    // Mobile touch handling (non-intrusive tap with threshold)
-    var touchStartX = 0;
-    var touchStartY = 0;
+    var touchStartX = 0, touchStartY = 0;
     el.addEventListener('touchstart', function (e) {
       if (e.touches && e.touches[0]) {
         touchStartX = e.touches[0].clientX;
@@ -1601,63 +1705,332 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) {
-          triggerAction();
-        }
+        if (dx < 10 && dy < 10) triggerAction();
       }
     }, { passive: true });
 
-    mascotControllers.push({
-      el: el,
-      tiltWrap: tiltWrap,
-      isActing: function () { return isActing; },
-      rect: null
+    if (prefersReduced) return;
+
+    // Desynchronized autonomous behavior
+    var actions = ['blink', 'blink', 'waveLeft', 'waveRight', 'think', 'happy'];
+    function runNextAction() {
+      if (el.classList.contains('mascot-offscreen') || isActing) {
+        schedulerTimer = setTimeout(runNextAction, 3000);
+        return;
+      }
+
+      var choice = actions[Math.floor(Math.random() * actions.length)];
+      clearStateClasses();
+
+      if (choice === 'blink') {
+        el.classList.add('state-blink');
+        setTimeout(clearStateClasses, 160);
+      } else if (choice === 'waveLeft') {
+        el.classList.add('state-wave-l');
+        setTimeout(clearStateClasses, 1100);
+      } else if (choice === 'waveRight') {
+        el.classList.add('state-wave-r');
+        setTimeout(clearStateClasses, 1100);
+      } else if (choice === 'think') {
+        el.classList.add('state-think');
+        setTimeout(clearStateClasses, 1300);
+      } else if (choice === 'happy') {
+        el.classList.add('state-happy');
+        setTimeout(clearStateClasses, 950);
+      }
+
+      var nextDelay = 4200 + Math.floor(Math.random() * 3200);
+      schedulerTimer = setTimeout(runNextAction, nextDelay);
+    }
+
+    schedulerTimer = setTimeout(runNextAction, 1400);
+  })();
+
+  // 2. Claude Mascot Controller (Divider Line Walker)
+  (function initClaude() {
+    var el = document.getElementById('mascot-claude');
+    if (!el) return;
+
+    var claudeBody = el.querySelector('.claude-body');
+    var claudeSprite = el.querySelector('.claude-sprite');
+    if (!claudeBody || !claudeSprite) return;
+
+    var isActing = false;
+    var cooldownUntil = 0;
+    var actionTimer = null;
+
+    function setFrame(frameNum) {
+      claudeSprite.className = 'claude-sprite claude-frame-' + frameNum;
+    }
+
+    setFrame(0);
+
+    function triggerAction() {
+      var now = Date.now();
+      if (isActing || now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 900;
+
+      el.classList.remove('state-think');
+      setFrame(5); // Wave/celebrate
+      el.classList.add('is-acting');
+
+      if (actionTimer) clearTimeout(actionTimer);
+      actionTimer = setTimeout(function () {
+        el.classList.remove('is-acting');
+        setFrame(0);
+        isActing = false;
+      }, 750);
+    }
+
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerAction();
     });
-  });
 
-  // Cached Proximity Tracking: avoids expensive getBoundingClientRect on every mousemove
-  if (!prefersReduced && hasFinePointer && mascotControllers.length > 0) {
-    var updateCachedBounds = function () {
-      mascotControllers.forEach(function (mc) {
-        if (!mc.el) return;
-        var r = mc.el.getBoundingClientRect();
-        mc.rect = {
-          cx: r.left + r.width / 2,
-          cy: r.top + r.height / 2
-        };
-      });
-    };
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerAction();
+      }
+    });
 
-    updateCachedBounds();
-    window.addEventListener('scroll', updateCachedBounds, { passive: true });
-    window.addEventListener('resize', updateCachedBounds, { passive: true });
-
-    var ticking = false;
-    window.addEventListener('mousemove', function (e) {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        ticking = false;
-        var mx = e.clientX;
-        var my = e.clientY;
-
-        mascotControllers.forEach(function (mc) {
-          if (!mc.tiltWrap || !mc.rect || mc.isActing()) return;
-          var dist = Math.hypot(mx - mc.rect.cx, my - mc.rect.cy);
-          if (dist < 130) {
-            // Gentle restrained look toward cursor (max ±3.2deg)
-            var tilt = ((mx - mc.rect.cx) / 130) * 3.2;
-            mc.tiltWrap.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg)';
-          } else {
-            mc.tiltWrap.style.transform = 'rotate(0deg)';
-          }
-        });
-      });
+    var touchStartX = 0, touchStartY = 0;
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
     }, { passive: true });
-  }
+
+    el.addEventListener('touchend', function (e) {
+      if (e.changedTouches && e.changedTouches[0]) {
+        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        if (dx < 10 && dy < 10) triggerAction();
+      }
+    }, { passive: true });
+
+    if (prefersReduced) return;
+
+    // Claude divider line walking state machine
+    var mode = 'IDLE'; // 'IDLE', 'WALKING'
+    var currentX = 64;
+    var targetX = 64;
+    var direction = 1; // +1 right, -1 left
+    var walkStepTick = 0;
+    var walkCycle = [2, 3, 4, 3];
+    var cycleIdx = 0;
+    var idleTimer = null;
+
+    // Initialize position
+    el.style.left = currentX + 'px';
+
+    function getBounds() {
+      var parent = el.offsetParent || document.getElementById('experience') || document.body;
+      var parentW = parent.offsetWidth || window.innerWidth;
+      var minX = 36;
+      var maxX = Math.max(minX + 60, Math.min(220, Math.round(parentW * 0.28)));
+      return { minX: minX, maxX: maxX };
+    }
+
+    function planNextWalk() {
+      if (isActing || el.classList.contains('mascot-offscreen')) {
+        idleTimer = setTimeout(planNextWalk, 2500);
+        return;
+      }
+
+      var bounds = getBounds();
+      // Pick next target separated by at least 45px
+      var candidate;
+      for (var iter = 0; iter < 5; iter++) {
+        candidate = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
+        if (Math.abs(candidate - currentX) >= 45) break;
+      }
+
+      targetX = Math.round(candidate);
+      direction = targetX > currentX ? 1 : -1;
+
+      // Face walking direction
+      if (direction > 0) {
+        claudeBody.classList.remove('facing-left');
+        claudeBody.classList.add('facing-right');
+      } else {
+        claudeBody.classList.remove('facing-right');
+        claudeBody.classList.add('facing-left');
+      }
+
+      mode = 'WALKING';
+      walkStepTick = 0;
+      cycleIdx = 0;
+      setFrame(walkCycle[0]);
+    }
+
+    function scheduleIdleGesture() {
+      // Small idle reaction during pause
+      var r = Math.random();
+      if (r < 0.5) {
+        // Blink
+        setFrame(1);
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing) setFrame(0);
+        }, 180);
+      } else if (r < 0.75) {
+        // Small wave
+        setFrame(5);
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing) setFrame(0);
+        }, 850);
+      } else {
+        // Thinking pose
+        el.classList.add('state-think');
+        setTimeout(function () {
+          el.classList.remove('state-think');
+        }, 1100);
+      }
+    }
+
+    // Walking animation frame loop
+    var lastRafTime = performance.now();
+    function walkLoop(now) {
+      requestAnimationFrame(walkLoop);
+
+      if (el.classList.contains('mascot-offscreen') || isActing) {
+        return;
+      }
+
+      var dt = Math.min(34, now - lastRafTime);
+      lastRafTime = now;
+
+      if (mode === 'WALKING') {
+        var dist = Math.abs(targetX - currentX);
+        var stepSpeed = 0.038 * dt; // ~0.55px per 16ms frame
+
+        if (dist <= stepSpeed) {
+          currentX = targetX;
+          el.style.left = Math.round(currentX) + 'px';
+          mode = 'IDLE';
+          setFrame(0);
+
+          // Idle pause before next walk (5.5s to 9s)
+          var idleDuration = 5500 + Math.floor(Math.random() * 3500);
+          setTimeout(scheduleIdleGesture, Math.round(idleDuration * 0.4));
+          idleTimer = setTimeout(planNextWalk, idleDuration);
+        } else {
+          currentX += direction * stepSpeed;
+          el.style.left = currentX.toFixed(1) + 'px';
+
+          walkStepTick += dt;
+          if (walkStepTick >= 170) { // Cycle frame every 170ms
+            walkStepTick = 0;
+            cycleIdx = (cycleIdx + 1) % walkCycle.length;
+            setFrame(walkCycle[cycleIdx]);
+          }
+        }
+      }
+    }
+
+    requestAnimationFrame(walkLoop);
+    idleTimer = setTimeout(planNextWalk, 3200);
+  })();
+
+  // 3. Gemini Cosmic Companion Controller
+  (function initGemini() {
+    var el = document.getElementById('mascot-gemini');
+    if (!el) return;
+
+    var isActing = false;
+    var cooldownUntil = 0;
+    var actionTimer = null;
+    var schedulerTimer = null;
+
+    function clearStateClasses() {
+      el.classList.remove('state-blink', 'state-wave', 'state-star-lift', 'state-think', 'state-happy');
+    }
+
+    function triggerAction() {
+      var now = Date.now();
+      if (isActing || now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 950;
+
+      clearStateClasses();
+      el.classList.add('is-acting');
+
+      if (actionTimer) clearTimeout(actionTimer);
+      actionTimer = setTimeout(function () {
+        el.classList.remove('is-acting');
+        isActing = false;
+      }, 850);
+    }
+
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerAction();
+    });
+
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerAction();
+      }
+    });
+
+    var touchStartX = 0, touchStartY = 0;
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function (e) {
+      if (e.changedTouches && e.changedTouches[0]) {
+        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        if (dx < 10 && dy < 10) triggerAction();
+      }
+    }, { passive: true });
+
+    if (prefersReduced) return;
+
+    // Desynchronized autonomous behavior
+    var actions = ['blink', 'blink', 'wave', 'starLift', 'think', 'happy'];
+    function runNextAction() {
+      if (el.classList.contains('mascot-offscreen') || isActing) {
+        schedulerTimer = setTimeout(runNextAction, 3200);
+        return;
+      }
+
+      var choice = actions[Math.floor(Math.random() * actions.length)];
+      clearStateClasses();
+
+      if (choice === 'blink') {
+        el.classList.add('state-blink');
+        setTimeout(clearStateClasses, 160);
+      } else if (choice === 'wave') {
+        el.classList.add('state-wave');
+        setTimeout(clearStateClasses, 1100);
+      } else if (choice === 'starLift') {
+        el.classList.add('state-star-lift');
+        setTimeout(clearStateClasses, 1200);
+      } else if (choice === 'think') {
+        el.classList.add('state-think');
+        setTimeout(clearStateClasses, 1300);
+      } else if (choice === 'happy') {
+        el.classList.add('state-happy');
+        setTimeout(clearStateClasses, 950);
+      }
+
+      var nextDelay = 4800 + Math.floor(Math.random() * 3400);
+      schedulerTimer = setTimeout(runNextAction, nextDelay);
+    }
+
+    schedulerTimer = setTimeout(runNextAction, 4500);
+  })();
 
   // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery
-  if ('IntersectionObserver' in window && mascotControllers.length > 0) {
+  if ('IntersectionObserver' in window) {
     var mascotObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -1668,8 +2041,9 @@ document.addEventListener('keydown', function (e) {
       });
     }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
 
-    mascotControllers.forEach(function (mc) {
-      mascotObserver.observe(mc.el);
+    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) mascotObserver.observe(el);
     });
   }
 })();

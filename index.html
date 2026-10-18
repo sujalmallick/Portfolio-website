@@ -18,8 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=26">
-  <link rel="stylesheet" href="mediaqueries.css?v=26">
+  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="mediaqueries.css?v=32">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
@@ -160,7 +160,10 @@
               <img src="./assets/mascot-chatgpt-bubble.png" alt="" class="mascot-bubble-img">
             </span>
             <span class="chatgpt-body">
-              <img src="./assets/mascot-chatgpt.png" alt="ChatGPT pixel companion" class="mascot-img">
+              <img src="./assets/mascot-chatgpt-main.png" alt="ChatGPT pixel companion" class="mascot-img chatgpt-main-img">
+              <img src="./assets/mascot-chatgpt-arml.png" alt="" class="chatgpt-arml-img" aria-hidden="true">
+              <img src="./assets/mascot-chatgpt-armr.png" alt="" class="chatgpt-armr-img" aria-hidden="true">
+              <span class="chatgpt-screen-blink" aria-hidden="true"></span>
               <span class="chatgpt-thruster-glow" aria-hidden="true"></span>
             </span>
           </span>
@@ -254,13 +257,13 @@
 
   <!-- ═══════════════════════════ EXPERIENCE ════════════════════════════ -->
   <section id="experience" class="reveal-divider" aria-label="Experience">
-    <!-- Claude-inspired Robot perched on About/Experience divider -->
-    <div class="pixel-mascot mascot-claude" id="mascot-claude" role="img" aria-label="Claude-inspired pixel robot perched on divider" tabindex="0">
+    <!-- Claude-inspired Robot walking on About/Experience divider -->
+    <div class="pixel-mascot mascot-claude" id="mascot-claude" role="img" aria-label="Claude-inspired pixel robot walking on divider" tabindex="0">
       <div class="mascot-bubble claude-bubble" aria-hidden="true">
         <img src="./assets/mascot-claude-bubble.png" alt="" class="mascot-bubble-img">
       </div>
       <div class="claude-body">
-        <img src="./assets/mascot-claude-body.png?v=2" alt="Claude pixel robot" class="mascot-img claude-main-img">
+        <div class="claude-sprite" aria-hidden="true"></div>
       </div>
     </div>
     <div class="section-header reveal">
@@ -787,7 +790,10 @@
             </div>
             <div class="gemini-orbit-wrap">
               <div class="gemini-body">
-                <img src="./assets/mascot-gemini.png" alt="Gemini pixel companion" class="mascot-img gemini-main-img">
+                <img src="./assets/mascot-gemini-main.png" alt="Gemini pixel companion" class="mascot-img gemini-main-img">
+                <img src="./assets/mascot-gemini-arml.png" alt="" class="gemini-arml-img" aria-hidden="true">
+                <img src="./assets/mascot-gemini-armr.png" alt="" class="gemini-armr-img" aria-hidden="true">
+                <span class="gemini-visor-blink" aria-hidden="true"></span>
                 <div class="gemini-star-sparkler" aria-hidden="true">
                   <span class="constellation-spark c-spark-1"></span>
                   <span class="constellation-spark c-spark-2"></span>
@@ -870,6 +876,6 @@
   <!-- Roaming Pixel Space Rocket Companion Canvas -->
   <canvas id="space-rocket-canvas" aria-hidden="true"></canvas>
 
-  <script src="script.js?v=31"></script>
+  <script src="script.js?v=33"></script>
 </body>
 </html>

@@ -39,24 +39,21 @@
 
   /* AI Pixel Mascots — Tablet adjustments */
   .mascot-chatgpt {
-    left: 16px;
+    left: 14px;
     bottom: -4px;
-    right: auto;
-    top: auto;
-    width: 56px;
+    transform: scale(0.88);
+    transform-origin: bottom center;
   }
 
   .mascot-claude {
-    left: clamp(20px, 6vw, 48px);
-    width: 58px;
-    height: auto;
-    top: -34px;
+    transform: scale(0.88);
+    transform-origin: bottom left;
   }
 
   .mascot-gemini {
     right: -58px;
-    width: 48px;
-    top: -12px;
+    transform: scale(0.88);
+    transform-origin: top right;
   }
 
   .edu-divider-character {
@@ -248,40 +245,38 @@
 
   /* AI Pixel Mascots — Mobile adjustments */
   .mascot-chatgpt {
-    left: 14px;
+    left: 10px;
     bottom: -4px;
-    right: auto;
-    top: auto;
-    width: 48px;
+    transform: scale(0.78);
+    transform-origin: bottom center;
   }
 
   .chatgpt-bubble {
-    width: 32px;
-    top: -34px;
+    width: 36px;
+    top: -38px;
   }
 
   .mascot-claude {
-    left: 16px;
-    width: 52px;
-    height: auto;
-    top: -32px;
+    transform: scale(0.78);
+    transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 32px;
-    top: -34px;
-    left: 14px;
+    width: 36px;
+    top: -38px;
+    left: 16px;
   }
 
   .mascot-gemini {
     right: 8px;
-    width: 44px;
     top: -42px;
+    transform: scale(0.8);
+    transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 30px;
-    top: -32px;
+    width: 34px;
+    top: -36px;
     right: -2px;
   }
 
@@ -296,21 +291,21 @@
     height: 29px;
   }
 
-  /* Footer living pixel world */
+  /* Footer living pixel world (Uncompressed 84px height for crisp pixel rendering) */
   .footer-inner {
     gap: 0.75rem;
-    min-height: 64px;
+    min-height: 84px;
   }
 
   .footer-world-scene {
     width: 100%;
-    height: 64px;
+    height: 84px;
     margin: 0 auto;
   }
 
   #footer-world-canvas {
     width: 100%;
-    height: 64px;
+    height: 84px;
   }
 }
 
@@ -350,38 +345,38 @@
   }
 
   .mascot-chatgpt {
-    left: 10px;
+    left: 8px;
     bottom: -2px;
-    width: 42px;
+    transform: scale(0.7);
+    transform-origin: bottom center;
   }
 
   .chatgpt-bubble {
-    width: 28px;
-    top: -30px;
+    width: 32px;
+    top: -34px;
   }
 
   .mascot-claude {
-    width: 46px;
-    height: auto;
-    top: -28px;
-    left: 12px;
+    transform: scale(0.72);
+    transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 28px;
-    top: -30px;
-    left: 12px;
+    width: 32px;
+    top: -34px;
+    left: 14px;
   }
 
   .mascot-gemini {
-    width: 40px;
-    top: -38px;
     right: 4px;
+    top: -38px;
+    transform: scale(0.74);
+    transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 26px;
-    top: -28px;
+    width: 30px;
+    top: -32px;
   }
 
   .edu-divider-character {
@@ -391,19 +386,19 @@
   }
 
   .footer-inner {
-    min-height: 52px;
+    min-height: 84px;
     gap: 0.5rem;
     overflow: hidden;
   }
 
   .footer-world-scene {
     width: 100%;
-    height: 52px;
+    height: 84px;
   }
 
   #footer-world-canvas {
     width: 100%;
-    height: 52px;
+    height: 84px;
   }
 }
 
@@ -434,14 +429,15 @@
   }
 
   .mascot-chatgpt {
-    left: 8px;
+    left: 6px;
     bottom: -2px;
-    width: 36px;
+    transform: scale(0.62);
+    transform-origin: bottom center;
   }
 
   .chatgpt-bubble {
-    width: 24px;
-    top: -26px;
+    width: 28px;
+    top: -30px;
   }
 
   .chatgpt-thruster-glow {
@@ -450,27 +446,26 @@
   }
 
   .mascot-claude {
-    width: 40px;
-    height: auto;
-    top: -24px;
-    left: 8px;
+    transform: scale(0.65);
+    transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 24px;
-    top: -26px;
+    width: 28px;
+    top: -30px;
     left: 10px;
   }
 
   .mascot-gemini {
-    width: 36px;
-    top: -34px;
     right: 0px;
+    top: -34px;
+    transform: scale(0.68);
+    transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 24px;
-    top: -24px;
+    width: 26px;
+    top: -28px;
   }
 
   .edu-divider-character {
@@ -482,7 +477,7 @@
   .footer-inner,
   .footer-world-scene,
   #footer-world-canvas {
-    height: 48px;
-    min-height: 48px;
+    height: 84px;
+    min-height: 84px;
   }
 }
