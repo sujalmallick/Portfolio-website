@@ -704,12 +704,12 @@ async function processSheet() {
 
           frameRects++;
           totalRectCount++;
-          d += `M ${x} ${y} h ${w} v ${h} h -${w} z `;
+          d += `M${x} ${y}h${w}v${h}h-${w}z`;
         }
       }
 
       if (d) {
-        colorPaths[result.paletteHex[c]] = d.trim();
+        colorPaths[result.paletteHex[c]] = d;
       }
     }
 
