@@ -136,7 +136,7 @@
     width: 100%;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.85rem;
+    gap: 1.75rem;
   }
 
   .cert-verify-btn {
@@ -153,15 +153,11 @@
     width: 100%;
   }
 
-  .mascot-gemini {
+  .mascot-gemini-wrap.mascot-gemini-badge {
     right: 8px;
-    top: -42px;
-    width: 46px;
-  }
-
-  .gemini-bubble {
-    width: 40px;
-    top: -42px;
+    top: -44px;
+    transform: scale(0.92);
+    transform-origin: bottom right;
   }
 }
 
