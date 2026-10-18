@@ -237,12 +237,24 @@ document.addEventListener('keydown', function (e) {
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── PROTECTED Terminator Character & Code Projectiles ─────────────────────────
-  // STRICT RULE: Original Terminator sprites and projectile assets remain untouched
-  var robotImg = new Image();
-  robotImg.src = 'assets/wasteland/cyborg-shooter-0.png';
+  // ── High-Detail 16-Bit Cyborg Shooter 4-Frame Walk Suite & Recoil State ──────
+  var cyborgWalkFrames = [
+    new Image(),
+    new Image(),
+    new Image(),
+    new Image()
+  ];
+  cyborgWalkFrames[0].src = 'assets/wasteland/cyborg-shooter-0.png';
+  cyborgWalkFrames[1].src = 'assets/wasteland/cyborg-shooter-1.png';
+  cyborgWalkFrames[2].src = 'assets/wasteland/cyborg-shooter-2.png';
+  cyborgWalkFrames[3].src = 'assets/wasteland/cyborg-shooter-3.png';
 
-  var robotStepImg = new Image();
-  robotStepImg.src = 'assets/wasteland/cyborg-shooter-1.png';
+  var cyborgFireImg = new Image();
+  cyborgFireImg.src = 'assets/wasteland/cyborg-shooter-fire.png';
+
+  // Backwards-compatible aliases
+  var robotImg = cyborgWalkFrames[0];
+  var robotStepImg = cyborgWalkFrames[1];
 
   var muzzleImg = new Image();
   muzzleImg.src = 'assets/muzzle-flash.png';
@@ -262,9 +274,9 @@ document.addEventListener('keydown', function (e) {
   // Terminator Geometry & Motion Constants
   var ROBOT_DRAW_W = 75;
   var ROBOT_DRAW_H = 74;
-  var BARREL_OFFSET_X = 2;
-  var BARREL_OFFSET_Y = 27;
-  var WALK_SPEED = 0.32; // Slower deliberate mechanical walking pace
+  var BARREL_OFFSET_X = 0; // True muzzle barrel tip alignment
+  var BARREL_OFFSET_Y = 26;
+  var WALK_SPEED = 0.34; // Slower deliberate mechanical walking pace
 
   // Runtime State
   var frameCount = 0;
@@ -385,9 +397,9 @@ document.addEventListener('keydown', function (e) {
       } else {
         robotX += (moveDist > 0 ? 1 : -1) * currentSpeed;
         walkStepTimer++;
-        if (walkStepTimer >= 18) { // Deliberate mechanical stride cadence
+        if (walkStepTimer >= 14) { // Crisp 4-frame mechanical stride cadence
           walkStepTimer = 0;
-          walkFrame = walkFrame === 0 ? 1 : 0;
+          walkFrame = (walkFrame + 1) % 4;
         }
       }
     } else if (patrolState === 'AIM_FIRE') {
@@ -413,6 +425,7 @@ document.addEventListener('keydown', function (e) {
           key: key,
           x: muzzleTipX,
           y: muzzleTipY,
+          baseY: muzzleTipY,
           vx: projVx,
           alpha: 1,
           dist: 0,
@@ -424,16 +437,24 @@ document.addEventListener('keydown', function (e) {
           type: 'dot',
           x: muzzleTipX - facing * 14,
           y: muzzleTipY,
+          baseY: muzzleTipY,
           vx: projVx,
           alpha: 1,
           dist: 0,
           waveOffset: Math.random() * 6.28
         });
 
-        recoilOffset = isOverdrive ? 3.4 : 2.0;
+        recoilOffset = isOverdrive ? 3.6 : 2.4;
         spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
         burstRemaining--;
-        burstCooldown = isOverdrive ? 26 : 48; // Deliberate slower firing interval
+        burstCooldown = isOverdrive ? 24 : 44; // Deliberate firing interval
+
+        // Dispatch firing event for coordinated Service Droid reaction
+        try {
+          window.dispatchEvent(new CustomEvent('cyborg-fire-burst', {
+            detail: { x: robotX, facing: facing }
+          }));
+        } catch (evErr) {}
       } else if (burstRemaining <= 0 && burstCooldown <= 0) {
         patrolState = 'IDLE_SCAN';
         stateTimer = 180 + Math.floor(Math.random() * 80); // Slower pause (~3 to 4.5s) between bursts
@@ -604,40 +625,50 @@ document.addEventListener('keydown', function (e) {
     }
     ctx.globalAlpha = 1.0;
 
-    // 6. Preserved Authentic Terminator Character (Sprite & Animation)
+    // 6. High-Detail 16-Bit Cyborg Character (4-Frame Walk Suite & Firing State)
     // Feet land at y = 96 (the ground baseline)
-    var droidSprite = (walkFrame === 1 && robotStepImg.complete && robotStepImg.naturalWidth > 0)
-      ? robotStepImg
-      : robotImg;
+    var activeSprite;
+    if (patrolState === 'AIM_FIRE' && (recoilOffset > 0.4 || (burstCooldown > 0 && burstRemaining > 0))) {
+      activeSprite = (cyborgFireImg.complete && cyborgFireImg.naturalWidth > 0) ? cyborgFireImg : cyborgWalkFrames[0];
+    } else if (patrolState === 'WALK') {
+      var curF = cyborgWalkFrames[walkFrame];
+      activeSprite = (curF && curF.complete && curF.naturalWidth > 0) ? curF : cyborgWalkFrames[0];
+    } else {
+      activeSprite = cyborgWalkFrames[0];
+    }
 
-    if (droidSprite.complete && droidSprite.naturalWidth > 0) {
+    if (activeSprite && activeSprite.complete && activeSprite.naturalWidth > 0) {
       ctx.save();
+      var isFiringNow = (patrolState === 'AIM_FIRE' && recoilOffset > 0.4);
+
       if (facing === -1) {
         // Facing Left
-        ctx.drawImage(droidSprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
+        ctx.drawImage(activeSprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
-        // Glowing Cyan Visor Glint
-        if (patrolState === 'IDLE_SCAN' || patrolState === 'AIM_FIRE' || Math.sin(frameCount * 0.08) > 0.6) {
-          ctx.fillStyle = '#22d3ee';
-          ctx.shadowColor = '#22d3ee';
-          ctx.shadowBlur = 4;
-          ctx.globalAlpha = 0.85;
-          ctx.fillRect(rx + 9, ry + 15, 3, 2);
-        }
+        // Glowing Amber Visor Glint (exact visor coordinates on 75x74 sprite: x=44, y=8)
+        var visorAlpha = isFiringNow
+          ? 1.0
+          : 0.70 + 0.30 * Math.sin(frameCount * 0.12);
+        ctx.fillStyle = isFiringNow ? '#fff7ed' : '#f59e0b';
+        ctx.shadowColor = isFiringNow ? '#f97316' : '#f59e0b';
+        ctx.shadowBlur = isFiringNow ? 8 : 4;
+        ctx.globalAlpha = visorAlpha;
+        ctx.fillRect(rx + 44, ry + 8, 4, 3);
       } else {
         // Facing Right (Mirrored)
         ctx.translate(rx + ROBOT_DRAW_W, ry);
         ctx.scale(-1, 1);
-        ctx.drawImage(droidSprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
+        ctx.drawImage(activeSprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
-        // Visor Glint
-        if (patrolState === 'IDLE_SCAN' || patrolState === 'AIM_FIRE' || Math.sin(frameCount * 0.08) > 0.6) {
-          ctx.fillStyle = '#22d3ee';
-          ctx.shadowColor = '#22d3ee';
-          ctx.shadowBlur = 4;
-          ctx.globalAlpha = 0.85;
-          ctx.fillRect(9, 15, 3, 2);
-        }
+        // Glowing Amber Visor Glint
+        var visorAlpha = isFiringNow
+          ? 1.0
+          : 0.70 + 0.30 * Math.sin(frameCount * 0.12);
+        ctx.fillStyle = isFiringNow ? '#fff7ed' : '#f59e0b';
+        ctx.shadowColor = isFiringNow ? '#f97316' : '#f59e0b';
+        ctx.shadowBlur = isFiringNow ? 8 : 4;
+        ctx.globalAlpha = visorAlpha;
+        ctx.fillRect(44, 8, 4, 3);
       }
       ctx.restore();
     }
@@ -649,6 +680,14 @@ document.addEventListener('keydown', function (e) {
     render();
     rafId = requestAnimationFrame(loop);
   }
+
+  // Coordinated Companion Response: Acknowledge Droid Cheer
+  window.addEventListener('droid-happy-cheer', function () {
+    if (patrolState === 'IDLE_SCAN') {
+      facing = -1; // Glance toward wasteland droid partner
+      stateTimer = Math.max(stateTimer, 60);
+    }
+  });
 
   // Interactive Click Handlers: Terminator Overdrive Burst
   if (container) {
@@ -1074,8 +1113,11 @@ document.addEventListener('keydown', function (e) {
       if (state === 'HAPPY') return;
       state = 'HAPPY';
       stateTimer = 0.65;
-      inner.classList.remove('is-idle', 'is-moving');
+      inner.classList.remove('is-idle', 'is-moving', 'is-alert');
       inner.classList.add('is-happy');
+      try {
+        window.dispatchEvent(new CustomEvent('droid-happy-cheer'));
+      } catch (ev) {}
       setTimeout(function () {
         if (state === 'HAPPY') {
           inner.classList.remove('is-happy');
@@ -1083,6 +1125,22 @@ document.addEventListener('keydown', function (e) {
         }
       }, 650);
     }
+
+    // Coordinated companion alert scan when Cyborg fires across the wasteland
+    window.addEventListener('cyborg-fire-burst', function (e) {
+      if (state === 'IDLE' || state === 'PAUSE') {
+        if (inner && !inner.classList.contains('is-happy') && !inner.classList.contains('is-alert')) {
+          inner.classList.remove('is-idle');
+          inner.classList.add('is-alert');
+          setTimeout(function () {
+            if (inner && inner.classList.contains('is-alert')) {
+              inner.classList.remove('is-alert');
+              inner.classList.add('is-idle');
+            }
+          }, 520);
+        }
+      }
+    });
 
     wrap.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -2663,13 +2721,34 @@ document.addEventListener('keydown', function (e) {
     { id: 'contact-message', labelText: 'MESSAGE' }
   ];
 
-  var FRAME_W = 44;
-  var FRAME_H = 44;
-  var tuxWidth = 44;
-  var tuxHeight = 44;
-  var feetOffset = 40; // baseline of feet is 40px from top of 44px box
+  var tuxWidth = 36;
+  var tuxHeight = 36;
+  var FRAME_W = 36;
+  var FRAME_H = 36;
+  var feetOffset = 33; // baseline of feet is ~91% of sprite box height (80/88 in native cell)
 
-  // Sprite atlas rows (4 frames per row, 88x88px native cells scaled to 44x44px):
+  function updateDimensions() {
+    var screenW = window.innerWidth;
+    if (screenW <= 600) {
+      tuxWidth = 32;
+      tuxHeight = 32;
+    } else if (screenW <= 900) {
+      tuxWidth = 34;
+      tuxHeight = 34;
+    } else {
+      tuxWidth = 36;
+      tuxHeight = 36;
+    }
+    FRAME_W = tuxWidth;
+    FRAME_H = tuxHeight;
+    feetOffset = Math.round(tuxHeight * (80 / 88));
+
+    sprite.style.width = tuxWidth + 'px';
+    sprite.style.height = tuxHeight + 'px';
+    sprite.style.backgroundSize = (tuxWidth * 4) + 'px ' + (tuxHeight * 6) + 'px';
+  }
+
+  // Sprite atlas rows (4 frames per row, 88x88px native cells scaled responsively):
   // Row 0: IDLE (frame 0=stand, 1=blink, 2=breath/wide, 3=soft)
   // Row 1: WALK_RIGHT (frames 0..3: 4-step waddle cycle facing right)
   // Row 2: WALK_LEFT (frames 0..3: 4-step waddle cycle facing left)
@@ -2707,8 +2786,8 @@ document.addEventListener('keydown', function (e) {
 
     var span = label.querySelector('.form-label-text');
     var spanRect = span ? span.getBoundingClientRect() : labelRect;
-    var minX = spanRect.right - formRect.left + 16;
-    var maxX = Math.max(minX + 35, formRect.width - tuxWidth - 14);
+    var minX = spanRect.right - formRect.left + 14;
+    var maxX = Math.max(minX + 30, formRect.width - tuxWidth - 12);
 
     return { lineY: lineY, minX: minX, maxX: maxX };
   }
@@ -3024,6 +3103,7 @@ document.addEventListener('keydown', function (e) {
   }
 
   function snapToField() {
+    updateDimensions();
     var m = getFieldMetrics(currentField);
     posY = m.lineY - feetOffset;
     posX = Math.min(Math.max(posX, m.minX), m.maxX);
@@ -3031,6 +3111,7 @@ document.addEventListener('keydown', function (e) {
   }
 
   function init() {
+    updateDimensions();
     var m = getFieldMetrics(0);
     currentField = 0;
     journeyDir = 1;

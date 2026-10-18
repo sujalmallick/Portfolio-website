@@ -1583,7 +1583,7 @@ footer {
    ========================================================================== */
 .footer-prop.prop-droid {
   left: 0;
-  bottom: 0;
+  bottom: -5px; /* Firmly anchor caterpillar treads into wasteland sand bed */
   width: 58px;
   height: 60px;
   z-index: 5;
@@ -1597,6 +1597,7 @@ footer {
   position: relative;
   width: 58px;
   height: 60px;
+  transform-origin: 50% 100%;
 }
 
 .footer-droid-flipper {
@@ -1614,6 +1615,7 @@ footer {
   background-size: 232px 60px; /* 4 frames x 58px width */
   background-repeat: no-repeat;
   background-position: 0px 0px;
+  transform-origin: 50% 100%;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -1635,7 +1637,7 @@ footer {
   }
 }
 
-/* 2. Idle State: Rest on Neutral Frame with Gentle Chassis Breathing */
+/* 2. Idle State: Rest on Neutral Frame with Grounded Chassis Breathing */
 .footer-droid-inner.is-idle .footer-droid-sprite {
   background-position-x: 0px;
   animation: droidIdleBreath 3.4s infinite ease-in-out;
@@ -1643,12 +1645,12 @@ footer {
 
 @keyframes droidIdleBreath {
   0%, 100% {
-    transform: translateY(0px) scale(1);
+    transform: scale(1, 1);
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 4px rgba(56, 189, 248, 0.35));
   }
   50% {
-    transform: translateY(-2.5px) scale(1.015);
-    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.85));
+    transform: scale(1.01, 1.02);
+    filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.85));
   }
 }
 
@@ -1665,8 +1667,35 @@ footer {
   100% { transform: translateY(0) rotate(0deg) scale(1); }
 }
 
+/* 4. Alert Scan Response to Cyborg Cannon Fire */
+.footer-droid-inner.is-alert {
+  animation: droidAlertScan 0.52s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes droidAlertScan {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65));
+  }
+  35% {
+    transform: translateY(-7px) scale(1.04);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(56, 189, 248, 1));
+  }
+  70% {
+    transform: translateY(-2px) scale(1.02);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65));
+  }
+}
+
 /* Responsive Scaling */
 @media (max-width: 899px) {
+  .footer-prop.prop-droid {
+    bottom: -4px;
+  }
   .footer-prop.prop-droid,
   .footer-droid-inner,
   .footer-droid-flipper,
@@ -1684,6 +1713,9 @@ footer {
 }
 
 @media (max-width: 599px) {
+  .footer-prop.prop-droid {
+    bottom: -3px;
+  }
   .footer-prop.prop-droid,
   .footer-droid-inner,
   .footer-droid-flipper,
@@ -1704,7 +1736,8 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .footer-droid-inner.is-moving .footer-droid-sprite,
   .footer-droid-inner.is-idle .footer-droid-sprite,
-  .footer-droid-inner.is-happy {
+  .footer-droid-inner.is-happy,
+  .footer-droid-inner.is-alert {
     animation: none !important;
   }
   .footer-droid-sprite {
@@ -3019,6 +3052,17 @@ footer {
   z-index: 5;
 }
 
+/* ChatGPT beside About Heading */
+.mascot-chatgpt-wrap.mascot-chatgpt-heading {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
 .mascot-chatgpt-float {
   width: 60px;
   height: 72px;
@@ -3047,7 +3091,6 @@ footer {
   .mascot-chatgpt-wrap {
     width: 50px;
     height: 60px;
-    margin-top: -12px;
   }
   .mascot-chatgpt-float {
     width: 50px;
@@ -3064,72 +3107,54 @@ footer {
   }
 }
 
-/* ── 6. GEMINI FLOATING COSMONAUT (BESIDE ABOUT HEADING & GOOGLE BADGE) ── */
+/* ── 6. GEMINI FLOATING COSMONAUT NEAR GOOGLE SKILLS BADGE BUTTON ──────── */
 .mascot-gemini-wrap {
-  position: absolute;
-  top: 48px;
-  right: 20%;
-  width: 72px;
-  height: 68px;
-  z-index: 4;
+  position: relative;
+  width: 54px;
+  height: 51px;
+  z-index: 5;
   pointer-events: auto;
   cursor: pointer;
 }
 
-.mascot-gemini-wrap.mascot-gemini-heading {
-  position: relative;
-  top: auto;
-  right: auto;
-  margin-bottom: 0.35rem;
-  flex-shrink: 0;
+/* Positioned above the Google Skills Profile badge button */
+.mascot-gemini-wrap.mascot-gemini-badge {
+  position: absolute;
+  top: -46px;
+  right: -10px;
 }
 
 .mascot-gemini-float {
-  width: 72px;
-  height: 68px;
+  width: 54px;
+  height: 51px;
   animation: geminiFloatHover 6.8s ease-in-out infinite alternate; /* Slower floating drift */
 }
 
 .mascot-gemini-sprite {
-  width: 72px; /* ~0.33x scale */
-  height: 68px;
+  width: 54px;
+  height: 51px;
   background-image: url('./assets/mascot-gemini-sheet.png');
-  background-size: 360px 68px;
+  background-size: 270px 51px;
   background-repeat: no-repeat;
   animation: geminiFloat 2.2s steps(5) infinite; /* Slower gestures cycle */
 }
 
 @keyframes geminiFloat {
-  to { background-position-x: -360px; }
+  to { background-position-x: -270px; }
 }
 
 @keyframes geminiFloatHover {
   0%   { transform: translateY(0) rotate(0deg); }
-  50%  { transform: translateY(-7px) rotate(2deg); }
-  100% { transform: translateY(-3px) rotate(-1.5deg); }
+  50%  { transform: translateY(-6px) rotate(2deg); }
+  100% { transform: translateY(-2px) rotate(-1.5deg); }
 }
 
-/* Compact Companion Gemini Near Google Skills Profile Button */
-.mascot-gemini-badge-companion {
-  position: absolute;
-  top: -24px;
-  right: -12px;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.gemini-sprite-compact {
-  width: 36px;
-  height: 34px;
-  background-size: 180px 34px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
-  animation: geminiFloat 2.8s steps(5) infinite;
-}
-
-@media (max-width: 1024px) {
-  .mascot-gemini-wrap {
-    top: 40px;
-    right: 18%;
+@media (max-width: 600px) {
+  .mascot-gemini-wrap.mascot-gemini-badge {
+    top: -40px;
+    right: -6px;
+    transform: scale(0.9);
+    transform-origin: bottom right;
   }
 }
 
