@@ -2770,7 +2770,7 @@ document.addEventListener('keydown', function (e) {
     // Scroll parallax fallback if native CSS animation-timeline is unsupported
     var supportsScrollTimeline = false;
     try {
-      supportsScrollTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll(root)');
+      supportsScrollTimeline = window.CSS && CSS.supports && (CSS.supports('animation-timeline', 'view()') || CSS.supports('animation-timeline', 'scroll(root)'));
     } catch (e) {}
 
     if (!supportsScrollTimeline && !prefersReduced) {
@@ -2787,9 +2787,11 @@ document.addEventListener('keydown', function (e) {
             if (nebula) {
               var nebulaSec = document.getElementById('about');
               if (nebulaSec) {
-                var nTop = nebulaSec.offsetTop;
-                var nRel = scrollY - nTop;
-                nebula.style.transform = 'translate3d(0, ' + (nRel * -0.04) + 'px, 0)';
+                var rect = nebulaSec.getBoundingClientRect();
+                var viewH = window.innerHeight;
+                if (rect.bottom >= -100 && rect.top <= viewH + 100) {
+                  nebula.style.transform = 'translate3d(0, ' + Math.round(rect.top * -0.035) + 'px, 0)';
+                }
               }
             }
             if (station) {
