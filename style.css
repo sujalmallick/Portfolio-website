@@ -848,6 +848,8 @@ section {
 
 /* — Featured flagship card — */
 .project-featured {
+  position: relative;
+  z-index: 2;
   border: 1px solid var(--border);
   padding: 2.25rem 2.5rem;
   max-width: var(--max-w);
@@ -1076,6 +1078,8 @@ section {
 
 /* Project Grid (2 columns on desktop) */
 .project-grid {
+  position: relative;
+  z-index: 2;
   max-width: var(--max-w);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2960,8 +2964,8 @@ footer {
 /* ── 3. TINY SPACE PROBE DEEP-SPACE ASSET ───────────────────────────────── */
 .tiny-space-probe-drift-wrap {
   position: absolute;
-  top: 75px;
-  left: 5%;
+  top: 26px;
+  left: clamp(24px, 4vw, 56px);
   width: 46px;
   height: 34px;
   pointer-events: none;
@@ -3014,7 +3018,7 @@ footer {
 
 @media (max-width: 768px) {
   .tiny-space-probe-drift-wrap {
-    top: 22px;
+    top: 20px;
     left: 4%;
     width: 30px;
     height: 22px;
@@ -3027,8 +3031,8 @@ footer {
 
 @media (max-width: 480px) {
   .tiny-space-probe-drift-wrap {
-    top: 16px;
-    left: 18px;
+    top: 14px;
+    left: 16px;
     width: 26px;
     height: 19px;
   }
@@ -3554,11 +3558,12 @@ footer {
     opacity: 0.44;
   }
   .projects-orbital-station {
-    width: 105px;
-    top: 320px;
+    display: block;
+    top: 290px;
     right: 2%;
-    opacity: 0.40;
-    filter: brightness(0.72) contrast(0.90);
+    width: 115px;
+    opacity: 0.60;
+    filter: brightness(0.95) contrast(1.02);
   }
 }
 
@@ -3569,9 +3574,14 @@ footer {
     right: 8px;
     opacity: 0.35;
   }
-  /* Hide orbital station on narrow mobile screens (375px-430px) to eliminate visual clutter */
+  /* Position orbital station behind frosted project card on mobile */
   .projects-orbital-station {
-    display: none;
+    display: block;
+    top: 220px;
+    right: 4px;
+    width: 125px;
+    opacity: 0.75;
+    filter: brightness(1.12) contrast(1.08);
   }
 }
 
