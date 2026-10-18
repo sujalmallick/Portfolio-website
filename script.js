@@ -1827,271 +1827,10 @@ document.addEventListener('keydown', function (e) {
     var el = document.getElementById('mascot-claude');
     if (!el) return;
 
-    var claudeBody = el.querySelector('.claude-body');
-    var claudeSprite = el.querySelector('.claude-sprite');
-    var expSection = document.getElementById('experience');
-    if (!claudeBody || !claudeSprite) return;
-
-    var isActing = false;
-    var cooldownUntil = 0;
-    var actionTimer = null;
-    var currentState = 'idle';
-
-    function setState(st) {
-      if (currentState === st) return;
-      currentState = st;
-      el.setAttribute('data-state', st);
-    }
-
-    // Dynamic divider line calibration
-    function calibrateFeet() {
-      if (!expSection) return;
-      var secRect = expSection.getBoundingClientRect();
-      var sprRect = claudeSprite.getBoundingClientRect();
-      var currentBodyTop = parseFloat(getComputedStyle(claudeBody).top) || 5;
-      var currentFeetY = sprRect.top + 61;
-      var diff = secRect.top - currentFeetY;
-      if (Math.abs(diff) > 0.5 && Math.abs(diff) < 20) {
-        claudeBody.style.top = (currentBodyTop + diff) + 'px';
-      }
-    }
-
-    window.addEventListener('resize', calibrateFeet);
-    setTimeout(calibrateFeet, 300);
-
     var claudeBubble = el.querySelector('.claude-bubble');
-
-    function triggerDoubleClickAction(pointerX) {
-      var now = Date.now();
-      if (now < cooldownUntil) return;
-      isActing = true;
-      cooldownUntil = now + 2800;
-
-      // 1. Show only Claude's Anthropic speech bubble
-      showOnlyMascotBubble(claudeBubble, 2800);
-
-      // 2. Orient body and trigger alert/surprised reaction
-      if (typeof pointerX === 'number') {
-        var rect = el.getBoundingClientRect();
-        var mascotCenter = rect.left + rect.width / 2;
-        if (pointerX < mascotCenter) {
-          claudeBody.classList.remove('facing-right');
-          claudeBody.classList.add('facing-left');
-        } else {
-          claudeBody.classList.remove('facing-left');
-          claudeBody.classList.add('facing-right');
-        }
-      }
-
-      setState('surprised');
-
-      if (actionTimer) clearTimeout(actionTimer);
-      actionTimer = setTimeout(function () {
-        isActing = false;
-        setState('idle');
-      }, 2800);
-    }
-
-    // Double-click triggers Claude speech bubble & reaction
-    el.addEventListener('dblclick', function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      triggerDoubleClickAction(e.clientX);
-    });
-
-    // Single-click is strictly suppressed to avoid single-click triggers
-    el.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
-
-    // Double-tap support for mobile/touch screens (two taps within 350ms)
-    var lastTapTime = 0;
-    el.addEventListener('touchend', function (e) {
-      var now = Date.now();
-      var tapGap = now - lastTapTime;
-      if (tapGap > 30 && tapGap < 350) {
-        e.preventDefault();
-        var touch = e.changedTouches && e.changedTouches[0];
-        triggerDoubleClickAction(touch ? touch.clientX : null);
-        lastTapTime = 0;
-      } else {
-        lastTapTime = now;
-      }
-    }, { passive: false });
-
-    // Keyboard accessibility: double-press Enter or Space triggers reaction
-    var lastKeyTime = 0;
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        var now = Date.now();
-        if (now - lastKeyTime > 30 && now - lastKeyTime < 450) {
-          triggerDoubleClickAction();
-          lastKeyTime = 0;
-        } else {
-          lastKeyTime = now;
-        }
-      }
-    });
-
-    // Hover subtly faces pointer without popping speech bubble
-    el.addEventListener('pointerenter', function (e) {
-      if (!isActing && typeof e.clientX === 'number') {
-        var rect = el.getBoundingClientRect();
-        var mascotCenter = rect.left + rect.width / 2;
-        if (e.clientX < mascotCenter) {
-          claudeBody.classList.remove('facing-right');
-          claudeBody.classList.add('facing-left');
-        } else {
-          claudeBody.classList.remove('facing-left');
-          claudeBody.classList.add('facing-right');
-        }
-      }
-    });
-
-    if (prefersReduced) return;
-
-    var mode = 'IDLE'; // 'IDLE', 'TURNING', 'WALKING'
-    var currentX = 64;
-    var targetX = 64;
-    var direction = 1;
-    var walkStepTick = 0;
-    var walkFrames = ['walk-1', 'walk-2', 'walk-3', 'walk-4'];
-    var frameIdx = 0;
-    var idleTimer = null;
-    var turnTimer = null;
-
-    el.style.left = currentX + 'px';
-
-    function getBounds() {
-      var parent = el.offsetParent || document.getElementById('experience') || document.body;
-      var parentW = parent.offsetWidth || window.innerWidth;
-      var minX = 40;
-      var maxX = Math.max(minX + 80, Math.min(320, Math.round(parentW * 0.35)));
-      return { minX: minX, maxX: maxX };
-    }
-
-    function planNextWalk() {
-      if (isActing || document.hidden || el.classList.contains('mascot-offscreen')) {
-        idleTimer = setTimeout(planNextWalk, 2000);
-        return;
-      }
-
-      var bounds = getBounds();
-      var candidate;
-      for (var iter = 0; iter < 6; iter++) {
-        candidate = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
-        if (Math.abs(candidate - currentX) >= 50) break;
-      }
-
-      targetX = Math.round(candidate);
-      var newDirection = targetX > currentX ? 1 : -1;
-
-      if (newDirection !== direction) {
-        mode = 'TURNING';
-        setState('idle');
-        turnTimer = setTimeout(function () {
-          direction = newDirection;
-          if (direction > 0) {
-            claudeBody.classList.remove('facing-left');
-            claudeBody.classList.add('facing-right');
-          } else {
-            claudeBody.classList.remove('facing-right');
-            claudeBody.classList.add('facing-left');
-          }
-          mode = 'WALKING';
-          walkStepTick = 0;
-          frameIdx = 0;
-          setState(walkFrames[0]);
-        }, 300);
-      } else {
-        mode = 'WALKING';
-        walkStepTick = 0;
-        frameIdx = 0;
-        setState(walkFrames[0]);
-      }
-    }
-
-    function scheduleIdleReaction() {
-      if (mode !== 'IDLE' || isActing) return;
-      var r = Math.random();
-      if (r < 0.5) {
-        setState('alert');
-        setTimeout(function () {
-          if (mode === 'IDLE' && !isActing) setState('idle');
-        }, 1100);
-      } else {
-        setState('surprised');
-        setTimeout(function () {
-          if (mode === 'IDLE' && !isActing) setState('idle');
-        }, 900);
-      }
-    }
-
-    var lastRafTime = performance.now();
-    function walkLoop(now) {
-      requestAnimationFrame(walkLoop);
-
-      if (el.classList.contains('mascot-offscreen') || isActing || document.hidden) {
-        lastRafTime = now;
-        return;
-      }
-
-      var dt = Math.min(34, now - lastRafTime);
-      lastRafTime = now;
-
-      if (mode === 'WALKING') {
-        var dist = Math.abs(targetX - currentX);
-        var stepDist = 0.030 * dt;
-
-        if (dist <= stepDist) {
-          currentX = targetX;
-          el.style.left = Math.round(currentX) + 'px';
-          mode = 'IDLE';
-          setState('idle');
-
-          var idleDuration = 1200 + Math.floor(Math.random() * 1800);
-          if (Math.random() < 0.6) {
-            setTimeout(scheduleIdleReaction, Math.round(idleDuration * 0.35));
-          }
-          idleTimer = setTimeout(planNextWalk, idleDuration);
-        } else {
-          currentX += direction * stepDist;
-          el.style.left = Math.round(currentX) + 'px';
-
-          walkStepTick += dt;
-          if (walkStepTick >= 180) {
-            walkStepTick = 0;
-            frameIdx = (frameIdx + 1) % walkFrames.length;
-            setState(walkFrames[frameIdx]);
-          }
-        }
-      }
-    }
-
-    requestAnimationFrame(walkLoop);
-    idleTimer = setTimeout(planNextWalk, 2500);
-  })();
-
-  // 3. Gemini Cosmic Companion Controller
-  (function initGemini() {
-    var el = document.getElementById('mascot-gemini');
-    if (!el) return;
-
     var isActing = false;
     var cooldownUntil = 0;
     var actionTimer = null;
-    var gestureTimer = null;
-    var blinkTimer = null;
-    var currentState = 'idle';
-
-    function setState(st) {
-      if (currentState === st) return;
-      currentState = st;
-      el.setAttribute('data-state', st);
-    }
-
-    var geminiBubble = el.querySelector('.gemini-bubble');
 
     function triggerDoubleClickAction() {
       var now = Date.now();
@@ -2099,32 +1838,28 @@ document.addEventListener('keydown', function (e) {
       isActing = true;
       cooldownUntil = now + 2800;
 
-      // 1. Show only Gemini's Google Gemini speech bubble
-      showOnlyMascotBubble(geminiBubble, 2800);
-
-      // 2. Trigger celebration constellation sparkles & joyful eyes
-      setState('celebrate');
+      // Show Claude Anthropic speech bubble
+      showOnlyMascotBubble(claudeBubble, 2800);
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
         isActing = false;
-        setState('idle');
       }, 2800);
     }
 
-    // Double-click triggers Gemini speech bubble & celebration
+    // Double-click triggers Claude speech bubble
     el.addEventListener('dblclick', function (e) {
       e.stopPropagation();
       e.preventDefault();
       triggerDoubleClickAction();
     });
 
-    // Single-click is strictly suppressed to avoid single-click triggers
+    // Suppress single-click
     el.addEventListener('click', function (e) {
       e.stopPropagation();
     });
 
-    // Double-tap support for mobile/touch screens (two taps within 350ms)
+    // Double-tap support for mobile/touch screens
     var lastTapTime = 0;
     el.addEventListener('touchend', function (e) {
       var now = Date.now();
@@ -2138,7 +1873,7 @@ document.addEventListener('keydown', function (e) {
       }
     }, { passive: false });
 
-    // Keyboard accessibility: double-press Enter or Space triggers reaction
+    // Keyboard accessibility: double-press Enter or Space
     var lastKeyTime = 0;
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -2152,53 +1887,73 @@ document.addEventListener('keydown', function (e) {
         }
       }
     });
+  })();
 
-    // Hover subtly blinks without popping speech bubble
-    el.addEventListener('pointerenter', function () {
-      if (!isActing && currentState === 'idle') {
-        setState('blink');
-        setTimeout(function () {
-          if (!isActing && currentState === 'blink') setState('idle');
-        }, 180);
-      }
+  // 3. Gemini Cosmic Companion Controller (Floating in Projects Section)
+  (function initGemini() {
+    var el = document.getElementById('mascot-gemini');
+    if (!el) return;
+
+    var geminiBubble = el.querySelector('.gemini-bubble');
+    var isActing = false;
+    var cooldownUntil = 0;
+    var actionTimer = null;
+
+    function triggerDoubleClickAction() {
+      var now = Date.now();
+      if (now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 2800;
+
+      // Show Gemini Google speech bubble
+      showOnlyMascotBubble(geminiBubble, 2800);
+
+      if (actionTimer) clearTimeout(actionTimer);
+      actionTimer = setTimeout(function () {
+        isActing = false;
+      }, 2800);
+    }
+
+    // Double-click triggers Gemini speech bubble
+    el.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerDoubleClickAction();
     });
 
-    if (prefersReduced) return;
+    // Suppress single-click
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
 
-    // Autonomous behavior:
-    // A. 2-frame idle/blink swap every 3-6s for 120ms
-    function runBlink() {
-      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
-        setState('blink');
-        setTimeout(function () {
-          if (!isActing && currentState === 'blink') setState('idle');
-        }, 120);
+    // Double-tap support for mobile/touch screens
+    var lastTapTime = 0;
+    el.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      var tapGap = now - lastTapTime;
+      if (tapGap > 30 && tapGap < 350) {
+        e.preventDefault();
+        triggerDoubleClickAction();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
       }
-      var delay = 3200 + Math.floor(Math.random() * 2800);
-      blinkTimer = setTimeout(runBlink, delay);
-    }
+    }, { passive: false });
 
-    // B. Welcome gesture every 8-12s: sequential swap to arm-up frames
-    function runGesture() {
-      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
-        var gestureFrames = ['star-rise', 'star-high', 'celebrate', 'star-low', 'idle'];
-        var gIdx = 0;
-        function stepGesture() {
-          if (isActing) return;
-          if (gIdx < gestureFrames.length) {
-            setState(gestureFrames[gIdx]);
-            gIdx++;
-            setTimeout(stepGesture, 380);
-          }
+    // Keyboard accessibility: double-press Enter or Space
+    var lastKeyTime = 0;
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var now = Date.now();
+        if (now - lastKeyTime > 30 && now - lastKeyTime < 450) {
+          triggerDoubleClickAction();
+          lastKeyTime = 0;
+        } else {
+          lastKeyTime = now;
         }
-        stepGesture();
       }
-      var delay = 8000 + Math.floor(Math.random() * 4000);
-      gestureTimer = setTimeout(runGesture, delay);
-    }
-
-    blinkTimer = setTimeout(runBlink, 3000);
-    gestureTimer = setTimeout(runGesture, 7000);
+    });
   })();
 
   // 4. Terminal Robot Mascot Controller (Hackathons Divider Line Walker)
