@@ -3346,47 +3346,55 @@ document.addEventListener('keydown', function (e) {
     var container = document.getElementById('asteroid-field');
     if (!container) return;
 
-    var ASTEROID_CONFIGS = [
-      // Hero / Profile Section (4 asteroids)
-      { id: 0, sectionId: 'profile', relX: 0.05, relY: 0.14, tier: 1, sprite: 3, size: 16, orbitRx: 22, orbitRy: 18, orbitSpeed: 0.00045, wobbleSpeed: 0.0009, wobbleAmp: 6, rotSpeed: 0.025, phase: 0.4 },
-      { id: 1, sectionId: 'profile', relX: 0.94, relY: 0.12, tier: 2, sprite: 2, size: 26, orbitRx: 32, orbitRy: 24, orbitSpeed: 0.00055, wobbleSpeed: 0.0011, wobbleAmp: 8, rotSpeed: -0.045, phase: 1.8 },
-      { id: 2, sectionId: 'profile', relX: 0.035, relY: 0.54, tier: 3, sprite: 1, size: 42, orbitRx: 40, orbitRy: 30, orbitSpeed: 0.00065, wobbleSpeed: 0.0013, wobbleAmp: 10, rotSpeed: 0.065, phase: 3.2 },
-      { id: 3, sectionId: 'profile', relX: 0.92, relY: 0.74, tier: 1, sprite: 3, size: 15, orbitRx: 20, orbitRy: 16, orbitSpeed: 0.0004, wobbleSpeed: 0.0008, wobbleAmp: 5, rotSpeed: -0.02, phase: 4.5 },
+        var ASTEROID_CONFIGS = [
+      // Hero / Profile Section (5 asteroids: 2 distant specks, 2 mid rocks, 1 near chunky boulder)
+      { id: 0, sectionId: 'profile', relX: 0.04, relY: 0.08, tier: 1, sprite: 3, size: 12, orbitRx: 14, orbitRy: 10, orbitSpeed: 0.00024, wobbleSpeed: 0.00055, wobbleAmp: 3, rotSpeed: 0.015, phase: 0.4, inclination: -25 },
+      { id: 1, sectionId: 'profile', relX: 0.03, relY: 0.52, tier: 3, sprite: 1, size: 56, orbitRx: 58, orbitRy: 38, orbitSpeed: 0.00078, wobbleSpeed: 0.0014, wobbleAmp: 12, rotSpeed: 0.085, phase: 3.2, inclination: 35 },
+      { id: 2, sectionId: 'profile', relX: 0.94, relY: 0.09, tier: 2, sprite: 2, size: 26, orbitRx: 30, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.0010, wobbleAmp: 6, rotSpeed: -0.045, phase: 1.8, inclination: -15 },
+      { id: 3, sectionId: 'profile', relX: 0.92, relY: 0.68, tier: 1, sprite: 3, size: 11, orbitRx: 12, orbitRy: 9, orbitSpeed: 0.00022, wobbleSpeed: 0.0005, wobbleAmp: 2.5, rotSpeed: -0.018, phase: 4.5, inclination: 40 },
+      { id: 4, sectionId: 'profile', relX: 0.955, relY: 0.88, tier: 2, sprite: 2, size: 28, orbitRx: 32, orbitRy: 22, orbitSpeed: 0.00052, wobbleSpeed: 0.0011, wobbleAmp: 7, rotSpeed: 0.042, phase: 5.6, inclination: -20 },
 
-      // About Section (3 asteroids)
-      { id: 4, sectionId: 'about', relX: 0.95, relY: 0.18, tier: 3, sprite: 1, size: 38, orbitRx: 38, orbitRy: 28, orbitSpeed: 0.0006, wobbleSpeed: 0.0012, wobbleAmp: 9, rotSpeed: 0.055, phase: 0.9 },
-      { id: 5, sectionId: 'about', relX: 0.045, relY: 0.48, tier: 1, sprite: 3, size: 18, orbitRx: 24, orbitRy: 20, orbitSpeed: 0.00042, wobbleSpeed: 0.00085, wobbleAmp: 6, rotSpeed: -0.03, phase: 2.3 },
-      { id: 6, sectionId: 'about', relX: 0.93, relY: 0.80, tier: 2, sprite: 2, size: 27, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: 0.04, phase: 5.1 },
+      // About Section (4 asteroids: 2 distant, 1 mid, 1 near chunky boulder)
+      { id: 5, sectionId: 'about', relX: 0.945, relY: 0.14, tier: 3, sprite: 1, size: 52, orbitRx: 54, orbitRy: 36, orbitSpeed: 0.00072, wobbleSpeed: 0.0013, wobbleAmp: 11, rotSpeed: 0.075, phase: 0.9, inclination: -30 },
+      { id: 6, sectionId: 'about', relX: 0.035, relY: 0.32, tier: 1, sprite: 3, size: 13, orbitRx: 15, orbitRy: 11, orbitSpeed: 0.00026, wobbleSpeed: 0.0006, wobbleAmp: 3, rotSpeed: -0.020, phase: 2.3, inclination: 20 },
+      { id: 7, sectionId: 'about', relX: 0.045, relY: 0.62, tier: 2, sprite: 2, size: 28, orbitRx: 32, orbitRy: 24, orbitSpeed: 0.00050, wobbleSpeed: 0.0010, wobbleAmp: 7, rotSpeed: 0.045, phase: 5.1, inclination: -45 },
+      { id: 8, sectionId: 'about', relX: 0.935, relY: 0.82, tier: 1, sprite: 3, size: 12, orbitRx: 13, orbitRy: 9, orbitSpeed: 0.00023, wobbleSpeed: 0.0005, wobbleAmp: 2.5, rotSpeed: -0.016, phase: 3.8, inclination: 15 },
 
-      // Experience Section (3 asteroids)
-      { id: 7, sectionId: 'experience', relX: 0.05, relY: 0.22, tier: 2, sprite: 2, size: 28, orbitRx: 28, orbitRy: 22, orbitSpeed: 0.00052, wobbleSpeed: 0.00105, wobbleAmp: 7, rotSpeed: -0.042, phase: 1.1 },
-      { id: 8, sectionId: 'experience', relX: 0.94, relY: 0.52, tier: 1, sprite: 3, size: 16, orbitRx: 20, orbitRy: 16, orbitSpeed: 0.00038, wobbleSpeed: 0.00075, wobbleAmp: 5, rotSpeed: 0.022, phase: 3.7 },
-      { id: 9, sectionId: 'experience', relX: 0.04, relY: 0.82, tier: 3, sprite: 1, size: 40, orbitRx: 42, orbitRy: 32, orbitSpeed: 0.00062, wobbleSpeed: 0.00125, wobbleAmp: 10, rotSpeed: 0.06, phase: 4.8 },
+      // Experience Section (4 asteroids: 1 distant, 2 mid, 1 near chunky boulder)
+      { id: 9, sectionId: 'experience', relX: 0.045, relY: 0.18, tier: 2, sprite: 2, size: 28, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.00052, wobbleSpeed: 0.00105, wobbleAmp: 7, rotSpeed: -0.042, phase: 1.1, inclination: 30 },
+      { id: 10, sectionId: 'experience', relX: 0.025, relY: 0.74, tier: 3, sprite: 1, size: 58, orbitRx: 60, orbitRy: 40, orbitSpeed: 0.00080, wobbleSpeed: 0.0015, wobbleAmp: 13, rotSpeed: 0.090, phase: 4.8, inclination: -35 },
+      { id: 11, sectionId: 'experience', relX: 0.95, relY: 0.38, tier: 1, sprite: 3, size: 11, orbitRx: 12, orbitRy: 8, orbitSpeed: 0.00021, wobbleSpeed: 0.00045, wobbleAmp: 2.5, rotSpeed: 0.014, phase: 3.7, inclination: -15 },
+      { id: 12, sectionId: 'experience', relX: 0.935, relY: 0.78, tier: 2, sprite: 2, size: 26, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.038, phase: 2.7, inclination: 45 },
 
-      // Projects Section (5 asteroids)
-      { id: 10, sectionId: 'projects', relX: 0.96, relY: 0.24, tier: 2, sprite: 2, size: 26, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.2 },
-      { id: 11, sectionId: 'projects', relX: 0.04, relY: 0.30, tier: 1, sprite: 3, size: 15, orbitRx: 18, orbitRy: 14, orbitSpeed: 0.00035, wobbleSpeed: 0.0007, wobbleAmp: 4, rotSpeed: -0.025, phase: 2.1 },
-      { id: 12, sectionId: 'projects', relX: 0.94, relY: 0.50, tier: 3, sprite: 1, size: 44, orbitRx: 45, orbitRy: 34, orbitSpeed: 0.00068, wobbleSpeed: 0.00135, wobbleAmp: 11, rotSpeed: -0.07, phase: 3.9 },
-      { id: 13, sectionId: 'projects', relX: 0.035, relY: 0.70, tier: 2, sprite: 2, size: 27, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: 0.045, phase: 1.5 },
-      { id: 14, sectionId: 'projects', relX: 0.95, relY: 0.90, tier: 1, sprite: 3, size: 18, orbitRx: 22, orbitRy: 18, orbitSpeed: 0.0004, wobbleSpeed: 0.0008, wobbleAmp: 5, rotSpeed: -0.03, phase: 5.4 },
+      // Projects Section (7 asteroids: drifting through margins, central gap, and behind cards)
+      { id: 13, sectionId: 'projects', relX: 0.035, relY: 0.10, tier: 1, sprite: 3, size: 14, orbitRx: 15, orbitRy: 11, orbitSpeed: 0.00025, wobbleSpeed: 0.00055, wobbleAmp: 3, rotSpeed: -0.018, phase: 0.6, inclination: 25 },
+      { id: 14, sectionId: 'projects', relX: 0.24, relY: 0.68, tier: 2, sprite: 1, size: 44, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.0010, wobbleAmp: 7, rotSpeed: 0.040, phase: 2.1, inclination: -20 },
+      { id: 15, sectionId: 'projects', relX: 0.945, relY: 0.38, tier: 3, sprite: 1, size: 62, orbitRx: 60, orbitRy: 38, orbitSpeed: 0.00078, wobbleSpeed: 0.0015, wobbleAmp: 13, rotSpeed: -0.090, phase: 3.9, inclination: 35 },
+      { id: 16, sectionId: 'projects', relX: 0.445, relY: 0.70, tier: 2, sprite: 2, size: 24, orbitRx: 18, orbitRy: 30, orbitSpeed: 0.00036, wobbleSpeed: 0.0008, wobbleAmp: 4, rotSpeed: 0.024, phase: 1.4, inclination: 15 },
+      { id: 17, sectionId: 'projects', relX: 0.66, relY: 0.68, tier: 2, sprite: 1, size: 40, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.00050, wobbleSpeed: 0.0011, wobbleAmp: 7, rotSpeed: -0.042, phase: 4.7, inclination: -15 },
+      { id: 18, sectionId: 'projects', relX: 0.28, relY: 0.92, tier: 3, sprite: 1, size: 54, orbitRx: 52, orbitRy: 36, orbitSpeed: 0.00074, wobbleSpeed: 0.0014, wobbleAmp: 12, rotSpeed: 0.078, phase: 1.5, inclination: -25 },
+      { id: 19, sectionId: 'projects', relX: 0.94, relY: 0.88, tier: 1, sprite: 3, size: 12, orbitRx: 14, orbitRy: 10, orbitSpeed: 0.00022, wobbleSpeed: 0.0005, wobbleAmp: 3, rotSpeed: -0.018, phase: 5.4, inclination: 45 },
 
-      // Hackathons Section (3 asteroids)
-      { id: 15, sectionId: 'hackathons', relX: 0.05, relY: 0.22, tier: 3, sprite: 1, size: 36, orbitRx: 36, orbitRy: 26, orbitSpeed: 0.00058, wobbleSpeed: 0.00115, wobbleAmp: 8, rotSpeed: 0.052, phase: 2.8 },
-      { id: 16, sectionId: 'hackathons', relX: 0.93, relY: 0.52, tier: 1, sprite: 3, size: 16, orbitRx: 20, orbitRy: 15, orbitSpeed: 0.00036, wobbleSpeed: 0.00072, wobbleAmp: 4, rotSpeed: -0.024, phase: 4.1 },
-      { id: 17, sectionId: 'hackathons', relX: 0.04, relY: 0.82, tier: 2, sprite: 2, size: 25, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00046, wobbleSpeed: 0.00092, wobbleAmp: 6, rotSpeed: 0.036, phase: 0.7 },
+      // Hackathons Section (3 asteroids: 1 distant, 1 mid, 1 near chunky boulder)
+      { id: 20, sectionId: 'hackathons', relX: 0.04, relY: 0.22, tier: 3, sprite: 1, size: 50, orbitRx: 52, orbitRy: 34, orbitSpeed: 0.00070, wobbleSpeed: 0.0013, wobbleAmp: 10, rotSpeed: 0.072, phase: 2.8, inclination: -40 },
+      { id: 21, sectionId: 'hackathons', relX: 0.945, relY: 0.38, tier: 1, sprite: 3, size: 12, orbitRx: 13, orbitRy: 9, orbitSpeed: 0.00023, wobbleSpeed: 0.0005, wobbleAmp: 2.5, rotSpeed: -0.016, phase: 4.1, inclination: 30 },
+      { id: 22, sectionId: 'hackathons', relX: 0.93, relY: 0.76, tier: 2, sprite: 2, size: 26, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00046, wobbleSpeed: 0.00092, wobbleAmp: 6, rotSpeed: 0.036, phase: 0.7, inclination: -15 },
 
-      // Certificates Section (3 asteroids)
-      { id: 18, sectionId: 'certificates', relX: 0.94, relY: 0.18, tier: 2, sprite: 2, size: 28, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: -0.044, phase: 1.9 },
-      { id: 19, sectionId: 'certificates', relX: 0.05, relY: 0.52, tier: 1, sprite: 3, size: 14, orbitRx: 18, orbitRy: 14, orbitSpeed: 0.00034, wobbleSpeed: 0.00068, wobbleAmp: 4, rotSpeed: 0.02, phase: 3.4 },
-      { id: 20, sectionId: 'certificates', relX: 0.93, relY: 0.82, tier: 3, sprite: 1, size: 38, orbitRx: 38, orbitRy: 28, orbitSpeed: 0.0006, wobbleSpeed: 0.0012, wobbleAmp: 9, rotSpeed: 0.058, phase: 5.7 },
+      // Certificates Section (4 asteroids: 1 distant, 2 mid, 1 near chunky boulder)
+      { id: 23, sectionId: 'certificates', relX: 0.95, relY: 0.16, tier: 2, sprite: 2, size: 28, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.00050, wobbleSpeed: 0.0010, wobbleAmp: 7, rotSpeed: -0.044, phase: 1.9, inclination: 25 },
+      { id: 24, sectionId: 'certificates', relX: 0.035, relY: 0.42, tier: 1, sprite: 3, size: 11, orbitRx: 12, orbitRy: 8, orbitSpeed: 0.00021, wobbleSpeed: 0.00045, wobbleAmp: 2.5, rotSpeed: 0.014, phase: 3.4, inclination: -30 },
+      { id: 25, sectionId: 'certificates', relX: 0.94, relY: 0.68, tier: 3, sprite: 1, size: 56, orbitRx: 58, orbitRy: 38, orbitSpeed: 0.00078, wobbleSpeed: 0.0014, wobbleAmp: 12, rotSpeed: 0.082, phase: 5.7, inclination: 35 },
+      { id: 26, sectionId: 'certificates', relX: 0.045, relY: 0.88, tier: 2, sprite: 2, size: 24, orbitRx: 26, orbitRy: 18, orbitSpeed: 0.00044, wobbleSpeed: 0.0009, wobbleAmp: 5.5, rotSpeed: -0.034, phase: 4.2, inclination: -20 },
 
-      // Contacts Section (2 asteroids)
-      { id: 21, sectionId: 'contacts', relX: 0.04, relY: 0.32, tier: 2, sprite: 2, size: 26, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00096, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.6 },
-      { id: 22, sectionId: 'contacts', relX: 0.95, relY: 0.68, tier: 1, sprite: 3, size: 17, orbitRx: 22, orbitRy: 16, orbitSpeed: 0.00038, wobbleSpeed: 0.00076, wobbleAmp: 5, rotSpeed: -0.026, phase: 2.6 },
+      // Contacts Section (3 asteroids: 2 distant, 1 mid)
+      { id: 27, sectionId: 'contacts', relX: 0.035, relY: 0.28, tier: 2, sprite: 2, size: 26, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00096, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.6, inclination: 40 },
+      { id: 28, sectionId: 'contacts', relX: 0.955, relY: 0.48, tier: 1, sprite: 3, size: 13, orbitRx: 14, orbitRy: 10, orbitSpeed: 0.00024, wobbleSpeed: 0.00055, wobbleAmp: 3, rotSpeed: -0.018, phase: 2.6, inclination: -25 },
+      { id: 29, sectionId: 'contacts', relX: 0.04, relY: 0.76, tier: 1, sprite: 3, size: 10, orbitRx: 11, orbitRy: 8, orbitSpeed: 0.00020, wobbleSpeed: 0.00045, wobbleAmp: 2, rotSpeed: 0.012, phase: 5.0, inclination: 15 },
 
-      // Footer Outpost Cosmic Background (2 asteroids)
-      { id: 23, sectionId: 'footer', relX: 0.10, relY: 0.20, tier: 3, sprite: 1, size: 34, orbitRx: 34, orbitRy: 24, orbitSpeed: 0.00055, wobbleSpeed: 0.0011, wobbleAmp: 8, rotSpeed: -0.05, phase: 4.3 },
-      { id: 24, sectionId: 'footer', relX: 0.90, relY: 0.22, tier: 2, sprite: 2, size: 24, orbitRx: 26, orbitRy: 18, orbitSpeed: 0.00045, wobbleSpeed: 0.0009, wobbleAmp: 6, rotSpeed: 0.034, phase: 1.2 }
+      // Footer Outpost Cosmic Background (3 asteroids: 1 distant, 1 mid, 1 near chunky boulder)
+      { id: 30, sectionId: 'footer', relX: 0.09, relY: 0.18, tier: 3, sprite: 1, size: 48, orbitRx: 50, orbitRy: 32, orbitSpeed: 0.00068, wobbleSpeed: 0.0013, wobbleAmp: 10, rotSpeed: -0.070, phase: 4.3, inclination: -30 },
+      { id: 31, sectionId: 'footer', relX: 0.89, relY: 0.16, tier: 1, sprite: 3, size: 12, orbitRx: 13, orbitRy: 9, orbitSpeed: 0.00022, wobbleSpeed: 0.0005, wobbleAmp: 2.5, rotSpeed: 0.016, phase: 1.2, inclination: 20 },
+      { id: 32, sectionId: 'footer', relX: 0.70, relY: 0.22, tier: 2, sprite: 2, size: 24, orbitRx: 26, orbitRy: 18, orbitSpeed: 0.00045, wobbleSpeed: 0.0009, wobbleAmp: 5.5, rotSpeed: 0.034, phase: 3.5, inclination: -15 }
     ];
 
     var PROTECTED_SELECTORS = [
@@ -3405,8 +3413,6 @@ document.addEventListener('keydown', function (e) {
       '.skills-badge-container',
       '.experience-details-container',
       '.experience-category-card',
-      '.projects-grid',
-      '.project-card',
       '.hackathons-grid',
       '.hackathon-card',
       '.certificates-grid',
@@ -3460,8 +3466,8 @@ document.addEventListener('keydown', function (e) {
       el.appendChild(img);
       container.appendChild(el);
 
-      var mass = cfg.tier === 3 ? 3.4 : (cfg.tier === 2 ? 2.0 : 1.0);
-      var maxSpeed = cfg.tier === 3 ? 0.65 : (cfg.tier === 2 ? 0.48 : 0.32);
+      var mass = cfg.tier === 3 ? 4.8 : (cfg.tier === 2 ? 2.4 : 1.0);
+      var maxSpeed = cfg.tier === 3 ? 0.78 : (cfg.tier === 2 ? 0.42 : 0.18);
 
       asteroids.push({
         el: el,
@@ -3579,8 +3585,17 @@ document.addEventListener('keydown', function (e) {
         var wobble = Math.sin(t * cfg.wobbleSpeed) * cfg.wobbleAmp;
         var wobbleY = Math.cos(t * cfg.wobbleSpeed * 0.8) * (cfg.wobbleAmp * 0.7);
 
-        var targetX = ast.homeX + Math.cos(orbitAngle) * cfg.orbitRx + wobble;
-        var targetY = ast.homeY + Math.sin(orbitAngle) * cfg.orbitRy + wobbleY;
+        // Unrotated elliptical displacement
+        var u = Math.cos(orbitAngle) * cfg.orbitRx + wobble;
+        var v = Math.sin(orbitAngle) * cfg.orbitRy + wobbleY;
+
+        // Rotate by unique 3D orbital inclination angle
+        var incRad = (cfg.inclination || 0) * (Math.PI / 180);
+        var cosInc = Math.cos(incRad);
+        var sinInc = Math.sin(incRad);
+
+        var targetX = ast.homeX + (u * cosInc - v * sinInc);
+        var targetY = ast.homeY + (u * sinInc + v * cosInc);
 
         var kGrav = 0.0016 / ast.mass;
         var ax = (targetX - ast.x) * kGrav;
@@ -3588,7 +3603,7 @@ document.addEventListener('keydown', function (e) {
 
         // 2. Collision Avoidance against Protected Elements
         var astRadius = ast.radius;
-        var safePadding = 32 + astRadius;
+        var safePadding = 35 + astRadius;
 
         for (var b = 0; b < protectedBoxes.length; b++) {
           var box = protectedBoxes[b];
@@ -3652,8 +3667,8 @@ document.addEventListener('keydown', function (e) {
         }
 
         // 5. Integrate Physics: Inertia, Damping & Speed Clamping
-        ast.vx = (ast.vx + ax) * 0.985;
-        ast.vy = (ast.vy + ay) * 0.985;
+        ast.vx = (ast.vx + ax) * 0.988;
+        ast.vy = (ast.vy + ay) * 0.988;
 
         var speed = Math.sqrt(ast.vx * ast.vx + ast.vy * ast.vy);
         if (speed > ast.maxSpeed) {
