@@ -247,13 +247,13 @@ document.addEventListener('keydown', function (e) {
     new Image(),
     new Image()
   ];
-  cyborgWalkFrames[0].src = 'assets/wasteland/cyborg-shooter-0.png';
-  cyborgWalkFrames[1].src = 'assets/wasteland/cyborg-shooter-1.png';
-  cyborgWalkFrames[2].src = 'assets/wasteland/cyborg-shooter-2.png';
-  cyborgWalkFrames[3].src = 'assets/wasteland/cyborg-shooter-3.png';
+  cyborgWalkFrames[0].src = 'assets/wasteland/cyborg-shooter-0.png?v=45';
+  cyborgWalkFrames[1].src = 'assets/wasteland/cyborg-shooter-1.png?v=45';
+  cyborgWalkFrames[2].src = 'assets/wasteland/cyborg-shooter-2.png?v=45';
+  cyborgWalkFrames[3].src = 'assets/wasteland/cyborg-shooter-3.png?v=45';
 
   var cyborgFireImg = new Image();
-  cyborgFireImg.src = 'assets/wasteland/cyborg-shooter-fire.png';
+  cyborgFireImg.src = 'assets/wasteland/cyborg-shooter-fire.png?v=45';
 
   // Backwards-compatible aliases
   var robotImg = cyborgWalkFrames[0];
@@ -3257,14 +3257,32 @@ document.addEventListener('keydown', function (e) {
       supportsScrollTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll(root)');
     } catch (e) {}
 
-    if (!supportsScrollTimeline && satellite && !prefersReduced) {
+    if (!supportsScrollTimeline && !prefersReduced) {
+      var station = document.getElementById('projects-orbital-station');
+      var nebula = document.getElementById('space-nebula-wrap');
       var ticking = false;
       window.addEventListener('scroll', function () {
         if (!ticking) {
           window.requestAnimationFrame(function () {
             var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollY < 900) {
+            if (satellite && scrollY < 900) {
               satellite.style.transform = 'translate3d(0, ' + (scrollY * 0.18) + 'px, 0)';
+            }
+            if (nebula) {
+              var nebulaSec = document.getElementById('about');
+              if (nebulaSec) {
+                var nTop = nebulaSec.offsetTop;
+                var nRel = scrollY - nTop;
+                nebula.style.transform = 'translate3d(0, ' + (nRel * -0.04) + 'px, 0)';
+              }
+            }
+            if (station) {
+              var stationSec = document.getElementById('projects');
+              if (stationSec) {
+                var sTop = stationSec.offsetTop;
+                var sRel = scrollY - sTop;
+                station.style.transform = 'translate3d(0, ' + (sRel * -0.05) + 'px, 0)';
+              }
             }
             ticking = false;
           });
@@ -3384,7 +3402,11 @@ document.addEventListener('keydown', function (e) {
       '.prop-cyborg',
       '#pixel-starfighter-wrap',
       '#space-helmet-wrap',
-      '#tiny-probe-wrap'
+      '#tiny-probe-wrap',
+      '#projects-orbital-station',
+      '.projects-orbital-station',
+      '#prop-wasteland-beacon',
+      '.prop-wasteland-beacon'
     ];
 
     var protectedBoxes = [];
@@ -3696,8 +3718,8 @@ document.addEventListener('keydown', function (e) {
   function start() {
     var planet = document.getElementById('projects-pixel-planet');
     var driftWrap = document.getElementById('projects-planet-drift-wrap');
-    var projectsSec = document.getElementById('projects');
-    if (!planet || !driftWrap || !projectsSec) return;
+    var planetSec = planet.closest('section') || document.getElementById('experience') || document.getElementById('projects');
+    if (!planet || !driftWrap || !planetSec) return;
 
     var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     var prefersReduced = motionQuery.matches;
@@ -3785,7 +3807,7 @@ document.addEventListener('keydown', function (e) {
       state.angle += state.rotSpeed;
 
       // 5. Viewport check & transform updates
-      var secRect = projectsSec.getBoundingClientRect();
+      var secRect = planetSec.getBoundingClientRect();
       var inView = (secRect.bottom > -200 && secRect.top < window.innerHeight + 200);
       if (inView) {
         planet.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px, ' + state.y.toFixed(2) + 'px, 0)';
