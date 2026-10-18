@@ -309,8 +309,8 @@ document.addEventListener('keydown', function (e) {
   function getSceneScale(w) {
     if (w >= 1024) return 1.0;
     if (w >= 768) return 0.85;
-    if (w >= 480) return 0.72;
-    return 0.62;
+    if (w >= 480) return 0.78;
+    return 0.72; // Crisp, integer-coherent 54x53px on mobile - keeps soles, knees, and armor plates solid
   }
 
   function getSceneLayout(w, h) {
@@ -321,20 +321,22 @@ document.addEventListener('keydown', function (e) {
     var leftBound, rightBound;
 
     if (isSmallMobile) {
-      minPatrolX = Math.round(w * 0.32);
-      maxPatrolX = Math.round(w * 0.48);
-      leftBound = Math.round(w * 0.18);
-      rightBound = Math.round(w * 0.62);
+      // On mobile, the Retro Droid patrols 4%..22% (left edge).
+      // The open central-to-east wasteland sector spans 27% to 68%, giving the Cyborg 150+ px of continuous walking room
+      minPatrolX = Math.round(w * 0.27);
+      maxPatrolX = Math.round(w * 0.68);
+      leftBound = Math.round(w * 0.16);
+      rightBound = Math.min(w - 20, Math.max(Math.round(w * 0.86), w - 80));
     } else if (isTablet) {
-      minPatrolX = Math.round(w * 0.30);
-      maxPatrolX = Math.round(w * 0.52);
-      leftBound = Math.round(w * 0.22);
-      rightBound = Math.round(w * 0.60);
+      minPatrolX = Math.round(w * 0.28);
+      maxPatrolX = Math.round(w * 0.56);
+      leftBound = Math.round(w * 0.20);
+      rightBound = Math.min(w - 25, Math.max(Math.round(w * 0.83), w - 110));
     } else {
       minPatrolX = Math.round(w * 0.32);
       maxPatrolX = Math.max(minPatrolX + 60, Math.round(w * 0.54));
       leftBound = Math.round(w * 0.26);
-      rightBound = Math.round(w * 0.58);
+      rightBound = Math.min(w - 30, Math.max(Math.round(w * 0.86), w - 160));
     }
 
     return {
@@ -387,6 +389,40 @@ document.addEventListener('keydown', function (e) {
     }
   }
 
+  function pickPatrolTarget(layout, curX, curFacing) {
+    var minX = layout.minPatrolX;
+    var maxX = layout.maxPatrolX;
+    var span = maxX - minX;
+    var isSmallMobile = width < 480;
+    // Guaranteed minimum stride distance so the cyborg always completes multiple full walk cycles
+    var minWalkDist = isSmallMobile ? Math.min(48, Math.round(span * 0.38)) : Math.min(85, Math.round(span * 0.32));
+
+    var canContinue = false;
+    if (curFacing === 1 && (maxX - curX) >= minWalkDist) {
+      canContinue = true;
+    } else if (curFacing === -1 && (curX - minX) >= minWalkDist) {
+      canContinue = true;
+    }
+
+    var nextFacing = curFacing;
+    if (!canContinue || Math.random() < 0.28) {
+      nextFacing = -curFacing;
+    }
+
+    var target;
+    if (nextFacing === 1) {
+      var avail = maxX - curX;
+      var stride = minWalkDist + Math.random() * Math.max(0, avail - minWalkDist);
+      target = Math.min(maxX, Math.round(curX + stride));
+    } else {
+      var avail = curX - minX;
+      var stride = minWalkDist + Math.random() * Math.max(0, avail - minWalkDist);
+      target = Math.max(minX, Math.round(curX - stride));
+    }
+
+    return { targetX: target, facing: nextFacing };
+  }
+
   function update() {
     frameCount++;
     var layout = getSceneLayout(width, height);
@@ -411,31 +447,36 @@ document.addEventListener('keydown', function (e) {
       walkFrame = 0;
       if (stateTimer <= 0) {
         var actionRoll = Math.random();
-        if (actionRoll < 0.55 && (layout.maxPatrolX - layout.minPatrolX > 40)) {
+        var isSmallMobile = width < 480;
+        var walkProb = isSmallMobile ? 0.76 : 0.62;
+        if (actionRoll < walkProb && (layout.maxPatrolX - layout.minPatrolX > 30)) {
           patrolState = 'WALK';
-          robotTargetX = layout.minPatrolX + Math.random() * (layout.maxPatrolX - layout.minPatrolX);
-          facing = robotTargetX > robotX ? 1 : -1;
+          var nextMove = pickPatrolTarget(layout, robotX, facing);
+          robotTargetX = nextMove.targetX;
+          facing = nextMove.facing;
         } else {
           patrolState = 'AIM_FIRE';
           burstRemaining = isOverdrive ? 3 : 2;
-          burstCooldown = 28; // Deliberate pre-fire aim delay
-          facing = Math.random() < 0.6 ? -1 : 1;
+          burstCooldown = 26; // Deliberate pre-fire aim delay
+          facing = Math.random() < 0.5 ? -1 : 1;
         }
       }
     } else if (patrolState === 'WALK') {
       var moveDist = robotTargetX - robotX;
-      var currentSpeed = WALK_SPEED * (isOverdrive ? 1.4 : 1.0);
+      var isSmallMobile = width < 480;
+      var baseSpeed = isSmallMobile ? 0.44 : WALK_SPEED;
+      var currentSpeed = baseSpeed * (isOverdrive ? 1.4 : 1.0);
 
       if (Math.abs(moveDist) <= currentSpeed) {
         robotX = robotTargetX;
         patrolState = 'AIM_FIRE';
         burstRemaining = isOverdrive ? 3 : 2;
-        burstCooldown = 28; // Deliberate aim pause
-        facing = Math.random() < 0.65 ? -1 : 1;
+        burstCooldown = 26; // Deliberate aim pause
       } else {
         robotX += (moveDist > 0 ? 1 : -1) * currentSpeed;
         walkStepTimer++;
-        if (walkStepTimer >= 14) { // Crisp 4-frame mechanical stride cadence
+        var stepCadence = isSmallMobile ? 10 : 14; // Crisp 4-frame mechanical stride cadence
+        if (walkStepTimer >= stepCadence) {
           walkStepTimer = 0;
           walkFrame = (walkFrame + 1) % 4;
         }
@@ -458,7 +499,7 @@ document.addEventListener('keydown', function (e) {
         var projVx = facing * (isOverdrive ? 3.6 : 2.8);
 
         // Cap stream items to prevent unbounded array buildup on rapid bursts
-        if (streamItems.length >= 8) {
+        if (streamItems.length >= 20) {
           streamItems.splice(0, 2);
         }
 
@@ -500,7 +541,10 @@ document.addEventListener('keydown', function (e) {
         } catch (evErr) {}
       } else if (burstRemaining <= 0 && burstCooldown <= 0) {
         patrolState = 'IDLE_SCAN';
-        stateTimer = 180 + Math.floor(Math.random() * 80); // Slower pause (~3 to 4.5s) between bursts
+        var isSmallMobile = width < 480;
+        stateTimer = isSmallMobile
+          ? (70 + Math.floor(Math.random() * 40)) // Mobile pause ~1.2s to 1.8s
+          : (140 + Math.floor(Math.random() * 70)); // Desktop pause ~2.3s to 3.5s
       }
     }
 
@@ -542,7 +586,7 @@ document.addEventListener('keydown', function (e) {
           });
         }
       }
-      else if (item.dist > 300) {
+      else if (item.dist > (item.vx > 0 ? 1200 : 320)) {
         item.alpha -= 0.025;
       }
 
@@ -803,6 +847,21 @@ document.addEventListener('keydown', function (e) {
       }, { threshold: 0.05 });
       observer.observe(container);
     }
+
+    window.__cyborgDebug = {
+      get robotX() { return robotX; },
+      get facing() { return facing; },
+      get patrolState() { return patrolState; },
+      get streamItems() { return streamItems; },
+      getLayout: function () { return getSceneLayout(width, height); },
+      triggerFireRight: function (startX) {
+        if (typeof startX === 'number') robotX = startX;
+        facing = 1;
+        patrolState = 'AIM_FIRE';
+        burstRemaining = 3;
+        burstCooldown = 0;
+      }
+    };
   }
 
   init();
@@ -2191,549 +2250,6 @@ document.addEventListener('keydown', function (e) {
     });
   })();
 
-  // 4. Terminal Robot Mascot Controller (Hackathons Divider Line Walker)
-  (function initTerminalRobot() {
-    var el = document.getElementById('mascot-terminal-robot');
-    if (!el) return;
-
-    var bodyEl = el.querySelector('.terminal-robot-body');
-    var spriteEl = el.querySelector('.terminal-robot-sprite');
-    var fxEl = el.querySelector('.terminal-robot-fx');
-    var bubbleEl = document.getElementById('terminal-robot-bubble');
-    var hackSection = document.getElementById('hackathons');
-    if (!bodyEl || !spriteEl || !fxEl) return;
-
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Sprite frames coordinates in assets/terminal-mascot-sheet.png (750x504)
-    var FRAMES = {
-      'idle-1': [0, 0], 'idle-2': [-75, 0], 'idle-3': [-150, 0], 'idle-4': [-225, 0], 'idle-5': [-300, 0],
-      'walk-1': [-375, 0], 'walk-2': [-450, 0], 'walk-3': [-525, 0], 'walk-4': [-600, 0], 'walk-5': [-675, 0], 'walk-6': [0, -84],
-      'turn-1': [-75, -84], 'turn-2': [-150, -84], 'turn-3': [-225, -84], 'turn-4': [-300, -84], 'turn-5': [-375, -84],
-      'type-1': [-450, -84], 'type-2': [-525, -84], 'type-3': [-600, -84], 'type-4': [-675, -84],
-      'celebrate-1': [0, -168], 'celebrate-2': [-75, -168], 'celebrate-3': [-150, -168],
-      'curious-1': [-225, -168], 'curious-2': [-300, -168], 'curious-3': [-375, -168], 'curious-4': [-450, -168],
-      'curious-5': [-525, -168], 'curious-6': [-600, -168], 'curious-7': [-675, -168],
-      'idle-var-1': [0, -252], 'idle-var-2': [-75, -252], 'idle-var-3': [-150, -252], 'idle-var-4': [-225, -252], 'idle-var-5': [-300, -252],
-      'run-1': [-375, -252], 'run-2': [-450, -252], 'run-3': [-525, -252], 'run-4': [-600, -252],
-      'sleep-1': [-675, -252], 'sleep-2': [0, -336], 'sleep-3': [-75, -336],
-      'face-1': [-150, -336], 'face-2': [-225, -336], 'face-3': [-300, -336], 'face-4': [-375, -336],
-      'face-5': [-450, -336], 'face-6': [-525, -336], 'face-7': [-600, -336], 'face-8': [-675, -336], 'face-9': [0, -420],
-      'fx-question': [-75, -420], 'fx-exclaim': [-150, -420], 'fx-zzz': [-225, -420],
-      'fx-dust-1': [-300, -420], 'fx-dust-2': [-375, -420], 'fx-dust-3': [-450, -420], 'fx-dust-4': [-525, -420]
-    };
-
-    function setFrame(frameName, fxName) {
-      var coords = FRAMES[frameName] || FRAMES['idle-1'];
-      spriteEl.style.backgroundPosition = coords[0] + 'px ' + coords[1] + 'px';
-      if (fxName && FRAMES[fxName]) {
-        var fxCoords = FRAMES[fxName];
-        fxEl.style.display = 'block';
-        fxEl.style.backgroundPosition = fxCoords[0] + 'px ' + fxCoords[1] + 'px';
-      } else {
-        fxEl.style.display = 'none';
-      }
-    }
-
-    var currentState = 'pause';
-    function setState(st) {
-      if (currentState === st) return;
-      currentState = st;
-      el.setAttribute('data-state', st);
-    }
-
-    // Dynamic divider line calibration: feet baseline touches divider line within +/- 1px
-    function calibrateFeet() {
-      if (!hackSection) return;
-      var secRect = hackSection.getBoundingClientRect();
-      var sprRect = spriteEl.getBoundingClientRect();
-      var currentBodyTop = parseFloat(getComputedStyle(bodyEl).top) || 0;
-      // In the 75x84 frame, the sole rests at y = 83px (baseline at y = 82px)
-      var currentFeetY = sprRect.top + 83;
-      var diff = secRect.top - currentFeetY;
-      if (Math.abs(diff) > 0.5 && Math.abs(diff) < 25) {
-        bodyEl.style.top = (currentBodyTop + diff) + 'px';
-      }
-    }
-
-    window.addEventListener('resize', calibrateFeet);
-    setTimeout(calibrateFeet, 250);
-    setTimeout(calibrateFeet, 800);
-
-    // Speech bubble controller
-    var bubbleTimer = null;
-    function showBubble(text, duration) {
-      if (!bubbleEl) return;
-      if (text) {
-        var textEl = bubbleEl.querySelector('.bubble-text');
-        if (textEl) textEl.textContent = text;
-      }
-      bubbleEl.classList.add('is-visible');
-      if (bubbleTimer) clearTimeout(bubbleTimer);
-      bubbleTimer = setTimeout(function () {
-        bubbleEl.classList.remove('is-visible');
-      }, duration || 2000);
-    }
-
-    var isActing = false;
-    var isSleeping = false;
-    var lastInteractionTime = Date.now();
-    var lastTapTime = 0;
-    var sleepTimer = null;
-    var sleepLoopTimer = null;
-    var stateTimer = null;
-    var idleTimer = null;
-
-    function resetSleepTimer() {
-      lastInteractionTime = Date.now();
-      if (sleepTimer) clearTimeout(sleepTimer);
-      if (isSleeping) {
-        wakeUp();
-      }
-      sleepTimer = setTimeout(checkGoToSleep, 45000);
-    }
-
-    function checkGoToSleep() {
-      if (isActing || document.hidden || el.classList.contains('mascot-offscreen')) {
-        sleepTimer = setTimeout(checkGoToSleep, 10000);
-        return;
-      }
-      var idleElapsed = Date.now() - lastInteractionTime;
-      if (idleElapsed >= 44000) {
-        goToSleep();
-      } else {
-        sleepTimer = setTimeout(checkGoToSleep, 45000 - idleElapsed);
-      }
-    }
-
-    function goToSleep() {
-      if (isActing || isSleeping) return;
-      isSleeping = true;
-      setState('sleep');
-      setFrame('sleep-1');
-      stateTimer = setTimeout(function () {
-        if (!isSleeping) return;
-        setFrame('sleep-2');
-        stateTimer = setTimeout(function () {
-          if (!isSleeping) return;
-          setFrame('sleep-3', 'fx-zzz');
-          startSleepLoop();
-        }, 320);
-      }, 300);
-    }
-
-    function startSleepLoop() {
-      if (!isSleeping) return;
-      var flip = false;
-      function loopZz() {
-        if (!isSleeping) return;
-        flip = !flip;
-        setFrame(flip ? 'sleep-3' : 'sleep-2', 'fx-zzz');
-        sleepLoopTimer = setTimeout(loopZz, 900);
-      }
-      sleepLoopTimer = setTimeout(loopZz, 900);
-    }
-
-    function wakeUp() {
-      if (!isSleeping) return;
-      isSleeping = false;
-      if (sleepLoopTimer) clearTimeout(sleepLoopTimer);
-      if (stateTimer) clearTimeout(stateTimer);
-      setFrame('sleep-1');
-      setState('pause');
-      stateTimer = setTimeout(function () {
-        setFrame('idle-1');
-        if (prefersReduced) return;
-        idleTimer = setTimeout(planNextWalk, 1200);
-      }, 280);
-    }
-
-    // Wake listeners on window
-    ['pointermove', 'scroll', 'touchstart', 'keydown'].forEach(function (ev) {
-      window.addEventListener(ev, resetSleepTimer, { passive: true });
-    });
-    sleepTimer = setTimeout(checkGoToSleep, 45000);
-
-    // Interaction triggers: Curious on Hover/Tap, Celebrate on Double-tap
-    function triggerCurious(pointerX) {
-      resetSleepTimer();
-      if (isActing) return;
-      isActing = true;
-      setState('react');
-
-      if (typeof pointerX === 'number') {
-        var rect = el.getBoundingClientRect();
-        var centerX = rect.left + rect.width / 2;
-        if (pointerX < centerX) {
-          bodyEl.classList.remove('facing-right');
-          bodyEl.classList.add('facing-left');
-        } else {
-          bodyEl.classList.remove('facing-left');
-          bodyEl.classList.add('facing-right');
-        }
-      }
-
-      showBubble('hello_world', 2000);
-
-      var curiousFrames = ['curious-1', 'curious-2', 'curious-3', 'curious-4', 'curious-5', 'curious-6', 'curious-7'];
-      var cIdx = 0;
-      function stepCurious() {
-        if (!isActing) return;
-        if (cIdx < curiousFrames.length) {
-          setFrame(curiousFrames[cIdx], 'fx-question');
-          cIdx++;
-          stateTimer = setTimeout(stepCurious, 160);
-        } else {
-          // Finish reaction
-          setFrame('idle-1');
-          isActing = false;
-          setState('pause');
-          if (!prefersReduced) {
-            idleTimer = setTimeout(planNextWalk, 1200);
-          }
-        }
-      }
-      stepCurious();
-    }
-
-    function triggerCelebrate() {
-      resetSleepTimer();
-      if (isActing) return;
-      isActing = true;
-      setState('react');
-      showBubble('hello_world', 2200);
-
-      var celFrames = ['celebrate-1', 'celebrate-2', 'celebrate-3', 'celebrate-2', 'celebrate-1', 'celebrate-2', 'celebrate-3'];
-      var celIdx = 0;
-      function stepCelebrate() {
-        if (!isActing) return;
-        if (celIdx < celFrames.length) {
-          setFrame(celFrames[celIdx], 'fx-exclaim');
-          celIdx++;
-          stateTimer = setTimeout(stepCelebrate, 180);
-        } else {
-          setFrame('idle-1');
-          isActing = false;
-          setState('pause');
-          if (!prefersReduced) {
-            idleTimer = setTimeout(planNextWalk, 1400);
-          }
-        }
-      }
-      stepCelebrate();
-    }
-
-    // Pointer & click handlers
-    el.addEventListener('pointerenter', function (e) {
-      if (isSleeping) {
-        wakeUp();
-      } else if (!isActing) {
-        triggerCurious(e.clientX);
-      }
-    });
-
-    el.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var now = Date.now();
-      if (now - lastTapTime < 2000 && lastTapTime > 0) {
-        lastTapTime = 0;
-        if (stateTimer) clearTimeout(stateTimer);
-        isActing = false;
-        triggerCelebrate();
-      } else {
-        lastTapTime = now;
-        triggerCurious(e.clientX);
-      }
-    });
-
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        var now = Date.now();
-        if (now - lastTapTime < 2000 && lastTapTime > 0) {
-          lastTapTime = 0;
-          if (stateTimer) clearTimeout(stateTimer);
-          isActing = false;
-          triggerCelebrate();
-        } else {
-          lastTapTime = now;
-          triggerCurious();
-        }
-      }
-    });
-
-    // Touch support without blocking page scroll
-    var touchStartX = 0, touchStartY = 0;
-    el.addEventListener('touchstart', function (e) {
-      if (e.touches && e.touches[0]) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    el.addEventListener('touchend', function (e) {
-      if (e.changedTouches && e.changedTouches[0]) {
-        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 12 && dy < 12) {
-          var now = Date.now();
-          if (now - lastTapTime < 2000 && lastTapTime > 0) {
-            lastTapTime = 0;
-            if (stateTimer) clearTimeout(stateTimer);
-            isActing = false;
-            triggerCelebrate();
-          } else {
-            lastTapTime = now;
-            triggerCurious(touchStartX);
-          }
-        }
-      }
-    }, { passive: true });
-
-    // Handle prefers-reduced-motion
-    if (prefersReduced) {
-      setState('pause');
-      setFrame('idle-1');
-      function slowBlink() {
-        if (isActing || isSleeping || document.hidden) {
-          setTimeout(slowBlink, 5000);
-          return;
-        }
-        setFrame('idle-2');
-        setTimeout(function () {
-          setFrame('idle-3');
-          setTimeout(function () {
-            setFrame('idle-1');
-            setTimeout(slowBlink, 6000 + Math.random() * 4000);
-          }, 140);
-        }, 120);
-      }
-      setTimeout(slowBlink, 3500);
-      return;
-    }
-
-    // Walking & Navigation Controller
-    // Bounds: walk horizontally inside the hackathons divider line section bounds
-    function getBounds() {
-      var parent = el.offsetParent || hackSection || document.body;
-      var parentW = parent.offsetWidth || window.innerWidth;
-      var minR = 24;
-      var maxR = Math.max(minR + 90, Math.min(parentW - 120, Math.round(parentW * 0.45)));
-      return { minR: minR, maxR: maxR };
-    }
-
-    var currentRight = parseFloat(getComputedStyle(el).right) || 48;
-    var targetRight = currentRight;
-    var walkDir = 1; // +1: moving left (right increases), -1: moving right (right decreases)
-    var walkSpeed = 32; // px per second
-    var walkFrames = ['walk-1', 'walk-2', 'walk-3', 'walk-4', 'walk-5', 'walk-6'];
-    var walkIdx = 0;
-    var walkStepTick = 0;
-    var walkStartTime = 0;
-    var totalWalkDist = 0;
-    var isWalking = false;
-
-    el.style.right = Math.round(currentRight) + 'px';
-
-    function planNextWalk() {
-      if (isActing || isSleeping || document.hidden || el.classList.contains('mascot-offscreen')) {
-        idleTimer = setTimeout(planNextWalk, 2000);
-        return;
-      }
-
-      var bounds = getBounds();
-      // Route: walk 80-250px (randomized +/- 20%)
-      var desiredDist = (80 + Math.random() * 170) * (0.8 + Math.random() * 0.4);
-      var candidate;
-      for (var iter = 0; iter < 8; iter++) {
-        var sign = Math.random() < 0.5 ? 1 : -1;
-        candidate = currentRight + sign * desiredDist;
-        if (candidate >= bounds.minR && candidate <= bounds.maxR && Math.abs(candidate - currentRight) >= 60) {
-          break;
-        }
-      }
-
-      if (!candidate || candidate < bounds.minR || candidate > bounds.maxR) {
-        candidate = bounds.minR + Math.random() * (bounds.maxR - bounds.minR);
-      }
-
-      targetRight = Math.round(Math.max(bounds.minR, Math.min(bounds.maxR, candidate)));
-      var newWalkDir = targetRight > currentRight ? 1 : -1;
-      // In our sheet: sprite naturally faces right.
-      // Moving right means right is decreasing (newWalkDir < 0) -> facing-right.
-      // Moving left means right is increasing (newWalkDir > 0) -> facing-left.
-      var desiredFacing = newWalkDir > 0 ? 'left' : 'right';
-      var currentFacing = bodyEl.classList.contains('facing-left') ? 'left' : 'right';
-
-      if (desiredFacing !== currentFacing) {
-        // Turning state: stop on idle frame for ~300ms, play three-quarter frames in sequence, then mirror
-        setState('turn');
-        setFrame('idle-1');
-        var turnDuration = 300 * (0.8 + Math.random() * 0.4);
-        stateTimer = setTimeout(function () {
-          if (isActing || isSleeping) return;
-          var turnFrames = ['turn-1', 'turn-2', 'turn-3', 'turn-4', 'turn-5'];
-          var tIdx = 0;
-          function stepTurn() {
-            if (isActing || isSleeping) return;
-            if (tIdx < turnFrames.length) {
-              setFrame(turnFrames[tIdx]);
-              tIdx++;
-              stateTimer = setTimeout(stepTurn, 75);
-            } else {
-              // Flip facing direction
-              if (desiredFacing === 'left') {
-                bodyEl.classList.remove('facing-right');
-                bodyEl.classList.add('facing-left');
-              } else {
-                bodyEl.classList.remove('facing-left');
-                bodyEl.classList.add('facing-right');
-              }
-              setFrame('idle-1');
-              stateTimer = setTimeout(function () {
-                startWalking(newWalkDir);
-              }, 150);
-            }
-          }
-          stepTurn();
-        }, turnDuration);
-      } else {
-        startWalking(newWalkDir);
-      }
-    }
-
-    function startWalking(dir) {
-      if (isActing || isSleeping) return;
-      walkDir = dir;
-      // Speed 25-40 px/s with +/- 20% random variation
-      walkSpeed = 26 + Math.random() * 10;
-      totalWalkDist = Math.abs(targetRight - currentRight);
-      walkStartTime = performance.now();
-      walkIdx = 0;
-      walkStepTick = 0;
-      isWalking = true;
-      setState('walk');
-      setFrame(walkFrames[0]);
-    }
-
-    function onWalkFinished() {
-      isWalking = false;
-      currentRight = targetRight;
-      el.style.right = Math.round(currentRight) + 'px';
-      setState('pause');
-      setFrame('idle-1');
-
-      // Random pause duration: 1-3s (+/- 20%)
-      var pauseDuration = (1000 + Math.random() * 2000) * (0.8 + Math.random() * 0.4);
-
-      // Pause behaviours: 1 in 5 (20%) typing sequence, else blink or look around
-      var pauseChoice = Math.random();
-      if (pauseChoice < 0.20) {
-        // Typing on laptop sequence in order (>_, npm i, building..., done), then stand up
-        stateTimer = setTimeout(function () {
-          if (isActing || isSleeping || currentState !== 'pause') return;
-          var typeSteps = [
-            { frame: 'type-1', time: 650 },
-            { frame: 'type-2', time: 650 },
-            { frame: 'type-3', time: 700 },
-            { frame: 'type-4', time: 800 }
-          ];
-          var tpIdx = 0;
-          function stepType() {
-            if (isActing || isSleeping || currentState !== 'pause') return;
-            if (tpIdx < typeSteps.length) {
-              setFrame(typeSteps[tpIdx].frame);
-              var wait = typeSteps[tpIdx].time;
-              tpIdx++;
-              stateTimer = setTimeout(stepType, wait);
-            } else {
-              setFrame('idle-1');
-              idleTimer = setTimeout(planNextWalk, 400);
-            }
-          }
-          stepType();
-        }, 300);
-      } else if (pauseChoice < 0.60) {
-        // Idle blink
-        stateTimer = setTimeout(function () {
-          if (isActing || isSleeping || currentState !== 'pause') return;
-          setFrame('idle-2');
-          stateTimer = setTimeout(function () {
-            setFrame('idle-3');
-            stateTimer = setTimeout(function () {
-              setFrame('idle-4');
-              stateTimer = setTimeout(function () {
-                setFrame('idle-1');
-              }, 120);
-            }, 120);
-          }, 100);
-        }, Math.round(pauseDuration * 0.35));
-        idleTimer = setTimeout(planNextWalk, pauseDuration);
-      } else {
-        // Look around using idle variants
-        stateTimer = setTimeout(function () {
-          if (isActing || isSleeping || currentState !== 'pause') return;
-          setFrame('idle-var-1');
-          stateTimer = setTimeout(function () {
-            setFrame('idle-var-2');
-            stateTimer = setTimeout(function () {
-              setFrame('idle-var-3');
-              stateTimer = setTimeout(function () {
-                setFrame('idle-1');
-              }, 400);
-            }, 400);
-          }, 350);
-        }, Math.round(pauseDuration * 0.3));
-        idleTimer = setTimeout(planNextWalk, pauseDuration);
-      }
-    }
-
-    // Main requestAnimationFrame walk loop with acceleration and deceleration
-    var lastRafTime = performance.now();
-    function robotLoop(now) {
-      requestAnimationFrame(robotLoop);
-
-      if (document.hidden || el.classList.contains('mascot-offscreen') || isActing || isSleeping) {
-        lastRafTime = now;
-        return;
-      }
-
-      var dtMs = Math.min(40, now - lastRafTime);
-      lastRafTime = now;
-
-      if (isWalking && currentState === 'walk') {
-        var remainDist = Math.abs(targetRight - currentRight);
-        var elapsedMs = now - walkStartTime;
-
-        // Acceleration over ~300ms, deceleration over ~300ms before stopping
-        var accelFactor = Math.min(1, elapsedMs / 300);
-        var decelDist = walkSpeed * 0.35; // distance needed for deceleration
-        var decelFactor = remainDist < decelDist ? Math.max(0.25, remainDist / decelDist) : 1;
-        var currentSpeed = walkSpeed * accelFactor * decelFactor;
-
-        var stepDist = (currentSpeed * dtMs) / 1000;
-
-        if (remainDist <= Math.max(1, stepDist)) {
-          onWalkFinished();
-        } else {
-          currentRight += walkDir * stepDist;
-          el.style.right = Math.round(currentRight) + 'px';
-
-          walkStepTick += dtMs;
-          if (walkStepTick >= 130) {
-            walkStepTick = 0;
-            walkIdx = (walkIdx + 1) % walkFrames.length;
-            setFrame(walkFrames[walkIdx]);
-          }
-        }
-      }
-    }
-
-    requestAnimationFrame(robotLoop);
-    idleTimer = setTimeout(planNextWalk, 2800);
-  })();
-
-
   // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery
   if ('IntersectionObserver' in window) {
     var mascotObserver = new IntersectionObserver(function (entries) {
@@ -2746,7 +2262,7 @@ document.addEventListener('keydown', function (e) {
       });
     }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
 
-    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini', 'mascot-terminal-robot'].forEach(function (id) {
+    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) mascotObserver.observe(el);
     });
@@ -3254,7 +2770,7 @@ document.addEventListener('keydown', function (e) {
     // Scroll parallax fallback if native CSS animation-timeline is unsupported
     var supportsScrollTimeline = false;
     try {
-      supportsScrollTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll(root)');
+      supportsScrollTimeline = window.CSS && CSS.supports && (CSS.supports('animation-timeline', 'view()') || CSS.supports('animation-timeline', 'scroll(root)'));
     } catch (e) {}
 
     if (!supportsScrollTimeline && !prefersReduced) {
@@ -3271,9 +2787,11 @@ document.addEventListener('keydown', function (e) {
             if (nebula) {
               var nebulaSec = document.getElementById('about');
               if (nebulaSec) {
-                var nTop = nebulaSec.offsetTop;
-                var nRel = scrollY - nTop;
-                nebula.style.transform = 'translate3d(0, ' + (nRel * -0.04) + 'px, 0)';
+                var rect = nebulaSec.getBoundingClientRect();
+                var viewH = window.innerHeight;
+                if (rect.bottom >= -100 && rect.top <= viewH + 100) {
+                  nebula.style.transform = 'translate3d(0, ' + Math.round(rect.top * -0.035) + 'px, 0)';
+                }
               }
             }
             if (station) {
@@ -3359,10 +2877,10 @@ document.addEventListener('keydown', function (e) {
       { id: 28, sectionId: 'contacts', relX: 0.955, relY: 0.48, tier: 1, sprite: 3, size: 8, orbitRx: 9, orbitRy: 6, orbitSpeed: 0.00017, wobbleSpeed: 0.0004, wobbleAmp: 2, rotSpeed: -0.013, phase: 2.6, inclination: -25 },
       { id: 29, sectionId: 'contacts', relX: 0.04, relY: 0.76, tier: 1, sprite: 3, size: 7, orbitRx: 7, orbitRy: 5, orbitSpeed: 0.00015, wobbleSpeed: 0.00035, wobbleAmp: 1.4, rotSpeed: 0.010, phase: 5.0, inclination: 15 },
 
-      // Footer Outpost Cosmic Background (3 asteroids: 1 distant, 1 mid, 1 distant cluster)
-      { id: 30, sectionId: 'footer', relX: 0.09, relY: 0.18, tier: 3, sprite: 1, size: 28, orbitRx: 29, orbitRy: 19, orbitSpeed: 0.00049, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: -0.050, phase: 4.3, inclination: -30 },
-      { id: 31, sectionId: 'footer', relX: 0.89, relY: 0.16, tier: 1, sprite: 3, size: 8, orbitRx: 8, orbitRy: 6, orbitSpeed: 0.00016, wobbleSpeed: 0.00038, wobbleAmp: 1.8, rotSpeed: 0.012, phase: 1.2, inclination: 20 },
-      { id: 32, sectionId: 'footer', relX: 0.70, relY: 0.22, tier: 2, sprite: 2, size: 16, orbitRx: 16, orbitRy: 11, orbitSpeed: 0.00033, wobbleSpeed: 0.00065, wobbleAmp: 3.8, rotSpeed: 0.025, phase: 3.5, inclination: -15 }
+      // Contacts Section Cosmic Background (3 asteroids: 1 mid cluster, 2 distant)
+      { id: 30, sectionId: 'contacts', relX: 0.09, relY: 0.70, tier: 3, sprite: 1, size: 28, orbitRx: 14, orbitRy: 7, orbitSpeed: 0.00045, wobbleSpeed: 0.00085, wobbleAmp: 2.5, rotSpeed: -0.050, phase: 4.3, inclination: -30 },
+      { id: 31, sectionId: 'contacts', relX: 0.93, relY: 0.80, tier: 1, sprite: 3, size: 8, orbitRx: 8, orbitRy: 6, orbitSpeed: 0.00016, wobbleSpeed: 0.00038, wobbleAmp: 1.8, rotSpeed: 0.012, phase: 1.2, inclination: 20 },
+      { id: 32, sectionId: 'contacts', relX: 0.88, relY: 0.22, tier: 2, sprite: 2, size: 16, orbitRx: 16, orbitRy: 11, orbitSpeed: 0.00033, wobbleSpeed: 0.00065, wobbleAmp: 3.8, rotSpeed: 0.025, phase: 3.5, inclination: -15 }
     ];
 
     var PROTECTED_SELECTORS = [
@@ -3393,20 +2911,18 @@ document.addEventListener('keydown', function (e) {
       '.mascot-claude-patrol-wrap',
       '#mascot-gemini',
       '.mascot-gemini-wrap',
-      '#mascot-terminal-robot',
-      '.mascot-terminal-robot',
       '#contact-tux-track',
       '#footer-droid-wrap',
       '.prop-droid',
-      '#prop-cyborg',
-      '.prop-cyborg',
       '#pixel-starfighter-wrap',
       '#space-helmet-wrap',
       '#tiny-probe-wrap',
+      '.tiny-space-probe-drift-wrap',
       '#projects-orbital-station',
       '.projects-orbital-station',
       '#prop-wasteland-beacon',
-      '.prop-wasteland-beacon'
+      '.prop-wasteland-beacon',
+      '.contacts-pixel-moon'
     ];
 
     var protectedBoxes = [];
@@ -3508,9 +3024,49 @@ document.addEventListener('keydown', function (e) {
         var secTop = secRect.top + scrollY;
         var secH = secEl.offsetHeight;
 
-        var targetX = docWidth * ast.cfg.relX - (ast.width / 2);
-        targetX = Math.max(10, Math.min(docWidth - ast.width - 10, targetX));
-        var targetY = secTop + (secH * ast.cfg.relY) - (ast.height / 2);
+        var targetRelX = ast.cfg.relX;
+        var targetRelY = ast.cfg.relY;
+
+        if (ast.cfg.id === 30) {
+          if (docWidth <= 900) {
+            // Positioned in open cosmic space below contact form, matching user's mobile placement
+            var btnEl = document.getElementById('submit-btn');
+            var footerEl = document.querySelector('footer');
+            if (btnEl && footerEl) {
+              var btnRect = btnEl.getBoundingClientRect();
+              var footerRect = footerEl.getBoundingClientRect();
+              var btnBottom = btnRect.bottom + scrollY;
+              var footerTop = footerRect.top + scrollY;
+              targetX = docWidth * 0.10 - (ast.width / 2);
+              targetY = (btnBottom + footerTop) / 2 - (ast.height / 2);
+            } else {
+              targetRelX = 0.10;
+              targetRelY = 0.94;
+              targetX = docWidth * targetRelX - (ast.width / 2);
+              targetY = secTop + (secH * targetRelY) - (ast.height / 2);
+            }
+          } else {
+            // Desktop (2-column layout): sits in open cosmic space on the left below contact links
+            targetRelX = 0.08;
+            targetRelY = 0.70;
+            targetX = docWidth * targetRelX - (ast.width / 2);
+            targetY = secTop + (secH * targetRelY) - (ast.height / 2);
+          }
+        } else {
+          targetX = docWidth * targetRelX - (ast.width / 2);
+          targetY = secTop + (secH * targetRelY) - (ast.height / 2);
+        }
+
+        // Absolute safeguard against clipping into footer:
+        // Ensure no asteroid's downward orbital reach can ever cross footerTop
+        var footerEl = document.querySelector('footer');
+        if (footerEl) {
+          var footerTop = footerEl.getBoundingClientRect().top + scrollY;
+          var safeMargin = (ast.cfg.orbitRy || 10) + (ast.cfg.wobbleAmp || 4) + ast.height + 12;
+          if (targetY + safeMargin > footerTop) {
+            targetY = footerTop - safeMargin;
+          }
+        }
 
         ast.homeX = targetX;
         ast.homeY = targetY;
@@ -3550,6 +3106,9 @@ document.addEventListener('keydown', function (e) {
       var scrollX = window.pageXOffset || document.documentElement.scrollLeft;
       var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
+      var footerEl = document.querySelector('footer');
+      var footerTopLimit = footerEl ? (footerEl.getBoundingClientRect().top + scrollY) : 999999;
+
       var rocket = window.__roamingRocketPos;
       var rocketDocX = rocket ? scrollX + rocket.x : -9999;
       var rocketDocY = rocket ? scrollY + rocket.y : -9999;
@@ -3583,10 +3142,13 @@ document.addEventListener('keydown', function (e) {
 
         // 2. Collision Avoidance against Protected Elements
         var astRadius = ast.radius;
-        var safePadding = 35 + astRadius;
+        var safePadding = (ast.cfg.id === 30) ? (10 + astRadius) : (35 + astRadius);
 
         for (var b = 0; b < protectedBoxes.length; b++) {
           var box = protectedBoxes[b];
+          if (ast.cfg.id === 30 && box.bottom <= ast.y + 4) {
+            continue;
+          }
           if (ast.x + safePadding < box.left || ast.x - safePadding > box.right ||
               ast.y + safePadding < box.top || ast.y - safePadding > box.bottom) {
             continue;
@@ -3658,6 +3220,13 @@ document.addEventListener('keydown', function (e) {
 
         ast.x += ast.vx;
         ast.y += ast.vy;
+
+        // Absolute physics bound: ensure asteroid never crosses into opaque footer
+        if (ast.y + ast.height > footerTopLimit - 4) {
+          ast.y = footerTopLimit - ast.height - 4;
+          if (ast.vy > 0) ast.vy = -Math.abs(ast.vy) * 0.4;
+        }
+
         ast.angle += cfg.rotSpeed;
 
         // 6. Viewport Culling & DOM Rendering

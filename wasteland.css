@@ -85,20 +85,20 @@
   filter: blur(1px);
 }
 
-/* Depth for Central Citadel Monolith (Midground Layer 2) - Clean grounding, zero yellow aura */
+/* Depth for Central Citadel Monolith (Midground Layer 2) - Clean grounding, zero aura */
 .prop-wasteland-citadel {
   position: absolute;
   left: 52%; transform: translateX(-50%);
   bottom: var(--ground-y);
   width: 120px; height: 195px;
   z-index: 2;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.82)) drop-shadow(0 0 12px rgba(15, 23, 42, 0.45));
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
 }
 .prop-wasteland-citadel:hover {
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 14px rgba(56, 189, 248, 0.22)) brightness(1.06);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 8px rgba(56, 189, 248, 0.25)) brightness(1.05);
 }
 .prop-wasteland-citadel.is-pulsing {
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.45)) brightness(1.15) !important;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 14px rgba(56, 189, 248, 0.4)) brightness(1.12) !important;
 }
 
 /* Citadel Radar Ping Ring Animation */
