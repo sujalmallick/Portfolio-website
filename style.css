@@ -274,6 +274,7 @@ section {
   align-items: center;
   border-top: none;
   padding: 4rem var(--section-px);
+
 }
 
 .profile-inner {
@@ -329,8 +330,79 @@ section {
   }
 }
 
+/* Distant Small Pixel Satellite (Far away in cosmic background, drifting slowly) */
+.hero-pixel-satellite {
+  position: absolute;
+  top: 14%;
+  left: clamp(28px, 14vw, 220px);
+  width: 38px;
+  height: 38px;
+  z-index: 1; /* Sits in background sky behind foreground content */
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+/* Scroll-driven parallax: satellite scrolls significantly slower than foreground to convey distance */
+@supports (animation-timeline: scroll(root)) {
+  .hero-pixel-satellite {
+    animation: hero-satellite-parallax linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 800px;
+  }
+}
+
+@keyframes hero-satellite-parallax {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(140px);
+  }
+}
+
+.hero-satellite-drift-wrap {
+  width: 100%;
+  height: 100%;
+  animation: hero-satellite-drift 52s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-satellite-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  opacity: 0.72;
+  filter: brightness(0.88) contrast(0.92) drop-shadow(0 0 6px rgba(100, 150, 240, 0.08));
+}
+
+@keyframes hero-satellite-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  28% {
+    transform: translate3d(14px, -10px, 0) rotate(2deg);
+  }
+  68% {
+    transform: translate3d(26px, 5px, 0) rotate(-1.5deg);
+  }
+  100% {
+    transform: translate3d(10px, -4px, 0) rotate(2.5deg);
+  }
+}
+
+.hero-pixel-satellite.celestial-offscreen .hero-satellite-drift-wrap,
+.hero-pixel-planet.celestial-offscreen {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero-pixel-planet {
+  .hero-pixel-planet,
+  .hero-pixel-satellite,
+  .hero-satellite-drift-wrap {
     animation: none !important;
   }
 }
@@ -2445,6 +2517,119 @@ footer {
   50%      { transform: translateY(-2px); }
 }
 
+/* ── 4. TERMINAL ROBOT MASCOT (Walking on Hackathons Divider) ─────────── */
+.mascot-terminal-robot {
+  position: absolute;
+  top: -84px; /* Feet rest precisely on top of the 1px divider line */
+  right: clamp(24px, 8vw, 120px);
+  width: 75px;
+  height: 84px;
+  z-index: 10;
+  pointer-events: auto;
+  user-select: none;
+  cursor: pointer;
+  transform-origin: bottom right;
+}
+
+.terminal-robot-bubble {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(9, 21, 16, 0.95);
+  border: 1px solid #10b981;
+  color: #34d399;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 20;
+}
+
+.terminal-robot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0 4px;
+  border-style: solid;
+  border-color: #10b981 transparent transparent transparent;
+}
+
+.terminal-robot-bubble.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.terminal-robot-bubble .bubble-prompt {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.terminal-robot-bubble .bubble-text {
+  color: #6ee7b7;
+  letter-spacing: 0.02em;
+}
+
+.terminal-robot-body {
+  position: relative;
+  width: 75px;
+  height: 84px;
+  transform-origin: 50% 100%;
+}
+
+.terminal-robot-body.facing-left {
+  transform: scaleX(-1);
+}
+
+.terminal-robot-body.facing-right {
+  transform: scaleX(1);
+}
+
+.terminal-robot-sprite {
+  width: 75px;
+  height: 84px;
+  background-image: url('./assets/terminal-mascot-sheet.png');
+  background-size: 750px 504px;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.terminal-robot-fx {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75px;
+  height: 84px;
+  background-image: url('./assets/terminal-mascot-sheet.png');
+  background-size: 750px 504px;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  display: none;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mascot-terminal-robot:hover .terminal-robot-body {
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
+}
+
 /* ── REDUCED MOTION SUPPORT ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .chatgpt-body,
@@ -2461,15 +2646,19 @@ footer {
   .gemini-part-handl,
   .gemini-part-armr,
   .gemini-part-handr,
-  .constellation-spark {
+  .constellation-spark,
+  .terminal-robot-body,
+  .terminal-robot-bubble {
     animation: none !important;
   }
-  .mascot-claude {
+  .mascot-claude,
+  .mascot-terminal-robot {
     transition: none !important;
   }
   .mascot-chatgpt:hover .chatgpt-body,
   .mascot-claude:hover .claude-body,
-  .mascot-gemini:hover .gemini-body {
+  .mascot-gemini:hover .gemini-body,
+  .mascot-terminal-robot:hover .terminal-robot-body {
     transform: none !important;
   }
 }
@@ -2481,6 +2670,8 @@ footer {
 .pixel-mascot.mascot-offscreen .claude-body,
 .pixel-mascot.mascot-offscreen .claude-bubble,
 .pixel-mascot.mascot-offscreen .gemini-orbit-wrap,
-.pixel-mascot.mascot-offscreen .gemini-bubble {
+.pixel-mascot.mascot-offscreen .gemini-bubble,
+.pixel-mascot.mascot-offscreen .terminal-robot-body,
+.pixel-mascot.mascot-offscreen .terminal-robot-bubble {
   animation-play-state: paused !important;
 }
