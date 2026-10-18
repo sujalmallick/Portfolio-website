@@ -239,29 +239,29 @@ document.addEventListener('keydown', function (e) {
   // ── PROTECTED Terminator Character & Code Projectiles ─────────────────────────
   // STRICT RULE: Original Terminator sprites and projectile assets remain untouched
   var robotImg = new Image();
-  robotImg.src = 'assets/pixel-terminator.png';
+  robotImg.src = 'assets/wasteland/cyborg-shooter.png';
 
   var robotStepImg = new Image();
-  robotStepImg.src = 'assets/pixel-terminator-step.png';
+  robotStepImg.src = 'assets/wasteland/cyborg-shooter.png';
 
   var muzzleImg = new Image();
   muzzleImg.src = 'assets/muzzle-flash.png';
 
   var badgeImages = {
-    python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
+    html:   { img: new Image(), src: 'assets/badge-html.png',   w: 20, h: 20 },
+    css:    { img: new Image(), src: 'assets/badge-css.png',    w: 20, h: 20 },
     js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 17 },
-    cpp:    { img: new Image(), src: 'assets/badge-cpp.png',    w: 22, h: 15 },
-    java:   { img: new Image(), src: 'assets/badge-java.png',   w: 22, h: 24 },
+    python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
     code:   { img: new Image(), src: 'assets/badge-code.png',   w: 18, h: 14 }
   };
-  var BADGE_SEQUENCE = ['code', 'java', 'cpp', 'js', 'python'];
+  var BADGE_SEQUENCE = ['html', 'css', 'js', 'python', 'code'];
   for (var k in badgeImages) {
     badgeImages[k].img.src = badgeImages[k].src;
   }
 
   // Terminator Geometry & Motion Constants
-  var ROBOT_DRAW_W = 50;
-  var ROBOT_DRAW_H = 55;
+  var ROBOT_DRAW_W = 58;
+  var ROBOT_DRAW_H = 58;
   var BARREL_OFFSET_X = 2;
   var BARREL_OFFSET_Y = 24;
   var WALK_SPEED = 0.42;
@@ -1127,9 +1127,9 @@ document.addEventListener('keydown', function (e) {
     var ctx = canvas.getContext('2d');
     if (!ctx) return;
     var profile = document.getElementById('profile');
-    var btn = document.getElementById('pixel-rocket-btn');
 
-    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var prefersReducedMotion = motionQuery.matches;
 
     var rocketImg = new Image();
     rocketImg.src = 'assets/pixel-rocket.png';
@@ -1145,14 +1145,25 @@ document.addEventListener('keydown', function (e) {
     var legDropDist = Math.round(ROCKET_H * 0.52);
 
     // Rocket State
-    var mode = 'LANDED'; // 'LANDED', 'LAUNCH'
+    var mode = 'DRIFT'; // 'DRIFT', 'LAUNCH'
     var isLaunching = false;
-    var legDeploy = 1; // 0 to 1
+    var legDeploy = 0; // Tucked in flight
     var angle = 0;
     var x = 0;
     var y = 0;
     var vx = 0;
     var vy = 0;
+
+    // Space drift physics state
+    var drift = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      angle: 0,
+      time: Math.random() * 2000,
+      initialized: false
+    };
 
     // Launch flight parameters
     var launchStep = 0;
@@ -1168,33 +1179,28 @@ document.addEventListener('keydown', function (e) {
     var isRunning = true;
     var rafId = null;
 
-    function getHomePos() {
-      var hx, hy;
+    function getHomeConfig() {
+      var hx, hy, rx, ry;
       if (width > 900) {
-        // Desktop: Open cosmic sky to the right of profile photo, below the planet
-        hx = Math.round(Math.min(width - 55, Math.max(width * 0.86, 1200)));
-        hy = Math.round(height * 0.50);
+        // Desktop: Open cosmic sky to the right of profile photo
+        hx = Math.round(Math.min(width - 65, Math.max(width * 0.88, 1260)));
+        hy = Math.round(height * 0.48);
+        rx = 38;
+        ry = 30;
       } else if (width > 600) {
-        // Tablet: Open right margin beside centered photo
-        hx = Math.round(width * 0.86);
-        hy = Math.round(height * 0.35);
+        // Tablet: Right margin beside centered photo
+        hx = Math.round(Math.min(width - 45, Math.max(width * 0.86, 620)));
+        hy = Math.round(height * 0.36);
+        rx = 22;
+        ry = 18;
       } else {
-        // Mobile: Open right margin beside photo, clear of centered text
-        hx = Math.round(width - 32);
-        hy = Math.round(height * 0.34);
+        // Mobile: Clear right margin beside photo
+        hx = Math.round(width - 34);
+        hy = Math.round(height * 0.30);
+        rx = 12;
+        ry = 10;
       }
-      return { x: hx, y: hy };
-    }
-
-    function updateButtonPos() {
-      if (!btn) return;
-      var hitW = Math.max(56, ROCKET_W + 28);
-      var hitH = Math.max(76, ROCKET_H + 28);
-      btn.style.left = Math.round(x - hitW / 2) + 'px';
-      btn.style.top = Math.round(y - ROCKET_H / 2 - 14) + 'px';
-      btn.style.width = hitW + 'px';
-      btn.style.height = hitH + 'px';
-      btn.style.cursor = isLaunching ? 'default' : 'pointer';
+      return { x: hx, y: hy, rx: rx, ry: ry };
     }
 
     function resize() {
@@ -1215,35 +1221,23 @@ document.addEventListener('keydown', function (e) {
       ctx.scale(dpr, dpr);
       ctx.imageSmoothingEnabled = false;
 
-      // Keep rocket stationed in its responsive home position when landed
-      if (!isLaunching) {
-        var home = getHomePos();
+      var home = getHomeConfig();
+      if (!drift.initialized) {
+        drift.x = home.x;
+        drift.y = home.y;
         x = home.x;
         y = home.y;
-        angle = 0;
-        legDeploy = 1;
-        updateButtonPos();
+        drift.initialized = true;
+      } else if (!isLaunching) {
+        drift.x = Math.max(home.x - home.rx, Math.min(home.x + home.rx, drift.x));
+        drift.y = Math.max(home.y - home.ry, Math.min(home.y + home.ry, drift.y));
+        x = drift.x;
+        y = drift.y;
       }
     }
 
     function triggerLaunch() {
-      if (isLaunching) return; // Prevent repeated clicks from breaking active flight
-      if (prefersReducedMotion) {
-        // Subtle coolant whisper puff without sudden motion
-        for (var p = 0; p < 6; p++) {
-          particles.push({
-            x: x + (Math.random() - 0.5) * 8,
-            y: y + ROCKET_H * 0.44,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: 0.4 + Math.random() * 0.5,
-            color: Math.random() > 0.4 ? '#22D3EE' : '#FFFFFF',
-            size: Math.random() > 0.5 ? 2 : 1,
-            alpha: 0.9,
-            decay: 0.04
-          });
-        }
-        return;
-      }
+      if (isLaunching || prefersReducedMotion) return;
 
       isLaunching = true;
       mode = 'LAUNCH';
@@ -1251,42 +1245,71 @@ document.addEventListener('keydown', function (e) {
       launchStartX = x;
       launchStartY = y;
 
-      // Climb apex in open upper cosmic sky of profile
       arcApexX = Math.round(width > 900 ? width * 0.56 : (width > 600 ? width * 0.50 : width * 0.42));
       arcApexY = Math.round(Math.max(35, height * 0.10));
-      updateButtonPos();
     }
 
     function update() {
-      // ── FLIGHT MODE STATE MACHINE ──
-      if (mode === 'LANDED') {
-        // Rocket remains completely stationary; no autodrift, no wandering
-        vx = 0;
-        vy = 0;
-        angle = 0;
-        legDeploy = 1;
+      if (mode === 'DRIFT') {
+        drift.time += 1;
+        var t = drift.time;
+        var home = getHomeConfig();
 
-        // Occasional faint idle coolant whisper (every 220 frames)
-        if (Math.random() < 0.005) {
+        // Organic multi-harmonic drifting target (non-repeating orbital perturbations)
+        var targetOffsetX = Math.sin(t * 0.0052) * home.rx + Math.sin(t * 0.0125 + 1.2) * (home.rx * 0.45);
+        var targetOffsetY = Math.cos(t * 0.0046 + 0.8) * home.ry + Math.sin(t * 0.0098 + 2.1) * (home.ry * 0.35);
+
+        var targetX = home.x + targetOffsetX;
+        var targetY = home.y + targetOffsetY;
+
+        // Gravitational / inertial spring restoring acceleration
+        var ax = (targetX - drift.x) * 0.00075;
+        var ay = (targetY - drift.y) * 0.00075;
+
+        // Space vacuum damping & momentum
+        drift.vx = (drift.vx + ax) * 0.985;
+        drift.vy = (drift.vy + ay) * 0.985;
+
+        // Restrained speed limit (slow distant spacecraft feel)
+        var speed = Math.hypot(drift.vx, drift.vy);
+        var maxDriftSpeed = isMobile ? 0.16 : 0.25;
+        if (speed > maxDriftSpeed) {
+          drift.vx = (drift.vx / speed) * maxDriftSpeed;
+          drift.vy = (drift.vy / speed) * maxDriftSpeed;
+        }
+
+        drift.x += drift.vx;
+        drift.y += drift.vy;
+
+        // Subtle banking rotation that follows travel heading (clamped to max ~8.5°)
+        var targetAngle = Math.max(-0.15, Math.min(0.15, drift.vx * 0.55));
+        drift.angle += (targetAngle - drift.angle) * 0.04;
+
+        x = drift.x;
+        y = drift.y;
+        angle = drift.angle;
+        legDeploy = 0;
+
+        // Occasional faint RCS micro-particle (very subtle space ambience)
+        if (Math.random() < 0.025) {
           particles.push({
-            x: x + (Math.random() - 0.5) * 6,
-            y: y + ROCKET_H * 0.42,
-            vx: (Math.random() - 0.5) * 0.3,
-            vy: -0.3,
-            color: '#CFC6B5',
+            x: x + (Math.random() - 0.5) * 4,
+            y: y + ROCKET_H * 0.44,
+            vx: -Math.sin(angle) * 0.4 + (Math.random() - 0.5) * 0.3,
+            vy: Math.cos(angle) * 0.7 + 0.2,
+            color: Math.random() > 0.4 ? '#22D3EE' : '#FFFFFF',
             size: 1,
-            alpha: 0.4,
-            decay: 0.025
+            alpha: 0.65,
+            decay: 0.045
           });
         }
 
       } else if (mode === 'LAUNCH') {
         launchStep++;
-
         var nozzleDist = ROCKET_H * 0.44;
 
         if (launchStep <= 12) {
-          // Phase 1: Ignition & Flame Flare at landing site
+          // Phase 1: Ignition & Flame Flare
           legDeploy = Math.max(0, 1 - (launchStep / 12));
           x = launchStartX + (Math.random() - 0.5) * 1.0;
           y = launchStartY + (Math.random() - 0.5) * 1.0;
@@ -1309,16 +1332,15 @@ document.addEventListener('keydown', function (e) {
         } else if (launchStep <= 54) {
           // Phase 2: Upward Lift & Ascent Acceleration
           legDeploy = 0;
-          var t = (launchStep - 12) / 42; // 0 to 1
-          var easeY = Math.sin(t * (Math.PI / 2));
-          var easeX = t;
+          var tAsc = (launchStep - 12) / 42;
+          var easeY = Math.sin(tAsc * (Math.PI / 2));
+          var easeX = tAsc;
           x = launchStartX + (arcApexX - launchStartX) * easeX;
           y = launchStartY + (arcApexY - launchStartY) * easeY;
 
           var desiredAngle = -0.24;
           angle += (desiredAngle - angle) * 0.08;
 
-          // Main thruster plume backwards along heading
           var fx = Math.sin(angle);
           var fy = -Math.cos(angle);
           var nx = x - fx * nozzleDist;
@@ -1347,7 +1369,6 @@ document.addEventListener('keydown', function (e) {
 
           angle += (0.12 - angle) * 0.06;
 
-          // Side RCS thrusters fire puffs on hull
           if (launchStep % 3 === 0) {
             particles.push({
               x: x - Math.cos(angle) * (ROCKET_W * 0.44),
@@ -1374,7 +1395,6 @@ document.addEventListener('keydown', function (e) {
           angle += (0 - angle) * 0.14;
           legDeploy = Math.min(1, tDesc * 1.35);
 
-          // Retro thrusters firing downward in deceleration bursts
           for (var p = 0; p < 2; p++) {
             particles.push({
               x: x + (Math.random() - 0.5) * 6,
@@ -1389,31 +1409,31 @@ document.addEventListener('keydown', function (e) {
           }
 
         } else {
-          // Phase 5: Clean Touchdown on landing pad
-          x = launchStartX;
-          y = launchStartY;
+          // Phase 5: Smooth return to organic drift
+          drift.x = launchStartX;
+          drift.y = launchStartY;
+          drift.vx = 0;
+          drift.vy = 0;
+          drift.angle = 0;
+          x = drift.x;
+          y = drift.y;
           angle = 0;
-          vx = 0;
-          vy = 0;
-          legDeploy = 1;
-          mode = 'LANDED';
+          legDeploy = 0;
+          mode = 'DRIFT';
           isLaunching = false;
 
-          // Soft settle dust burst across footpads
-          for (var s = 0; s < 8; s++) {
+          for (var s = 0; s < 6; s++) {
             particles.push({
-              x: x + (Math.random() - 0.5) * 14,
+              x: x + (Math.random() - 0.5) * 12,
               y: y + legDropDist,
-              vx: (Math.random() - 0.5) * 1.8,
-              vy: -0.3 - Math.random() * 0.4,
+              vx: (Math.random() - 0.5) * 1.4,
+              vy: -0.3 - Math.random() * 0.3,
               color: '#CFC6B5',
               size: Math.random() > 0.4 ? 2 : 1,
-              alpha: 0.9,
-              decay: 0.035
+              alpha: 0.85,
+              decay: 0.04
             });
           }
-
-          updateButtonPos();
         }
       }
 
@@ -1538,57 +1558,45 @@ document.addEventListener('keydown', function (e) {
 
     function init() {
       resize();
-      window.addEventListener('resize', resize);
 
-      if (prefersReducedMotion) {
-        rocketImg.onload = drawStaticFallback;
-        if (rocketImg.complete) drawStaticFallback();
-      } else {
-        rocketImg.onload = function () {
-          if (!isRunning) return;
-          render();
-        };
+      function onResize() {
+        resize();
+        if (prefersReducedMotion) {
+          drawStaticFallback();
+        }
       }
+      window.addEventListener('resize', onResize);
 
-      // Hitbox Button Trigger (Primary click, tap, and keyboard trigger)
-      if (btn) {
-        btn.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          triggerLaunch();
-        });
-
-        btn.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            triggerLaunch();
+      function handleMotionPreference(e) {
+        prefersReducedMotion = e.matches;
+        if (prefersReducedMotion) {
+          isRunning = false;
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
           }
-        });
-
-        btn.addEventListener('pointerdown', function (e) {
-          triggerLaunch();
-        });
-      }
-
-      // Secondary Profile Section click / tap detection fallback
-      if (profile) {
-        profile.addEventListener('click', function (e) {
-          var rect = canvas.getBoundingClientRect();
-          var px = e.clientX - rect.left;
-          var py = e.clientY - rect.top;
-          if (Math.hypot(x - px, y - py) < 48) {
-            triggerLaunch();
+          drawStaticFallback();
+        } else {
+          if (!isRunning) {
+            isRunning = true;
+            rafId = requestAnimationFrame(loop);
           }
-        });
+        }
       }
 
-      // Window pointer click fallback
+      if (motionQuery.addEventListener) {
+        motionQuery.addEventListener('change', handleMotionPreference);
+      } else if (motionQuery.addListener) {
+        motionQuery.addListener(handleMotionPreference);
+      }
+
+      // Passive window click listener: non-intrusive interactive trigger on the rocket
       window.addEventListener('click', function (e) {
         if (!canvas) return;
         var rect = canvas.getBoundingClientRect();
-        var canvasPx = e.clientX - rect.left;
-        var canvasPy = e.clientY - rect.top;
-        if (Math.hypot(x - canvasPx, y - canvasPy) < 48) {
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+        if (Math.hypot(x - clickX, y - clickY) < Math.max(48, ROCKET_W * 2.2)) {
           triggerLaunch();
         }
       }, { passive: true });
@@ -1596,15 +1604,28 @@ document.addEventListener('keydown', function (e) {
       // Battery / Background Tab Saver: pause loop when tab hidden
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
-          isRunning = false;
-          if (rafId) cancelAnimationFrame(rafId);
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
         } else {
-          if (!isRunning) {
-            isRunning = true;
+          if (isRunning && !prefersReducedMotion) {
             rafId = requestAnimationFrame(loop);
           }
         }
       });
+
+      if (prefersReducedMotion) {
+        isRunning = false;
+        rocketImg.onload = drawStaticFallback;
+        if (rocketImg.complete) drawStaticFallback();
+        return;
+      }
+
+      rocketImg.onload = function () {
+        if (!isRunning) return;
+        render();
+      };
 
       isRunning = true;
       rafId = requestAnimationFrame(loop);
