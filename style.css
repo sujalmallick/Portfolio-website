@@ -1252,18 +1252,19 @@ section {
   position: absolute;
   top: 0;
   left: 0;
-  width: 36px;
-  height: 37px;
+  width: 44px;
+  height: 44px;
   background-image: url('./assets/pixel-tux-sheet.png');
-  background-size: 400% 100%; /* 4 frames: stride1, mid, stride2, jump */
-  background-position: 0% 0;
+  background-size: 176px 264px; /* 4 columns (176px) x 6 rows (264px) */
+  background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   transform-origin: bottom center;
   transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1);
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   user-select: none;
   will-change: transform, left, top;
 }

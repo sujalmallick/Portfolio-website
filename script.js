@@ -1693,17 +1693,31 @@ document.addEventListener('keydown', function (e) {
     { id: 'contact-message', labelText: 'MESSAGE' }
   ];
 
-  var tuxWidth = 36;
-  var tuxHeight = 37;
+  var FRAME_W = 44;
+  var FRAME_H = 44;
+  var tuxWidth = 44;
+  var tuxHeight = 44;
+  var feetOffset = 40; // baseline of feet is 40px from top of 44px box
 
-  // Sprite frames (36x37 frames in 144x37 sheet: 4 frames)
-  var FRAMES = {
-    STRIDE_1: '0% 0',
-    MID_STEP: '33.333% 0',
-    STRIDE_2: '66.666% 0',
-    AIRBORNE: '100% 0'
-  };
-  var WALK_CYCLE = [FRAMES.STRIDE_1, FRAMES.MID_STEP, FRAMES.STRIDE_2, FRAMES.MID_STEP];
+  // Sprite atlas rows (4 frames per row, 88x88px native cells scaled to 44x44px):
+  // Row 0: IDLE (frame 0=stand, 1=blink, 2=breath/wide, 3=soft)
+  // Row 1: WALK_RIGHT (frames 0..3: 4-step waddle cycle facing right)
+  // Row 2: WALK_LEFT (frames 0..3: 4-step waddle cycle facing left)
+  // Row 3: JUMP (0=crouch, 1=launch, 2=apex glide, 3=landing squash)
+  // Row 4: LOOK_AROUND (0=center, 1=look left, 2=center, 3=look right)
+  // Row 5: HAPPY (0..3: celebratory flipper wave & jump)
+  var ROW_IDLE = 0;
+  var ROW_WALK_R = 1;
+  var ROW_WALK_L = 2;
+  var ROW_JUMP = 3;
+  var ROW_LOOK = 4;
+  var ROW_HAPPY = 5;
+
+  function setFrame(row, col) {
+    var posX = -(col * FRAME_W);
+    var posY = -(row * FRAME_H);
+    sprite.style.backgroundPosition = posX + 'px ' + posY + 'px';
+  }
 
   function getFieldMetrics(index) {
     var field = fields[index];
@@ -1717,12 +1731,10 @@ document.addEventListener('keydown', function (e) {
       return { lineY: 0, minX: 80, maxX: 260 };
     }
 
-    // Precise client bounding rect relative to form container
     var formRect = form.getBoundingClientRect();
     var labelRect = label.getBoundingClientRect();
     var lineY = labelRect.top - formRect.top + Math.floor(labelRect.height / 2);
 
-    // Horizontal boundaries: never overlap label text, never overflow form
     var span = label.querySelector('.form-label-text');
     var spanRect = span ? span.getBoundingClientRect() : labelRect;
     var minX = spanRect.right - formRect.left + 16;
@@ -1735,20 +1747,27 @@ document.addEventListener('keydown', function (e) {
   var currentField = 0;       // 0 = Name, 1 = Email, 2 = Message
   var targetField = 0;
   var journeyDir = 1;         // +1 = going down (Name -> Email -> Message), -1 = returning up
-  var state = 'WALK';         // 'WALK', 'PAUSE', 'HOP', 'LAND'
+  var state = 'WALK';         // 'WALK', 'PAUSE', 'HOP', 'LAND', 'HAPPY'
 
   var posX = 90;
   var posY = 0;
   var facing = 1;             // +1 = facing right, -1 = facing left
-  var speed = 0.40;           // slow waddle speed (~24px/sec)
+  var speed = 0.38;           // gentle waddle speed (~23px/sec)
 
+  // Walk animation
   var walkAnimTimer = 0;
   var walkFrameIndex = 0;
   var walkDistanceRemaining = 0;
 
+  // Pause / Idle animation
   var pauseTimer = 0;
   var fieldTimeElapsed = 0;
-  var fieldTimeLimit = 4200;  // 4.2s exploration before next hop
+  var fieldTimeLimit = 4200;  // 4.2s exploration on divider before next hop
+  var blinkTimer = 0;
+  var isBlinking = false;
+  var lookTimer = 0;
+  var isLookingAround = false;
+  var lookStep = 0;
 
   // Hop trajectory
   var hopStartTime = 0;
@@ -1757,20 +1776,23 @@ document.addEventListener('keydown', function (e) {
   var hopStartY = 0;
   var hopEndX = 0;
   var hopEndY = 0;
-  var hopPeakH = 20;
+  var hopPeakH = 22;
 
+  // Land squash
   var landTimer = 0;
+
+  // Happy celebration
+  var happyTimer = 0;
+  var happyAnimTimer = 0;
+  var happyFrame = 0;
+
   var isVisible = true;
   var isRunning = true;
   var rafId = null;
   var lastTime = 0;
 
-  function setFrame(framePosition) {
-    sprite.style.backgroundPosition = framePosition;
-  }
-
   function renderTux(extraScaleX, extraScaleY, extraRotate, extraOffsetY) {
-    var sX = (extraScaleX !== undefined ? extraScaleX : 1.0) * facing;
+    var sX = extraScaleX !== undefined ? extraScaleX : 1.0;
     var sY = extraScaleY !== undefined ? extraScaleY : 1.0;
     var rot = extraRotate ? ' rotate(' + extraRotate.toFixed(1) + 'deg)' : '';
     var offY = extraOffsetY || 0;
@@ -1782,7 +1804,7 @@ document.addEventListener('keydown', function (e) {
 
   function chooseNewWalk() {
     var m = getFieldMetrics(currentField);
-    var dist = 25 + Math.random() * 35;
+    var dist = 24 + Math.random() * 36;
     if (Math.random() < 0.45) {
       facing = -facing;
     }
@@ -1793,14 +1815,25 @@ document.addEventListener('keydown', function (e) {
       facing = 1;
     }
     walkDistanceRemaining = dist;
+    walkAnimTimer = 0;
+    walkFrameIndex = 0;
     state = 'WALK';
   }
 
   function startPause(duration) {
     state = 'PAUSE';
     pauseTimer = duration || (1800 + Math.random() * 1600);
-    setFrame(FRAMES.STRIDE_1);
-    renderTux(1.0, 1.0);
+    blinkTimer = 1600 + Math.random() * 1800; // time until next blink
+    isBlinking = false;
+    isLookingAround = false;
+    lookStep = 0;
+    // Chance to look around during long pauses (> 2.4s)
+    if (pauseTimer > 2400 && Math.random() < 0.45) {
+      isLookingAround = true;
+      lookTimer = 500;
+    }
+    setFrame(ROW_IDLE, 0);
+    renderTux(facing === -1 ? -1.0 : 1.0, 1.0, 0, 0);
   }
 
   function triggerNextHop() {
@@ -1811,34 +1844,33 @@ document.addEventListener('keydown', function (e) {
         nextField = 1;
       } else if (currentField === 1) {
         nextField = 2;
-        journeyDir = -1; // Begin return journey next
+        journeyDir = -1;
       }
     } else {
       if (currentField === 2) {
         nextField = 1;
       } else if (currentField === 1) {
         nextField = 0;
-        journeyDir = 1;  // Repeat cycle from Name
+        journeyDir = 1;
       }
     }
 
     var startMetrics = getFieldMetrics(currentField);
     var endMetrics = getFieldMetrics(nextField);
 
-    // Row 35 is Tux's feet, aligning precisely with lineY
     hopStartX = posX;
-    hopStartY = startMetrics.lineY - 35;
+    hopStartY = startMetrics.lineY - feetOffset;
 
     // Gentle landing X on target field
     var targetX = endMetrics.minX + 20 + Math.random() * Math.max(10, endMetrics.maxX - endMetrics.minX - 40);
     hopEndX = Math.min(Math.max(targetX, endMetrics.minX), endMetrics.maxX);
-    hopEndY = endMetrics.lineY - 35;
+    hopEndY = endMetrics.lineY - feetOffset;
 
     facing = hopEndX >= hopStartX ? 1 : -1;
 
-    // Parabolic arc peak and timing: upward jumps get more vertical clearance
+    // Parabolic arc peak and timing
     if (nextField < currentField) {
-      hopPeakH = 30; // Upward leap arc
+      hopPeakH = 28; // Upward leap arc
       hopDuration = 2400 + Math.random() * 250;
     } else {
       hopPeakH = 20; // Downward hop arc
@@ -1848,7 +1880,16 @@ document.addEventListener('keydown', function (e) {
     hopStartTime = performance.now();
     targetField = nextField;
     state = 'HOP';
-    setFrame(FRAMES.AIRBORNE);
+    setFrame(ROW_JUMP, 0); // Crouch prep
+  }
+
+  function triggerHappy() {
+    if (state === 'HOP') return; // Don't interrupt mid-air jump
+    state = 'HAPPY';
+    happyTimer = 900;
+    happyAnimTimer = 0;
+    happyFrame = 0;
+    setFrame(ROW_HAPPY, 0);
   }
 
   function update(dt) {
@@ -1869,15 +1910,21 @@ document.addEventListener('keydown', function (e) {
         facing = -1;
       }
 
-      // Waddle leg swing
+      // 4-step waddle animation
       walkAnimTimer += dt;
       if (walkAnimTimer >= 140) {
         walkAnimTimer = 0;
-        walkFrameIndex = (walkFrameIndex + 1) % WALK_CYCLE.length;
-        setFrame(WALK_CYCLE[walkFrameIndex]);
+        walkFrameIndex = (walkFrameIndex + 1) % 4;
       }
 
-      renderTux(1.0, 1.0);
+      // WALK_RIGHT and WALK_LEFT dedicated frames
+      if (facing > 0) {
+        setFrame(ROW_WALK_R, walkFrameIndex);
+        renderTux(1.0, 1.0, 0, 0);
+      } else {
+        setFrame(ROW_WALK_L, walkFrameIndex);
+        renderTux(1.0, 1.0, 0, 0);
+      }
 
       if (walkDistanceRemaining <= 0) {
         startPause();
@@ -1890,9 +1937,39 @@ document.addEventListener('keydown', function (e) {
       fieldTimeElapsed += dt;
       pauseTimer -= dt;
 
-      // Gentle 1px breathing bob during idle
-      var idleBob = Math.sin(performance.now() * 0.0032) * 1.0;
-      renderTux(1.0, 1.0, 0, idleBob);
+      // Gentle 0.8px breathing bob
+      var idleBob = Math.sin(performance.now() * 0.003) * 0.8;
+
+      if (isLookingAround) {
+        lookTimer -= dt;
+        if (lookTimer <= 0) {
+          lookTimer = 220;
+          lookStep++;
+          if (lookStep > 4) {
+            isLookingAround = false;
+            setFrame(ROW_IDLE, 0);
+          } else {
+            var lookFrames = [0, 1, 2, 3, 0];
+            setFrame(ROW_LOOK, lookFrames[lookStep % 5]);
+          }
+        }
+      } else {
+        // Natural blinking
+        blinkTimer -= dt;
+        if (blinkTimer <= 0) {
+          if (!isBlinking) {
+            isBlinking = true;
+            blinkTimer = 160; // blink duration
+            setFrame(ROW_IDLE, 1); // blink frame
+          } else {
+            isBlinking = false;
+            blinkTimer = 2600 + Math.random() * 2200; // next blink
+            setFrame(ROW_IDLE, 0);
+          }
+        }
+      }
+
+      renderTux(facing === -1 ? -1.0 : 1.0, 1.0, 0, idleBob);
 
       if (pauseTimer <= 0) {
         if (fieldTimeElapsed >= fieldTimeLimit) {
@@ -1907,30 +1984,58 @@ document.addEventListener('keydown', function (e) {
       var elapsed = performance.now() - hopStartTime;
       var t = Math.min(1.0, elapsed / hopDuration);
 
-      // Smooth parabolic arc: y(t) = y0 + (y1 - y0)*t - 4*peak*t*(1-t)
+      // Parabolic flight trajectory
       posX = hopStartX + (hopEndX - hopStartX) * t;
       posY = hopStartY + (hopEndY - hopStartY) * t - 4 * hopPeakH * t * (1.0 - t);
 
-      // Gentle parabolic flight tilt
-      var tilt = facing * Math.sin(t * Math.PI) * 4.5;
-      renderTux(1.0, 1.0, tilt);
+      // Trajectory poses:
+      // 0.00 - 0.08: crouch
+      // 0.08 - 0.42: launch stretch
+      // 0.42 - 0.86: apex glide
+      // 0.86 - 1.00: landing preparation
+      if (t < 0.08) {
+        setFrame(ROW_JUMP, 0); // Crouch
+      } else if (t < 0.42) {
+        setFrame(ROW_JUMP, 1); // Takeoff / wings up
+      } else if (t < 0.86) {
+        setFrame(ROW_JUMP, 2); // Apex flight glide
+      } else {
+        setFrame(ROW_JUMP, 3); // Pre-touchdown
+      }
+
+      // Smooth parabolic flight tilt
+      var tilt = facing * Math.sin(t * Math.PI) * 4.0;
+      renderTux(facing === -1 ? -1.0 : 1.0, 1.0, tilt, 0);
 
       if (t >= 1.0) {
-        // Land on target divider line
+        // Touchdown on destination divider
         posX = hopEndX;
         posY = hopEndY;
         currentField = targetField;
         state = 'LAND';
-        landTimer = 160; // 160ms squash duration
-        setFrame(FRAMES.STRIDE_1);
-        renderTux(1.12, 0.88, 0); // Gentle landing squash
+        landTimer = 180;
+        setFrame(ROW_JUMP, 3); // Landing squash frame
+        renderTux(facing === -1 ? -1.12 : 1.12, 0.88, 0, 1);
       }
     } else if (state === 'LAND') {
       landTimer -= dt;
       if (landTimer <= 0) {
-        // Return to normal posture and pause
-        renderTux(1.0, 1.0, 0);
+        renderTux(facing === -1 ? -1.0 : 1.0, 1.0, 0, 0);
         startPause(1600 + Math.random() * 1000);
+      }
+    } else if (state === 'HAPPY') {
+      happyTimer -= dt;
+      happyAnimTimer += dt;
+      if (happyAnimTimer >= 140) {
+        happyAnimTimer = 0;
+        happyFrame = (happyFrame + 1) % 4;
+        setFrame(ROW_HAPPY, happyFrame);
+      }
+      var joyfulHop = -Math.abs(Math.sin(performance.now() * 0.009)) * 3.5;
+      renderTux(facing === -1 ? -1.0 : 1.0, 1.0, 0, joyfulHop);
+
+      if (happyTimer <= 0) {
+        startPause(1400);
       }
     }
   }
@@ -1950,28 +2055,40 @@ document.addEventListener('keydown', function (e) {
 
   function snapToField() {
     var m = getFieldMetrics(currentField);
-    posY = m.lineY - 35;
+    posY = m.lineY - feetOffset;
     posX = Math.min(Math.max(posX, m.minX), m.maxX);
-    renderTux(1.0, 1.0);
+    renderTux(facing === -1 ? -1.0 : 1.0, 1.0, 0, 0);
   }
 
   function init() {
-    // Initial resting position on Name divider line
     var m = getFieldMetrics(0);
     currentField = 0;
     journeyDir = 1;
-    posX = m.minX + 28;
-    posY = m.lineY - 35;
+    posX = m.minX + 24;
+    posY = m.lineY - feetOffset;
     facing = 1;
 
-    setFrame(FRAMES.STRIDE_1);
-    renderTux(1.0, 1.0);
+    setFrame(ROW_IDLE, 0);
+    renderTux(1.0, 1.0, 0, 0);
+
+    // Interactive reactions on click and hover
+    sprite.setAttribute('role', 'img');
+    sprite.setAttribute('aria-label', 'Linux Tux mascot exploring form dividers');
+    sprite.title = 'Click Tux!';
+    sprite.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerHappy();
+    });
+    sprite.addEventListener('mouseenter', function () {
+      if (state === 'PAUSE' && Math.random() < 0.6) {
+        triggerHappy();
+      }
+    });
 
     if (prefersReduced) return;
 
     window.addEventListener('resize', snapToField, { passive: true });
 
-    // Pause when scrolled off-screen or tab hidden
     if ('IntersectionObserver' in window) {
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
