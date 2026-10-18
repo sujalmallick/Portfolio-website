@@ -1235,8 +1235,11 @@ section {
 
 .projects-toggle-wrap {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
   margin-top: 2.5rem;
+  position: relative;
 }
 
 .projects-toggle-btn {
@@ -1291,7 +1294,7 @@ section {
 .contacts-pixel-moon {
   position: absolute;
   right: -52px; /* Approximately 28% cropped off-screen at the right edge */
-  top: clamp(100px, 16%, 150px); /* Elevated into the upper cosmic sky */
+  top: clamp(250px, 32%, 310px); /* Positioned further downward beside contact inputs */
   width: 180px;
   height: 180px;
   display: block;
@@ -3140,16 +3143,16 @@ footer {
   pointer-events: auto;
   cursor: pointer;
   z-index: 5;
+  image-rendering: pixelated;
 }
 
-/* ChatGPT beside About Heading */
+/* ChatGPT beside Projects See More button & About Heading */
+.mascot-chatgpt-wrap.mascot-chatgpt-projects,
 .mascot-chatgpt-wrap.mascot-chatgpt-heading {
   position: relative;
   top: auto;
   right: auto;
-  margin-top: 0;
-  margin-bottom: 0.35rem;
-  margin-right: 0;
+  margin: 0;
   flex-shrink: 0;
 }
 
@@ -3165,6 +3168,7 @@ footer {
   background-image: url('./assets/mascot-chatgpt-sheet.png');
   background-size: 360px 72px;
   background-repeat: no-repeat;
+  image-rendering: pixelated;
   animation: chatgptBob 2.4s steps(6) infinite; /* Slower spritesheet bob cycle */
 }
 
@@ -3416,8 +3420,8 @@ footer {
 .space-nebula-wrap {
   position: absolute;
   top: -45px;
-  right: clamp(10px, 2.5vw, 45px);
-  width: clamp(460px, 44vw, 660px);
+  right: clamp(15px, 2.5vw, 45px);
+  width: clamp(500px, 44vw, 630px);
   height: auto;
   pointer-events: none;
   user-select: none;
@@ -3430,7 +3434,7 @@ footer {
   width: 100%;
   height: auto;
   position: relative;
-  animation: nebulaSlowDrift 56s ease-in-out infinite alternate;
+  animation: nebulaSlowDrift 58s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -3439,7 +3443,7 @@ footer {
   height: auto;
   display: block;
   image-rendering: pixelated;
-  animation: nebulaPurplePulse 16s ease-in-out infinite alternate;
+  animation: nebulaPurplePulse 20s ease-in-out infinite alternate;
   will-change: opacity, filter;
   pointer-events: none;
   user-select: none;
@@ -3450,21 +3454,21 @@ footer {
     transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(-14px, 8px, 0);
+    transform: translate3d(-10px, 7px, 0);
   }
   100% {
-    transform: translate3d(10px, -6px, 0);
+    transform: translate3d(8px, -5px, 0);
   }
 }
 
 @keyframes nebulaPurplePulse {
   0%, 100% {
-    opacity: 0.92;
-    filter: brightness(0.96);
+    opacity: 0.94;
+    filter: brightness(0.98);
   }
   50% {
     opacity: 1.0;
-    filter: brightness(1.06);
+    filter: brightness(1.04);
   }
 }
 
@@ -3477,8 +3481,8 @@ footer {
 }
 
 @keyframes nebulaScrollParallax {
-  from { transform: translate3d(0, 24px, 0); }
-  to   { transform: translate3d(0, -28px, 0); }
+  from { transform: translate3d(0, 22px, 0); }
+  to   { transform: translate3d(0, -26px, 0); }
 }
 
 /* ── 2. Distant Abandoned Orbital Research Station in Projects Section ── */
