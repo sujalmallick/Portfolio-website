@@ -1654,40 +1654,53 @@ document.addEventListener('keydown', function (e) {
     var el = document.getElementById('mascot-chatgpt');
     if (!el) return;
 
+    var currentState = 'idle';
     var isActing = false;
     var cooldownUntil = 0;
     var actionTimer = null;
-    var schedulerTimer = null;
+    var idleTimer = null;
+    var blinkTimer = null;
+    var hopTimer = null;
 
-    function clearStateClasses() {
-      el.classList.remove('state-blink', 'state-wave-l', 'state-wave-r', 'state-think', 'state-happy');
+    function setState(st) {
+      if (currentState === st) return;
+      currentState = st;
+      el.setAttribute('data-state', st);
     }
 
-    function triggerAction() {
+    function triggerReaction() {
       var now = Date.now();
       if (isActing || now < cooldownUntil) return;
       isActing = true;
-      cooldownUntil = now + 900;
+      cooldownUntil = now + 1200;
 
-      clearStateClasses();
-      el.classList.add('is-acting');
+      setState('celebrate');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
-        el.classList.remove('is-acting');
         isActing = false;
-      }, 750);
+        setState('idle');
+      }, 1200);
     }
+
+    el.addEventListener('pointerenter', function () {
+      if (!isActing) {
+        setState('tilt');
+        setTimeout(function () {
+          if (!isActing && currentState === 'tilt') setState('idle');
+        }, 800);
+      }
+    });
 
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerAction();
+      triggerReaction();
     });
 
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerAction();
+        triggerReaction();
       }
     });
 
@@ -1703,45 +1716,62 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerAction();
+        if (dx < 10 && dy < 10) triggerReaction();
       }
     }, { passive: true });
 
     if (prefersReduced) return;
 
-    // Desynchronized autonomous behavior
-    var actions = ['blink', 'blink', 'waveLeft', 'waveRight', 'think', 'happy'];
-    function runNextAction() {
-      if (el.classList.contains('mascot-offscreen') || isActing) {
-        schedulerTimer = setTimeout(runNextAction, 3000);
-        return;
+    // Autonomous behavior:
+    // A. Alternating idle / flare every 2.5s - 3.5s
+    function cycleIdlePose() {
+      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
+        if (currentState === 'idle') {
+          setState('flare');
+        } else if (currentState === 'flare') {
+          setState('idle');
+        }
       }
-
-      var choice = actions[Math.floor(Math.random() * actions.length)];
-      clearStateClasses();
-
-      if (choice === 'blink') {
-        el.classList.add('state-blink');
-        setTimeout(clearStateClasses, 160);
-      } else if (choice === 'waveLeft') {
-        el.classList.add('state-wave-l');
-        setTimeout(clearStateClasses, 1100);
-      } else if (choice === 'waveRight') {
-        el.classList.add('state-wave-r');
-        setTimeout(clearStateClasses, 1100);
-      } else if (choice === 'think') {
-        el.classList.add('state-think');
-        setTimeout(clearStateClasses, 1300);
-      } else if (choice === 'happy') {
-        el.classList.add('state-happy');
-        setTimeout(clearStateClasses, 950);
-      }
-
-      var nextDelay = 4200 + Math.floor(Math.random() * 3200);
-      schedulerTimer = setTimeout(runNextAction, nextDelay);
+      var delay = 2600 + Math.floor(Math.random() * 900);
+      idleTimer = setTimeout(cycleIdlePose, delay);
     }
 
-    schedulerTimer = setTimeout(runNextAction, 1400);
+    // B. Screen blink every 4-7s for 150ms
+    function runBlink() {
+      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
+        var prev = currentState;
+        setState('blink');
+        setTimeout(function () {
+          if (!isActing && currentState === 'blink') setState(prev);
+        }, 150);
+      }
+      var delay = 4000 + Math.floor(Math.random() * 3000);
+      blinkTimer = setTimeout(runBlink, delay);
+    }
+
+    // C. Occasional look or hop every 6-10s
+    function runHopGesture() {
+      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
+        var r = Math.random();
+        if (r < 0.5) {
+          setState('tilt');
+          setTimeout(function () {
+            if (!isActing && currentState === 'tilt') setState('idle');
+          }, 1000);
+        } else {
+          setState('hop');
+          setTimeout(function () {
+            if (!isActing && currentState === 'hop') setState('idle');
+          }, 850);
+        }
+      }
+      var delay = 6000 + Math.floor(Math.random() * 4000);
+      hopTimer = setTimeout(runHopGesture, delay);
+    }
+
+    idleTimer = setTimeout(cycleIdlePose, 2000);
+    blinkTimer = setTimeout(runBlink, 3500);
+    hopTimer = setTimeout(runHopGesture, 6500);
   })();
 
   // 2. Claude Mascot Controller (Divider Line Walker)
@@ -1751,45 +1781,76 @@ document.addEventListener('keydown', function (e) {
 
     var claudeBody = el.querySelector('.claude-body');
     var claudeSprite = el.querySelector('.claude-sprite');
+    var expSection = document.getElementById('experience');
     if (!claudeBody || !claudeSprite) return;
 
     var isActing = false;
     var cooldownUntil = 0;
     var actionTimer = null;
+    var currentState = 'idle';
 
-    function setFrame(frameNum) {
-      claudeSprite.className = 'claude-sprite claude-frame-' + frameNum;
+    function setState(st) {
+      if (currentState === st) return;
+      currentState = st;
+      el.setAttribute('data-state', st);
     }
 
-    setFrame(0);
+    // Dynamic divider line calibration
+    function calibrateFeet() {
+      if (!expSection) return;
+      var secRect = expSection.getBoundingClientRect();
+      var sprRect = claudeSprite.getBoundingClientRect();
+      var currentBodyTop = parseFloat(getComputedStyle(claudeBody).top) || 5;
+      var currentFeetY = sprRect.top + 61;
+      var diff = secRect.top - currentFeetY;
+      if (Math.abs(diff) > 0.5 && Math.abs(diff) < 20) {
+        claudeBody.style.top = (currentBodyTop + diff) + 'px';
+      }
+    }
 
-    function triggerAction() {
+    window.addEventListener('resize', calibrateFeet);
+    setTimeout(calibrateFeet, 300);
+
+    function triggerReaction(pointerX) {
       var now = Date.now();
       if (isActing || now < cooldownUntil) return;
       isActing = true;
-      cooldownUntil = now + 900;
+      cooldownUntil = now + 1200;
 
-      el.classList.remove('state-think');
-      setFrame(5); // Wave/celebrate
-      el.classList.add('is-acting');
+      if (typeof pointerX === 'number') {
+        var rect = el.getBoundingClientRect();
+        var mascotCenter = rect.left + rect.width / 2;
+        if (pointerX < mascotCenter) {
+          claudeBody.classList.remove('facing-right');
+          claudeBody.classList.add('facing-left');
+        } else {
+          claudeBody.classList.remove('facing-left');
+          claudeBody.classList.add('facing-right');
+        }
+      }
+
+      setState('surprised');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
-        el.classList.remove('is-acting');
-        setFrame(0);
         isActing = false;
-      }, 750);
+        setState('idle');
+      }, 1200);
     }
+
+    el.addEventListener('pointerenter', function (e) {
+      triggerReaction(e.clientX);
+    });
 
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerAction();
+      triggerReaction(e.clientX);
     });
 
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerAction();
+        triggerReaction();
       }
     });
 
@@ -1805,95 +1866,95 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerAction();
+        if (dx < 10 && dy < 10) triggerReaction(touchStartX);
       }
     }, { passive: true });
 
     if (prefersReduced) return;
 
-    // Claude divider line walking state machine
-    var mode = 'IDLE'; // 'IDLE', 'WALKING'
+    var mode = 'IDLE'; // 'IDLE', 'TURNING', 'WALKING'
     var currentX = 64;
     var targetX = 64;
-    var direction = 1; // +1 right, -1 left
+    var direction = 1;
     var walkStepTick = 0;
-    var walkCycle = [2, 3, 4, 3];
-    var cycleIdx = 0;
+    var walkFrames = ['walk-1', 'walk-2', 'walk-3', 'walk-4'];
+    var frameIdx = 0;
     var idleTimer = null;
+    var turnTimer = null;
 
-    // Initialize position
     el.style.left = currentX + 'px';
 
     function getBounds() {
       var parent = el.offsetParent || document.getElementById('experience') || document.body;
       var parentW = parent.offsetWidth || window.innerWidth;
-      var minX = 36;
-      var maxX = Math.max(minX + 60, Math.min(220, Math.round(parentW * 0.28)));
+      var minX = 40;
+      var maxX = Math.max(minX + 80, Math.min(320, Math.round(parentW * 0.35)));
       return { minX: minX, maxX: maxX };
     }
 
     function planNextWalk() {
-      if (isActing || el.classList.contains('mascot-offscreen')) {
-        idleTimer = setTimeout(planNextWalk, 2500);
+      if (isActing || document.hidden || el.classList.contains('mascot-offscreen')) {
+        idleTimer = setTimeout(planNextWalk, 2000);
         return;
       }
 
       var bounds = getBounds();
-      // Pick next target separated by at least 45px
       var candidate;
-      for (var iter = 0; iter < 5; iter++) {
+      for (var iter = 0; iter < 6; iter++) {
         candidate = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
-        if (Math.abs(candidate - currentX) >= 45) break;
+        if (Math.abs(candidate - currentX) >= 50) break;
       }
 
       targetX = Math.round(candidate);
-      direction = targetX > currentX ? 1 : -1;
+      var newDirection = targetX > currentX ? 1 : -1;
 
-      // Face walking direction
-      if (direction > 0) {
-        claudeBody.classList.remove('facing-left');
-        claudeBody.classList.add('facing-right');
+      if (newDirection !== direction) {
+        mode = 'TURNING';
+        setState('idle');
+        turnTimer = setTimeout(function () {
+          direction = newDirection;
+          if (direction > 0) {
+            claudeBody.classList.remove('facing-left');
+            claudeBody.classList.add('facing-right');
+          } else {
+            claudeBody.classList.remove('facing-right');
+            claudeBody.classList.add('facing-left');
+          }
+          mode = 'WALKING';
+          walkStepTick = 0;
+          frameIdx = 0;
+          setState(walkFrames[0]);
+        }, 300);
       } else {
-        claudeBody.classList.remove('facing-right');
-        claudeBody.classList.add('facing-left');
+        mode = 'WALKING';
+        walkStepTick = 0;
+        frameIdx = 0;
+        setState(walkFrames[0]);
       }
-
-      mode = 'WALKING';
-      walkStepTick = 0;
-      cycleIdx = 0;
-      setFrame(walkCycle[0]);
     }
 
-    function scheduleIdleGesture() {
-      // Small idle reaction during pause
+    function scheduleIdleReaction() {
+      if (mode !== 'IDLE' || isActing) return;
       var r = Math.random();
       if (r < 0.5) {
-        // Blink
-        setFrame(1);
+        setState('alert');
         setTimeout(function () {
-          if (mode === 'IDLE' && !isActing) setFrame(0);
-        }, 180);
-      } else if (r < 0.75) {
-        // Small wave
-        setFrame(5);
-        setTimeout(function () {
-          if (mode === 'IDLE' && !isActing) setFrame(0);
-        }, 850);
-      } else {
-        // Thinking pose
-        el.classList.add('state-think');
-        setTimeout(function () {
-          el.classList.remove('state-think');
+          if (mode === 'IDLE' && !isActing) setState('idle');
         }, 1100);
+      } else {
+        setState('surprised');
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing) setState('idle');
+        }, 900);
       }
     }
 
-    // Walking animation frame loop
     var lastRafTime = performance.now();
     function walkLoop(now) {
       requestAnimationFrame(walkLoop);
 
-      if (el.classList.contains('mascot-offscreen') || isActing) {
+      if (el.classList.contains('mascot-offscreen') || isActing || document.hidden) {
+        lastRafTime = now;
         return;
       }
 
@@ -1902,34 +1963,35 @@ document.addEventListener('keydown', function (e) {
 
       if (mode === 'WALKING') {
         var dist = Math.abs(targetX - currentX);
-        var stepSpeed = 0.038 * dt; // ~0.55px per 16ms frame
+        var stepDist = 0.030 * dt;
 
-        if (dist <= stepSpeed) {
+        if (dist <= stepDist) {
           currentX = targetX;
           el.style.left = Math.round(currentX) + 'px';
           mode = 'IDLE';
-          setFrame(0);
+          setState('idle');
 
-          // Idle pause before next walk (5.5s to 9s)
-          var idleDuration = 5500 + Math.floor(Math.random() * 3500);
-          setTimeout(scheduleIdleGesture, Math.round(idleDuration * 0.4));
+          var idleDuration = 1200 + Math.floor(Math.random() * 1800);
+          if (Math.random() < 0.6) {
+            setTimeout(scheduleIdleReaction, Math.round(idleDuration * 0.35));
+          }
           idleTimer = setTimeout(planNextWalk, idleDuration);
         } else {
-          currentX += direction * stepSpeed;
-          el.style.left = currentX.toFixed(1) + 'px';
+          currentX += direction * stepDist;
+          el.style.left = Math.round(currentX) + 'px';
 
           walkStepTick += dt;
-          if (walkStepTick >= 170) { // Cycle frame every 170ms
+          if (walkStepTick >= 180) {
             walkStepTick = 0;
-            cycleIdx = (cycleIdx + 1) % walkCycle.length;
-            setFrame(walkCycle[cycleIdx]);
+            frameIdx = (frameIdx + 1) % walkFrames.length;
+            setState(walkFrames[frameIdx]);
           }
         }
       }
     }
 
     requestAnimationFrame(walkLoop);
-    idleTimer = setTimeout(planNextWalk, 3200);
+    idleTimer = setTimeout(planNextWalk, 2500);
   })();
 
   // 3. Gemini Cosmic Companion Controller
@@ -1940,37 +2002,44 @@ document.addEventListener('keydown', function (e) {
     var isActing = false;
     var cooldownUntil = 0;
     var actionTimer = null;
-    var schedulerTimer = null;
+    var gestureTimer = null;
+    var blinkTimer = null;
+    var currentState = 'idle';
 
-    function clearStateClasses() {
-      el.classList.remove('state-blink', 'state-wave', 'state-star-lift', 'state-think', 'state-happy');
+    function setState(st) {
+      if (currentState === st) return;
+      currentState = st;
+      el.setAttribute('data-state', st);
     }
 
-    function triggerAction() {
+    function triggerReaction() {
       var now = Date.now();
       if (isActing || now < cooldownUntil) return;
       isActing = true;
-      cooldownUntil = now + 950;
+      cooldownUntil = now + 1200;
 
-      clearStateClasses();
-      el.classList.add('is-acting');
+      setState('celebrate');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
-        el.classList.remove('is-acting');
         isActing = false;
-      }, 850);
+        setState('idle');
+      }, 1200);
     }
+
+    el.addEventListener('pointerenter', function () {
+      triggerReaction();
+    });
 
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerAction();
+      triggerReaction();
     });
 
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerAction();
+        triggerReaction();
       }
     });
 
@@ -1986,45 +2055,46 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerAction();
+        if (dx < 10 && dy < 10) triggerReaction();
       }
     }, { passive: true });
 
     if (prefersReduced) return;
 
-    // Desynchronized autonomous behavior
-    var actions = ['blink', 'blink', 'wave', 'starLift', 'think', 'happy'];
-    function runNextAction() {
-      if (el.classList.contains('mascot-offscreen') || isActing) {
-        schedulerTimer = setTimeout(runNextAction, 3200);
-        return;
+    // Autonomous behavior:
+    // A. 2-frame idle/blink swap every 3-6s for 120ms
+    function runBlink() {
+      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
+        setState('blink');
+        setTimeout(function () {
+          if (!isActing && currentState === 'blink') setState('idle');
+        }, 120);
       }
-
-      var choice = actions[Math.floor(Math.random() * actions.length)];
-      clearStateClasses();
-
-      if (choice === 'blink') {
-        el.classList.add('state-blink');
-        setTimeout(clearStateClasses, 160);
-      } else if (choice === 'wave') {
-        el.classList.add('state-wave');
-        setTimeout(clearStateClasses, 1100);
-      } else if (choice === 'starLift') {
-        el.classList.add('state-star-lift');
-        setTimeout(clearStateClasses, 1200);
-      } else if (choice === 'think') {
-        el.classList.add('state-think');
-        setTimeout(clearStateClasses, 1300);
-      } else if (choice === 'happy') {
-        el.classList.add('state-happy');
-        setTimeout(clearStateClasses, 950);
-      }
-
-      var nextDelay = 4800 + Math.floor(Math.random() * 3400);
-      schedulerTimer = setTimeout(runNextAction, nextDelay);
+      var delay = 3200 + Math.floor(Math.random() * 2800);
+      blinkTimer = setTimeout(runBlink, delay);
     }
 
-    schedulerTimer = setTimeout(runNextAction, 4500);
+    // B. Welcome gesture every 8-12s: sequential swap to arm-up frames
+    function runGesture() {
+      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
+        var gestureFrames = ['star-rise', 'star-high', 'celebrate', 'star-low', 'idle'];
+        var gIdx = 0;
+        function stepGesture() {
+          if (isActing) return;
+          if (gIdx < gestureFrames.length) {
+            setState(gestureFrames[gIdx]);
+            gIdx++;
+            setTimeout(stepGesture, 380);
+          }
+        }
+        stepGesture();
+      }
+      var delay = 8000 + Math.floor(Math.random() * 4000);
+      gestureTimer = setTimeout(runGesture, delay);
+    }
+
+    blinkTimer = setTimeout(runBlink, 3000);
+    gestureTimer = setTimeout(runGesture, 7000);
   })();
 
   // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery

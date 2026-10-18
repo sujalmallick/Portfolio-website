@@ -138,16 +138,17 @@
         <span class="mask-wrap"><span class="mask-reveal delay-1">of <em>systems and intelligence.</em></span></span>
         <span class="chatgpt-heading-anchor" aria-hidden="true">
           <!-- Floating ChatGPT-inspired Mascot Companion -->
-          <span class="pixel-mascot mascot-chatgpt" id="mascot-chatgpt" role="img" aria-label="ChatGPT-inspired pixel companion" tabindex="0">
+          <span class="pixel-mascot mascot-chatgpt" id="mascot-chatgpt" role="img" aria-label="ChatGPT-inspired pixel companion" tabindex="0" data-state="idle">
             <span class="mascot-bubble chatgpt-bubble" aria-hidden="true">
               <img src="./assets/mascot-chatgpt-bubble.png" alt="" class="mascot-bubble-img">
             </span>
             <span class="chatgpt-body">
-              <img src="./assets/mascot-chatgpt-main.png" alt="ChatGPT pixel companion" class="mascot-img chatgpt-main-img">
-              <img src="./assets/mascot-chatgpt-arml.png" alt="" class="chatgpt-arml-img" aria-hidden="true">
-              <img src="./assets/mascot-chatgpt-armr.png" alt="" class="chatgpt-armr-img" aria-hidden="true">
-              <span class="chatgpt-screen-blink" aria-hidden="true"></span>
               <span class="chatgpt-thruster-glow" aria-hidden="true"></span>
+              <span class="chatgpt-sprite"></span>
+              <span class="chatgpt-sparkles" aria-hidden="true">
+                <span class="chatgpt-sparkle-item sp-1"></span>
+                <span class="chatgpt-sparkle-item sp-2"></span>
+              </span>
             </span>
           </span>
         </span>
@@ -241,13 +242,15 @@
   <!-- ═══════════════════════════ EXPERIENCE ════════════════════════════ -->
   <section id="experience" class="reveal-divider" aria-label="Experience">
     <!-- Claude-inspired Robot walking on About/Experience divider -->
-    <div class="pixel-mascot mascot-claude" id="mascot-claude" role="img" aria-label="Claude-inspired pixel robot walking on divider" tabindex="0">
+    <div class="pixel-mascot mascot-claude" id="mascot-claude" role="img" aria-label="Claude-inspired pixel robot walking on divider" tabindex="0" data-state="idle">
       <div class="mascot-bubble claude-bubble" aria-hidden="true">
         <img src="./assets/mascot-claude-bubble.png" alt="" class="mascot-bubble-img">
       </div>
-      <div class="claude-body">
+      <div class="claude-body facing-right">
         <div class="claude-sprite" aria-hidden="true"></div>
+        <div class="claude-fx" aria-hidden="true"></div>
       </div>
+    </div>
     </div>
     <div class="section-header reveal">
       <span class="section-label">02 / Experience</span>
@@ -769,22 +772,18 @@
           </a>
 
           <!-- Gemini-inspired Mascot floating beside Google Skills Profile badge -->
-          <div class="pixel-mascot mascot-gemini" id="mascot-gemini" role="img" aria-label="Gemini-inspired cosmic companion" tabindex="0">
+          <div class="pixel-mascot mascot-gemini" id="mascot-gemini" role="img" aria-label="Gemini-inspired cosmic companion" tabindex="0" data-state="idle">
             <div class="mascot-bubble gemini-bubble" aria-hidden="true">
               <img src="./assets/mascot-gemini-bubble.png" alt="" class="mascot-bubble-img">
             </div>
-            <div class="gemini-orbit-wrap">
-              <div class="gemini-body">
-                <img src="./assets/mascot-gemini-main.png" alt="Gemini pixel companion" class="mascot-img gemini-main-img">
-                <img src="./assets/mascot-gemini-arml.png" alt="" class="gemini-arml-img" aria-hidden="true">
-                <img src="./assets/mascot-gemini-armr.png" alt="" class="gemini-armr-img" aria-hidden="true">
-                <span class="gemini-visor-blink" aria-hidden="true"></span>
-                <div class="gemini-star-sparkler" aria-hidden="true">
-                  <span class="constellation-spark c-spark-1"></span>
-                  <span class="constellation-spark c-spark-2"></span>
-                  <span class="constellation-spark c-spark-3"></span>
-                  <span class="constellation-spark c-spark-4"></span>
-                </div>
+            <div class="gemini-body">
+              <div class="gemini-flame" aria-hidden="true"></div>
+              <div class="gemini-sprite"></div>
+              <div class="gemini-star-sparkler" aria-hidden="true">
+                <span class="constellation-spark c-spark-1"></span>
+                <span class="constellation-spark c-spark-2"></span>
+                <span class="constellation-spark c-spark-3"></span>
+                <span class="constellation-spark c-spark-4"></span>
               </div>
             </div>
           </div>
