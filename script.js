@@ -114,9 +114,12 @@ document.addEventListener('keydown', function (e) {
       'Message:\n' + message
     );
 
-    // Using Gmail web compose URL for maximum reliability across devices
+    // Using Gmail web compose URL for maximum reliability across devices, with secure noopener,noreferrer
     var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=sujalmallick123@gmail.com&su=' + subject + '&body=' + body;
-    window.open(gmailUrl, '_blank');
+    var mailWin = window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    if (!mailWin || mailWin.closed || typeof mailWin.closed === 'undefined') {
+      window.location.href = 'mailto:sujalmallick123@gmail.com?subject=' + subject + '&body=' + body;
+    }
   });
 })();
 
@@ -363,7 +366,10 @@ document.addEventListener('keydown', function (e) {
   }
 
   function spawnMuzzleSparks(x, y, dir) {
-    var count = isOverdrive ? 5 : 3;
+    if (muzzleSparks.length >= 25) {
+      muzzleSparks.splice(0, muzzleSparks.length - 15);
+    }
+    var count = isOverdrive ? 4 : 3;
     var baseAngle = dir === -1 ? Math.PI : 0;
     for (var i = 0; i < count; i++) {
       var angle = baseAngle + (Math.random() - 0.5) * 0.8;
@@ -451,6 +457,11 @@ document.addEventListener('keydown', function (e) {
 
         var projVx = facing * (isOverdrive ? 3.6 : 2.8);
 
+        // Cap stream items to prevent unbounded array buildup on rapid bursts
+        if (streamItems.length >= 8) {
+          streamItems.splice(0, 2);
+        }
+
         // Spawn Badge
         streamItems.push({
           type: 'badge',
@@ -502,7 +513,7 @@ document.addEventListener('keydown', function (e) {
       // Dissolution near left boundary
       if (item.vx < 0 && item.x <= layout.leftBound + 25) {
         item.alpha = Math.max(0, (item.x - layout.leftBound) / 25);
-        if (Math.random() < 0.4) {
+        if (pixelDust.length < 30 && Math.random() < 0.35) {
           pixelDust.push({
             x: item.x + Math.random() * 8,
             y: item.y + (Math.random() - 0.5) * 8,
@@ -518,7 +529,7 @@ document.addEventListener('keydown', function (e) {
       // Dissolution near right boundary
       else if (item.vx > 0 && item.x >= layout.rightBound - 25) {
         item.alpha = Math.max(0, (layout.rightBound - item.x) / 25);
-        if (Math.random() < 0.4) {
+        if (pixelDust.length < 30 && Math.random() < 0.35) {
           pixelDust.push({
             x: item.x - Math.random() * 8,
             y: item.y + (Math.random() - 0.5) * 8,
@@ -615,13 +626,12 @@ document.addEventListener('keydown', function (e) {
     for (var pd = 0; pd < pixelDust.length; pd++) {
       var dust = pixelDust[pd];
       if (dust.alpha > 0) {
-        ctx.save();
         ctx.fillStyle = dust.color;
         ctx.globalAlpha = Math.max(0, Math.min(1, dust.alpha));
         ctx.fillRect(Math.round(dust.x), Math.round(dust.y), dust.size, dust.size);
-        ctx.restore();
       }
     }
+    ctx.globalAlpha = 1.0;
 
     // 4. Cyan Muzzle Flash (When Terminator fires)
     if (patrolState === 'AIM_FIRE' && burstCooldown > (isOverdrive ? 6 : 12) && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
@@ -723,11 +733,15 @@ document.addEventListener('keydown', function (e) {
   });
 
   // Interactive Click Handlers: Terminator Overdrive Burst
+  var lastOverdriveClick = 0;
+  var OVERDRIVE_COOLDOWN = 650; // Guard against crash-inducing rapid click spam
+
   if (container) {
     container.addEventListener('click', function (e) {
-      var rect = canvas.getBoundingClientRect();
-      var clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
-      var clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+      var now = Date.now();
+      if (now - lastOverdriveClick < OVERDRIVE_COOLDOWN) return;
+      if (isOverdrive && burstRemaining > 0) return;
+      lastOverdriveClick = now;
 
       var layout = getSceneLayout(width, height);
       var gY = layout.groundY;
@@ -744,7 +758,6 @@ document.addEventListener('keydown', function (e) {
       var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
       var muzzleTipX = facing === -1 ? (drawRobotX + BARREL_OFFSET_X) : (drawRobotX + ROBOT_DRAW_W - BARREL_OFFSET_X);
       var muzzleTipY = robotY + BARREL_OFFSET_Y;
-      spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
       spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
     });
 
@@ -979,12 +992,12 @@ document.addEventListener('keydown', function (e) {
 
     function setMoving() {
       inner.classList.add('is-moving');
-      inner.classList.remove('is-idle', 'is-happy');
+      inner.classList.remove('is-idle', 'is-happy', 'is-alert');
     }
 
     function setIdle() {
       inner.classList.add('is-idle');
-      inner.classList.remove('is-moving');
+      inner.classList.remove('is-moving', 'is-happy', 'is-alert');
     }
 
     function pickNextMove() {
@@ -1070,18 +1083,13 @@ document.addEventListener('keydown', function (e) {
         }
       } else if (state === 'TURN') {
         turnTimer += dt;
-        var progress = Math.min(1, turnTimer / turnDuration);
-        var currentScale;
-        if (progress < 0.5) {
-          var p1 = progress / 0.5;
-          currentScale = oldFacing * (1.0 - 0.85 * p1); // Squash 1.0 -> 0.15
-        } else {
-          var p2 = (progress - 0.5) / 0.5;
-          currentScale = newFacing * (0.15 + 0.85 * p2); // Expand 0.15 -> 1.0
+        // Mechanical turnaround: pause in idle stance for a beat, then cleanly orient toward new direction
+        if (turnTimer >= 0.10 && facing !== newFacing) {
+          facing = newFacing;
+          flipper.style.transform = 'scaleX(' + facing + ')';
         }
-        flipper.style.transform = 'scaleX(' + currentScale.toFixed(3) + ')';
 
-        if (progress >= 1) {
+        if (turnTimer >= turnDuration) {
           facing = newFacing;
           flipper.style.transform = 'scaleX(' + facing + ')';
           startX = x;
@@ -1123,6 +1131,7 @@ document.addEventListener('keydown', function (e) {
       } else if (state === 'HAPPY') {
         stateTimer -= dt;
         if (stateTimer <= 0) {
+          inner.classList.remove('is-happy');
           state = 'PAUSE';
           stateTimer = 1.0;
           setIdle();
@@ -1145,6 +1154,7 @@ document.addEventListener('keydown', function (e) {
       wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
     });
 
+    var happyTimeout = null;
     function triggerHappyHop() {
       if (state === 'HAPPY') return;
       state = 'HAPPY';
@@ -1154,21 +1164,26 @@ document.addEventListener('keydown', function (e) {
       try {
         window.dispatchEvent(new CustomEvent('droid-happy-cheer'));
       } catch (ev) {}
-      setTimeout(function () {
+      if (happyTimeout) clearTimeout(happyTimeout);
+      happyTimeout = setTimeout(function () {
+        inner.classList.remove('is-happy');
         if (state === 'HAPPY') {
-          inner.classList.remove('is-happy');
-          inner.classList.add('is-idle');
+          state = 'PAUSE';
+          stateTimer = 0.5;
         }
+        setIdle();
       }, 650);
     }
 
     // Coordinated companion alert scan when Cyborg fires across the wasteland
+    var alertTimeout = null;
     window.addEventListener('cyborg-fire-burst', function (e) {
       if (state === 'IDLE' || state === 'PAUSE') {
         if (inner && !inner.classList.contains('is-happy') && !inner.classList.contains('is-alert')) {
           inner.classList.remove('is-idle');
           inner.classList.add('is-alert');
-          setTimeout(function () {
+          if (alertTimeout) clearTimeout(alertTimeout);
+          alertTimeout = setTimeout(function () {
             if (inner && inner.classList.contains('is-alert')) {
               inner.classList.remove('is-alert');
               inner.classList.add('is-idle');
@@ -3354,11 +3369,22 @@ document.addEventListener('keydown', function (e) {
       '.contact-form',
       '#contact-form',
       '.contact-info',
-      '.mascot-chatgpt',
-      '.mascot-claude',
-      '.mascot-gemini',
+      '#mascot-chatgpt',
+      '.mascot-chatgpt-wrap',
+      '#mascot-claude',
+      '.mascot-claude-patrol-wrap',
+      '#mascot-gemini',
+      '.mascot-gemini-wrap',
+      '#mascot-terminal-robot',
       '.mascot-terminal-robot',
-      '.footer-robot-patrol'
+      '#contact-tux-track',
+      '#footer-droid-wrap',
+      '.prop-droid',
+      '#prop-cyborg',
+      '.prop-cyborg',
+      '#pixel-starfighter-wrap',
+      '#space-helmet-wrap',
+      '#tiny-probe-wrap'
     ];
 
     var protectedBoxes = [];
@@ -3807,10 +3833,14 @@ document.addEventListener('keydown', function (e) {
       }, 1600);
     }
 
-    droidHead.addEventListener('click', triggerSensor);
+    droidHead.addEventListener('click', function (e) {
+      if (e) e.stopPropagation();
+      triggerSensor();
+    });
     droidHead.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
+        e.stopPropagation();
         triggerSensor();
       }
     });
