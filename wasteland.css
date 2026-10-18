@@ -13,16 +13,19 @@
    through muted deep teal into smoky amber and warm sunset orange at the horizon */
 .footer-scenery-strip.wasteland-scenery {
   height: 236px !important;
+  overflow-x: clip;
+  overflow-y: visible;
   background: linear-gradient(
     180deg,
-    #0F0F0E 0%,
-    #101719 12%,
-    #14252B 28%,
-    #1C3B46 46%,
-    #344047 62%,
-    #76503A 78%,
-    #B56A2F 90%,
-    #8A431C 96%,
+    rgba(15, 15, 14, 0) 0%,
+    rgba(15, 15, 14, 0.35) 10%,
+    rgba(16, 23, 25, 0.75) 22%,
+    #14252B 36%,
+    #1C3B46 50%,
+    #344047 64%,
+    #76503A 76%,
+    #B56A2F 88%,
+    #8A431C 95%,
     #5C2A12 100%
   ) !important;
 }

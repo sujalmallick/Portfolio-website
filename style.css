@@ -1467,7 +1467,8 @@ footer {
   background: transparent !important;
   position: relative;
   z-index: 2;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   --ground-y: 18px;
 }
 
@@ -1479,6 +1480,7 @@ footer {
   position: relative;
   background: transparent !important;
   min-height: 100px;
+  overflow: visible;
 }
 
 .footer-scenery-strip {
@@ -1486,7 +1488,8 @@ footer {
   width: 100%;
   height: 100px;
   background: transparent !important;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   pointer-events: none;
 }
 
