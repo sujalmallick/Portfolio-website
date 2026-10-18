@@ -272,6 +272,7 @@ document.addEventListener('keydown', function (e) {
   }
 
   // Terminator Geometry & Motion Constants
+  var currentScale = 1.0;
   var ROBOT_DRAW_W = 75;
   var ROBOT_DRAW_H = 74;
   var BARREL_OFFSET_X = 0; // True muzzle barrel tip alignment
@@ -302,18 +303,43 @@ document.addEventListener('keydown', function (e) {
   var pixelDust = [];
   var muzzleSparks = [];
 
+  function getSceneScale(w) {
+    if (w >= 1024) return 1.0;
+    if (w >= 768) return 0.85;
+    if (w >= 480) return 0.72;
+    return 0.62;
+  }
+
   function getSceneLayout(w, h) {
     var gY = 96; // Terminator feet land exactly at bottom of 96px canvas
     var isSmallMobile = w < 480;
-    var minPatrolX = isSmallMobile ? Math.round(w * 0.26) : Math.round(w * 0.32);
-    var maxPatrolX = isSmallMobile ? Math.round(w * 0.48) : Math.max(minPatrolX + 60, Math.round(w * 0.54));
+    var isTablet = w < 768;
+    var minPatrolX, maxPatrolX;
+    var leftBound, rightBound;
+
+    if (isSmallMobile) {
+      minPatrolX = Math.round(w * 0.32);
+      maxPatrolX = Math.round(w * 0.48);
+      leftBound = Math.round(w * 0.18);
+      rightBound = Math.round(w * 0.62);
+    } else if (isTablet) {
+      minPatrolX = Math.round(w * 0.30);
+      maxPatrolX = Math.round(w * 0.52);
+      leftBound = Math.round(w * 0.22);
+      rightBound = Math.round(w * 0.60);
+    } else {
+      minPatrolX = Math.round(w * 0.32);
+      maxPatrolX = Math.max(minPatrolX + 60, Math.round(w * 0.54));
+      leftBound = Math.round(w * 0.26);
+      rightBound = Math.round(w * 0.58);
+    }
 
     return {
       groundY: gY,
       minPatrolX: minPatrolX,
       maxPatrolX: maxPatrolX,
-      leftBound: isSmallMobile ? Math.round(w * 0.18) : Math.round(w * 0.26),
-      rightBound: isSmallMobile ? Math.round(w * 0.65) : Math.round(w * 0.58)
+      leftBound: leftBound,
+      rightBound: rightBound
     };
   }
 
@@ -324,6 +350,12 @@ document.addEventListener('keydown', function (e) {
     canvas.width = width;
     canvas.height = height;
     ctx.imageSmoothingEnabled = false; // Nearest-neighbor crisp pixel edges
+
+    currentScale = getSceneScale(width);
+    ROBOT_DRAW_W = Math.round(75 * currentScale);
+    ROBOT_DRAW_H = Math.round(74 * currentScale);
+    BARREL_OFFSET_X = Math.round(0 * currentScale);
+    BARREL_OFFSET_Y = Math.round(26 * currentScale);
 
     var layout = getSceneLayout(width, height);
     if (robotX < layout.minPatrolX) robotX = layout.minPatrolX;
@@ -567,12 +599,12 @@ document.addEventListener('keydown', function (e) {
         if (bInfo && bInfo.img.complete && bInfo.img.naturalWidth > 0) {
           ctx.save();
           ctx.globalAlpha = Math.max(0, item.alpha);
-          var bw = bInfo.w || bInfo.img.naturalWidth;
-          var bh = bInfo.h || bInfo.img.naturalHeight;
+          var bw = Math.round((bInfo.w || bInfo.img.naturalWidth) * currentScale);
+          var bh = Math.round((bInfo.h || bInfo.img.naturalHeight) * currentScale);
           var bx = Math.round(item.x - bw / 2);
           var by = Math.round(drawCenterY - bh / 2);
           ctx.shadowColor = bInfo.glow || '#22d3ee';
-          ctx.shadowBlur = 6;
+          ctx.shadowBlur = Math.max(3, Math.round(6 * currentScale));
           ctx.drawImage(bInfo.img, bx, by, bw, bh);
           ctx.restore();
         }
@@ -595,8 +627,8 @@ document.addEventListener('keydown', function (e) {
     if (patrolState === 'AIM_FIRE' && burstCooldown > (isOverdrive ? 6 : 12) && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
       ctx.save();
       var mPulse = isOverdrive ? (1.15 + 0.25 * Math.sin(frameCount * 0.6)) : (0.85 + 0.15 * Math.sin(frameCount * 0.35));
-      var mWidth = Math.round(20 * mPulse);
-      var mHeight = Math.round(18 * mPulse);
+      var mWidth = Math.round(20 * mPulse * currentScale);
+      var mHeight = Math.round(18 * mPulse * currentScale);
       var mJitterX = (Math.random() - 0.5) * 0.8;
       var mJitterY = (Math.random() - 0.5) * 0.8;
       var mX = facing === -1 ? Math.round(muzzleTipX - mWidth + 2 + mJitterX) : Math.round(muzzleTipX - 2 + mJitterX);
@@ -640,20 +672,24 @@ document.addEventListener('keydown', function (e) {
     if (activeSprite && activeSprite.complete && activeSprite.naturalWidth > 0) {
       ctx.save();
       var isFiringNow = (patrolState === 'AIM_FIRE' && recoilOffset > 0.4);
+      var visorX = Math.round(44 * currentScale);
+      var visorY = Math.round(8 * currentScale);
+      var visorW = Math.max(2, Math.round(4 * currentScale));
+      var visorH = Math.max(2, Math.round(3 * currentScale));
+      var visorAlpha = isFiringNow
+        ? 1.0
+        : 0.70 + 0.30 * Math.sin(frameCount * 0.12);
 
       if (facing === -1) {
         // Facing Left
         ctx.drawImage(activeSprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
-        // Glowing Amber Visor Glint (exact visor coordinates on 75x74 sprite: x=44, y=8)
-        var visorAlpha = isFiringNow
-          ? 1.0
-          : 0.70 + 0.30 * Math.sin(frameCount * 0.12);
+        // Glowing Amber Visor Glint
         ctx.fillStyle = isFiringNow ? '#fff7ed' : '#f59e0b';
         ctx.shadowColor = isFiringNow ? '#f97316' : '#f59e0b';
         ctx.shadowBlur = isFiringNow ? 8 : 4;
         ctx.globalAlpha = visorAlpha;
-        ctx.fillRect(rx + 44, ry + 8, 4, 3);
+        ctx.fillRect(rx + visorX, ry + visorY, visorW, visorH);
       } else {
         // Facing Right (Mirrored)
         ctx.translate(rx + ROBOT_DRAW_W, ry);
@@ -661,14 +697,11 @@ document.addEventListener('keydown', function (e) {
         ctx.drawImage(activeSprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
         // Glowing Amber Visor Glint
-        var visorAlpha = isFiringNow
-          ? 1.0
-          : 0.70 + 0.30 * Math.sin(frameCount * 0.12);
         ctx.fillStyle = isFiringNow ? '#fff7ed' : '#f59e0b';
         ctx.shadowColor = isFiringNow ? '#f97316' : '#f59e0b';
         ctx.shadowBlur = isFiringNow ? 8 : 4;
         ctx.globalAlpha = visorAlpha;
-        ctx.fillRect(44, 8, 4, 3);
+        ctx.fillRect(visorX, visorY, visorW, visorH);
       }
       ctx.restore();
     }
@@ -929,12 +962,12 @@ document.addEventListener('keydown', function (e) {
         maxX = Math.min(280, Math.floor(w * 0.28));
       } else if (w >= 600) {
         minX = 25;
-        maxX = Math.min(190, Math.floor(w * 0.30));
+        maxX = Math.min(170, Math.floor(w * 0.25));
       } else {
-        minX = 16;
-        maxX = Math.min(105, Math.floor(w * 0.32));
+        minX = 14;
+        maxX = Math.min(80, Math.floor(w * 0.23));
       }
-      return { minX: minX, maxX: Math.max(minX + 60, maxX) };
+      return { minX: minX, maxX: Math.max(minX + 45, maxX) };
     }
 
     var bounds = getBounds();

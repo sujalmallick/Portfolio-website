@@ -82,7 +82,7 @@
   .contact-tux-sprite {
     width: 34px;
     height: 34px;
-    background-size: 136px 204px;
+    background-size: 272px 34px;
     image-rendering: pixelated;
   }
 
@@ -331,15 +331,14 @@
   .contact-tux-sprite {
     width: 32px;
     height: 32px;
-    background-size: 128px 192px;
+    background-size: 256px 32px;
     image-rendering: pixelated;
   }
 
   /* Footer living pixel scenery */
-  .footer-scenery-strip,
   .prop-terminator,
-  #footer-terminator-canvas {
-    height: 96px;
+  .prop-cyborg {
+    bottom: 0;
   }
 }
 
