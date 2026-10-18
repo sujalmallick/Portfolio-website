@@ -2542,14 +2542,14 @@ footer {
   }
 }
 
-/* ── Distant Ringed Pixel Planet in Projects Section ──────────────────── */
+/* ── Distant Ringed Pixel Planet in Experience Section ─────────────────── */
 .projects-pixel-planet {
   position: absolute;
-  top: 36px;
-  right: 6%;
+  top: 16%;
+  right: 3%;
   width: 76px;
   height: 62px;
-  z-index: 1; /* Sits behind project cards (z-index 2) in cosmic void */
+  z-index: 1; /* Sits behind experience cards in cosmic void */
   pointer-events: none;
   user-select: none;
   opacity: 0.82;
@@ -2580,8 +2580,8 @@ footer {
   .projects-pixel-planet {
     width: 64px;
     height: 52px;
-    top: 30px;
-    right: 5%;
+    top: 15%;
+    right: 3%;
   }
 }
 
@@ -2589,8 +2589,8 @@ footer {
   .projects-pixel-planet {
     width: 50px;
     height: 41px;
-    top: 22px;
-    right: 4%;
+    top: 14%;
+    right: 2%;
     opacity: 0.76;
     filter: brightness(0.84) contrast(0.94);
   }
@@ -2683,7 +2683,10 @@ footer {
 [class*="mascot-"],
 [class*="pixel-"],
 .tiny-space-probe-img,
-.probe-antenna-beacon {
+.probe-antenna-beacon,
+.space-nebula-img,
+.orbital-station-img,
+.beacon-sprite-img {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -2846,15 +2849,15 @@ footer {
   }
 }
 
-/* ── 2. LOST ASTRONAUT HELMET DEEP-SPACE RELIC ─────────────────────────── */
+/* ── 2. LOST ASTRONAUT HELMET DEEP-SPACE RELIC IN PROJECTS ─────────────── */
 .pixel-space-helmet-drift-wrap {
   position: absolute;
-  top: 16%;
-  right: 3%;
+  top: 36px;
+  right: 6%;
   width: 42px;
   height: 45px;
   pointer-events: none;
-  z-index: 1; /* Sits behind experience cards */
+  z-index: 1; /* Sits behind project cards */
   animation: helmetDrift 20s ease-in-out infinite alternate;
 }
 
@@ -2883,16 +2886,23 @@ footer {
   100% { transform: rotate(-3deg); }
 }
 
+@media (max-width: 1024px) {
+  .pixel-space-helmet-drift-wrap {
+    top: 30px;
+    right: 5%;
+  }
+}
+
 @media (max-width: 768px) {
   .pixel-space-helmet-drift-wrap {
-    top: 14%;
-    right: 2%;
-    width: 34px;
-    height: 36px;
+    top: 22px;
+    right: 4%;
+    width: 36px;
+    height: 38px;
   }
   .pixel-space-helmet-img {
-    width: 34px;
-    height: 36px;
+    width: 36px;
+    height: 38px;
   }
 }
 
@@ -3458,3 +3468,185 @@ footer {
 .pixel-mascot.mascot-offscreen .terminal-robot-bubble {
   animation-play-state: paused !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DEEP-SPACE INTEGRATION: DISTANT NEBULA CLOUD & ORBITAL RESEARCH STATION
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Distant Deep-Space Nebula Cloud (Atmospheric Layer in About) ───── */
+.space-nebula-wrap {
+  position: absolute;
+  top: -60px;
+  right: clamp(-60px, -2vw, 30px);
+  width: clamp(480px, 50vw, 780px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1; /* Sits in distant cosmic background behind all section content (z-index 2) */
+  opacity: 0.50;
+  filter: brightness(0.72) contrast(0.94);
+  will-change: transform;
+}
+
+.space-nebula-drift {
+  width: 100%;
+  height: auto;
+  position: relative;
+  animation: nebulaSlowDrift 64s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.space-nebula-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes nebulaSlowDrift {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(-18px, 6px, 0); }
+  100% { transform: translate3d(8px, -4px, 0); }
+}
+
+@supports (animation-timeline: scroll(root)) {
+  .space-nebula-wrap {
+    animation: nebulaScrollParallax linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@keyframes nebulaScrollParallax {
+  from { transform: translate3d(0, 35px, 0); }
+  to   { transform: translate3d(0, -45px, 0); }
+}
+
+/* ── 2. Distant Abandoned Orbital Research Station in Projects Section ── */
+.projects-orbital-station {
+  position: absolute;
+  top: 340px;
+  right: clamp(16px, 3.5vw, 68px);
+  width: clamp(145px, 14vw, 215px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1; /* Sits in cosmic background behind project cards (z-index 2) */
+  opacity: 0.65;
+  filter: brightness(0.76) contrast(0.92);
+  will-change: transform;
+}
+
+.orbital-station-drift-wrap {
+  width: 100%;
+  height: auto;
+  position: relative;
+  animation: stationInertiaDrift 36s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.orbital-station-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes stationInertiaDrift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(-6px, 8px, 0) rotate(0.6deg); }
+  100% { transform: translate3d(4px, -5px, 0) rotate(-0.5deg); }
+}
+
+@supports (animation-timeline: scroll(root)) {
+  .projects-orbital-station {
+    animation: stationScrollParallax linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@keyframes stationScrollParallax {
+  from { transform: translate3d(0, 45px, 0); }
+  to   { transform: translate3d(0, -45px, 0); }
+}
+
+/* ── Responsive Refinements ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .space-nebula-wrap {
+    width: clamp(400px, 56vw, 600px);
+    top: -40px;
+    right: -30px;
+    opacity: 0.44;
+  }
+  .projects-orbital-station {
+    width: clamp(130px, 15vw, 175px);
+    top: 360px;
+    right: 3%;
+    opacity: 0.60;
+  }
+}
+
+@media (max-width: 768px) {
+  .space-nebula-wrap {
+    width: clamp(320px, 72vw, 460px);
+    top: -20px;
+    right: -20px;
+    opacity: 0.36;
+  }
+  .projects-orbital-station {
+    width: 115px;
+    top: 155px;
+    right: 3%;
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 480px) {
+  .space-nebula-wrap {
+    width: 280px;
+    top: 0px;
+    right: -25px;
+    opacity: 0.28;
+  }
+  .projects-orbital-station {
+    width: 78px;
+    top: 130px;
+    right: 8px;
+    opacity: 0.36;
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes stationScrollParallax {
+    from { transform: translate3d(0, 18px, 0); }
+    to   { transform: translate3d(0, -18px, 0); }
+  }
+}
+
+@media (max-width: 480px) {
+  @keyframes stationScrollParallax {
+    from { transform: translate3d(0, 10px, 0); }
+    to   { transform: translate3d(0, -10px, 0); }
+  }
+}
+
+/* ── Reduced Motion Accessibility ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .space-nebula-wrap,
+  .space-nebula-drift,
+  .projects-orbital-station,
+  .orbital-station-drift-wrap {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+

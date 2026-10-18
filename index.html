@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="style.css?v=34">
   <link rel="stylesheet" href="mediaqueries.css?v=32">
-  <link rel="stylesheet" href="wasteland.css?v=3">
+  <link rel="stylesheet" href="wasteland.css?v=5">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
@@ -141,6 +141,12 @@
 
   <!-- ═══════════════════════════ ABOUT ═════════════════════════════════ -->
   <section id="about" class="reveal-divider" aria-label="About">
+    <!-- Distant Deep-Space Nebula Cloud (Atmospheric cosmic layer) -->
+    <div class="space-nebula-wrap" id="space-nebula-wrap" aria-hidden="true">
+      <div class="space-nebula-drift">
+        <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="" class="space-nebula-img" width="1173" height="605" draggable="false">
+      </div>
+    </div>
     <div class="section-header reveal section-header--with-mascot">
       <div class="section-header-text">
         <span class="section-label">01 / About</span>
@@ -255,10 +261,10 @@
         <div class="mascot-claude-sprite" aria-hidden="true"></div>
       </div>
     </div>
-    <!-- Lost Astronaut Helmet Deep-Space Background Relic -->
-    <div class="pixel-space-helmet-drift-wrap" aria-hidden="true">
-      <div class="pixel-space-helmet-tumble-wrap">
-        <img src="./assets/pixel-space-helmet.png" alt="" class="pixel-space-helmet-img" width="42" height="45" draggable="false">
+    <!-- Distant Small Pixel Ringed Planet (Far away celestial background in Experience) -->
+    <div class="projects-pixel-planet" id="projects-pixel-planet" aria-hidden="true">
+      <div class="projects-planet-drift-wrap" id="projects-planet-drift-wrap">
+        <img src="./assets/pixel-ringed-planet.png" alt="" class="projects-planet-img" width="76" height="62" draggable="false">
       </div>
     </div>
     <div class="section-header reveal">
@@ -336,10 +342,10 @@
 
   <!-- ═══════════════════════════ PROJECTS ══════════════════════════════ -->
   <section id="projects" class="reveal-divider" aria-label="Projects">
-    <!-- Distant Small Pixel Ringed Planet (Far away celestial background in Projects) -->
-    <div class="projects-pixel-planet" id="projects-pixel-planet" aria-hidden="true">
-      <div class="projects-planet-drift-wrap" id="projects-planet-drift-wrap">
-        <img src="./assets/pixel-ringed-planet.png" alt="" class="projects-planet-img" width="76" height="62" draggable="false">
+    <!-- Lost Astronaut Helmet Deep-Space Background Relic in Projects -->
+    <div class="pixel-space-helmet-drift-wrap" id="space-helmet-wrap" aria-hidden="true">
+      <div class="pixel-space-helmet-tumble-wrap">
+        <img src="./assets/pixel-space-helmet.png" alt="" class="pixel-space-helmet-img" width="42" height="45" draggable="false">
       </div>
     </div>
 
@@ -348,6 +354,13 @@
       <div class="tiny-space-probe-inner">
         <img src="./assets/tiny-space-probe.png" alt="" class="tiny-space-probe-img" width="46" height="34" draggable="false">
         <span class="probe-antenna-beacon" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!-- Distant Abandoned Orbital Research Station Landmark -->
+    <div class="projects-orbital-station" id="projects-orbital-station" aria-hidden="true">
+      <div class="orbital-station-drift-wrap">
+        <img src="./assets/sprites/abandoned-orbital-station.png" alt="" class="orbital-station-img" width="899" height="696" draggable="false">
       </div>
     </div>
 
@@ -899,6 +912,18 @@
           <div class="tower-ground-shadow" aria-hidden="true"></div>
         </div>
 
+        <!-- Layer 2b: Industrial Launch & Navigation Beacon (Ground Landmark) -->
+        <div class="prop-wasteland-beacon" id="prop-wasteland-beacon" aria-hidden="true">
+          <div class="beacon-sprite-wrap">
+            <img src="./assets/sprites/industrial-navigation-beacon.png" alt="" class="beacon-sprite-img" width="425" height="1344" draggable="false">
+            <!-- Concentrated Warning Red Beacon Pulse Overlay -->
+            <span class="beacon-red-lamp" aria-hidden="true"></span>
+            <!-- Subtle Status Indicator LED Flicker -->
+            <span class="beacon-status-led" aria-hidden="true"></span>
+            <div class="beacon-ground-shadow" aria-hidden="true"></div>
+          </div>
+        </div>
+
         <!-- Layer 3: Utility Poles -->
         <img src="./assets/wasteland/utility-pole.png" alt="" class="prop-wasteland-pole pole-pos-left" width="20" height="72" aria-hidden="true">
         <img src="./assets/wasteland/utility-pole.png" alt="" class="prop-wasteland-pole pole-pos-mid-left" width="20" height="72" aria-hidden="true">
@@ -937,7 +962,7 @@
           </div>
           <!-- Volumetric Under-Canopy Depth Occlusion & Worklight Layer -->
           <div class="refinery-bay-backdrop" aria-hidden="true"></div>
-          <img src="./assets/wasteland/refinery-right.png" alt="" class="tower-sprite-img" width="205" height="152">
+          <img src="./assets/wasteland/refinery-right.png?v=46" alt="" class="tower-sprite-img" width="205" height="152">
           <!-- Active Warning Beacons -->
           <span class="refinery-beacon beacon-antenna" aria-hidden="true"></span>
           <span class="refinery-beacon beacon-rail" aria-hidden="true"></span>
@@ -984,6 +1009,6 @@
   <!-- Retro Chunky Pixel-Art Asteroid Field -->
   <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
 
-  <script src="script.js?v=44"></script>
+  <script src="script.js?v=47"></script>
 </body>
 </html>
