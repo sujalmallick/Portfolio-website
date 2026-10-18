@@ -114,6 +114,15 @@
     grid-template-columns: 1fr;
     gap: 3rem;
   }
+
+  /* Distant Pixel Moon — Tablet scaling */
+  .contacts-pixel-moon {
+    width: 130px;
+    height: 130px;
+    right: -38px;
+    top: 90px;
+    opacity: 0.85;
+  }
 }
 
 /* ── 768px — Small Tablet / Single column grids ───────────────── */
@@ -340,6 +349,15 @@
   .prop-cyborg {
     bottom: 0;
   }
+
+  /* Distant Pixel Moon — Compact Mobile scaling */
+  .contacts-pixel-moon {
+    width: 76px;
+    height: 76px;
+    right: -24px;
+    top: 75px;
+    opacity: 0.82;
+  }
 }
 
 /* ── 480px — Compact Mobile Layout ─────────────────────────── */
@@ -524,6 +542,15 @@
     right: 1%;
     transform: scale(0.74);
     transform-origin: top right;
+  }
+
+  /* Distant Pixel Moon — Ultra-narrow Mobile scaling */
+  .contacts-pixel-moon {
+    width: 64px;
+    height: 64px;
+    right: -20px;
+    top: 68px;
+    opacity: 0.78;
   }
 
 }

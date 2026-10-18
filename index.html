@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=34">
-  <link rel="stylesheet" href="mediaqueries.css?v=32">
-  <link rel="stylesheet" href="wasteland.css?v=5">
+  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="mediaqueries.css?v=33">
+  <link rel="stylesheet" href="wasteland.css?v=6">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
@@ -144,7 +144,7 @@
     <!-- Distant Deep-Space Nebula Cloud (Atmospheric cosmic layer) -->
     <div class="space-nebula-wrap" id="space-nebula-wrap" aria-hidden="true">
       <div class="space-nebula-drift">
-        <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="" class="space-nebula-img" width="1173" height="605" draggable="false">
+        <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="" class="space-nebula-img" width="1376" height="768" draggable="false">
       </div>
     </div>
     <div class="section-header reveal section-header--with-mascot">
@@ -350,7 +350,7 @@
     </div>
 
     <!-- Tiny Space Probe Deep-Space Asset -->
-    <div class="tiny-space-probe-drift-wrap" aria-hidden="true">
+    <div class="tiny-space-probe-drift-wrap" id="tiny-probe-wrap" aria-hidden="true">
       <div class="tiny-space-probe-inner">
         <img src="./assets/tiny-space-probe.png" alt="" class="tiny-space-probe-img" width="46" height="34" draggable="false">
         <span class="probe-antenna-beacon" aria-hidden="true"></span>
@@ -667,16 +667,6 @@
 
   <!-- ═══════════════════════════ HACKATHONS ═════════════════════════════ -->
   <section id="hackathons" class="reveal-divider" aria-label="Hackathons">
-    <!-- Pixel Terminal Robot walking on Hackathons divider -->
-    <div class="pixel-mascot mascot-terminal-robot" id="mascot-terminal-robot" role="img" aria-label="Pixel terminal robot walking on divider" tabindex="0" data-state="walk">
-      <div class="terminal-robot-bubble" id="terminal-robot-bubble" aria-hidden="true">
-        <span class="bubble-prompt">&gt;</span> <span class="bubble-text">hello_world</span>
-      </div>
-      <div class="terminal-robot-body" id="terminal-robot-body">
-        <div class="terminal-robot-sprite" id="terminal-robot-sprite" aria-hidden="true"></div>
-        <div class="terminal-robot-fx" id="terminal-robot-fx" aria-hidden="true"></div>
-      </div>
-    </div>
 
     <!-- Powered Pixel Starfighter Deep-Space Asset Near "High-intensity sprints" Title -->
     <div class="pixel-starfighter-flight-wrap" id="hackathons-starfighter" aria-hidden="true">
@@ -842,6 +832,11 @@
 
   <!-- ═══════════════════════════ CONTACTS ══════════════════════════════ -->
   <section id="contacts" class="reveal-divider" aria-label="Contact">
+    <!-- Distant Large Pixel-Art Moon (Partially Cropped at Right Viewport Edge) -->
+    <div class="contacts-moon-wrap" id="contacts-moon-wrap" aria-hidden="true">
+      <img src="./assets/pixel-moon.png" alt="" class="contacts-pixel-moon" width="180" height="180">
+    </div>
+
     <div class="section-header reveal">
       <span class="section-label">06 / Contact</span>
       <h2>
@@ -908,7 +903,7 @@
             <span class="hud-status">&#937;N CORE ACTIVE</span>
             <span class="hud-hint">CLICK TO PULSE</span>
           </div>
-          <img src="./assets/wasteland/citadel-tower.png" alt="" class="tower-sprite-img" width="120" height="195">
+          <img src="./assets/wasteland/citadel-tower.png?v=47" alt="" class="tower-sprite-img" width="120" height="195">
           <div class="tower-ground-shadow" aria-hidden="true"></div>
         </div>
 
@@ -1009,6 +1004,6 @@
   <!-- Retro Chunky Pixel-Art Asteroid Field -->
   <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
 
-  <script src="script.js?v=47"></script>
+  <script src="script.js?v=50"></script>
 </body>
 </html>

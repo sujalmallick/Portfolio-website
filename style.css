@@ -1268,7 +1268,42 @@ section {
 }
 
 /* ── 11. CONTACTS ──────────────────────────────────────────────────────── */
+#contacts {
+  padding-bottom: 6.5rem;
+}
+
+/* Distant Large Pixel-Art Moon in Contact Sky (Cropped at Right Edge) */
+.contacts-moon-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.contacts-pixel-moon {
+  position: absolute;
+  right: -52px; /* Approximately 28% cropped off-screen at the right edge */
+  top: clamp(100px, 16%, 150px); /* Elevated into the upper cosmic sky */
+  width: 180px;
+  height: 180px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0.88;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.65));
+}
+
 .contacts-grid {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5rem;
@@ -2897,12 +2932,28 @@ footer {
   .pixel-space-helmet-drift-wrap {
     top: 22px;
     right: 4%;
-    width: 36px;
-    height: 38px;
+    width: 32px;
+    height: 34px;
   }
   .pixel-space-helmet-img {
-    width: 36px;
-    height: 38px;
+    width: 32px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pixel-space-helmet-drift-wrap {
+    top: 18px;
+    right: 18px;
+    width: 28px;
+    height: 30px;
+  }
+  .pixel-space-helmet-img {
+    width: 28px;
+    height: 30px;
+  }
+  .pixel-space-helmet-tumble-wrap {
+    filter: brightness(0.80) contrast(0.90) opacity(0.70);
   }
 }
 
@@ -2963,27 +3014,30 @@ footer {
 
 @media (max-width: 768px) {
   .tiny-space-probe-drift-wrap {
-    top: 90px;
+    top: 22px;
     left: 4%;
-    width: 36px;
-    height: 26px;
+    width: 30px;
+    height: 22px;
   }
   .tiny-space-probe-img {
-    width: 36px;
-    height: 26px;
+    width: 30px;
+    height: 22px;
   }
 }
 
 @media (max-width: 480px) {
   .tiny-space-probe-drift-wrap {
-    top: 96px;
-    left: 4%;
-    width: 32px;
-    height: 23px;
+    top: 16px;
+    left: 18px;
+    width: 26px;
+    height: 19px;
   }
   .tiny-space-probe-img {
-    width: 32px;
-    height: 23px;
+    width: 26px;
+    height: 19px;
+  }
+  .tiny-space-probe-inner {
+    filter: brightness(0.80) contrast(0.90) opacity(0.70);
   }
 }
 
@@ -3302,119 +3356,6 @@ footer {
   }
 }
 
-/* ── 4. TERMINAL ROBOT MASCOT (Walking on Hackathons Divider) ─────────── */
-.mascot-terminal-robot {
-  position: absolute;
-  top: -84px; /* Feet rest precisely on top of the 1px divider line */
-  right: clamp(24px, 8vw, 120px);
-  width: 75px;
-  height: 84px;
-  z-index: 10;
-  pointer-events: auto;
-  user-select: none;
-  cursor: pointer;
-  transform-origin: bottom right;
-}
-
-.terminal-robot-bubble {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: rgba(9, 21, 16, 0.95);
-  border: 1px solid #10b981;
-  color: #34d399;
-  font-family: var(--font-mono, 'Courier New', monospace);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(16, 185, 129, 0.25);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  z-index: 20;
-}
-
-.terminal-robot-bubble::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 4px 4px 0 4px;
-  border-style: solid;
-  border-color: #10b981 transparent transparent transparent;
-}
-
-.terminal-robot-bubble.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.terminal-robot-bubble .bubble-prompt {
-  color: #10b981;
-  font-weight: 700;
-}
-
-.terminal-robot-bubble .bubble-text {
-  color: #6ee7b7;
-  letter-spacing: 0.02em;
-}
-
-.terminal-robot-body {
-  position: relative;
-  width: 75px;
-  height: 84px;
-  transform-origin: 50% 100%;
-}
-
-.terminal-robot-body.facing-left {
-  transform: scaleX(-1);
-}
-
-.terminal-robot-body.facing-right {
-  transform: scaleX(1);
-}
-
-.terminal-robot-sprite {
-  width: 75px;
-  height: 84px;
-  background-image: url('./assets/terminal-mascot-sheet.png');
-  background-size: 750px 504px;
-  background-repeat: no-repeat;
-  background-position: 0px 0px;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
-
-.terminal-robot-fx {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 75px;
-  height: 84px;
-  background-image: url('./assets/terminal-mascot-sheet.png');
-  background-size: 750px 504px;
-  background-repeat: no-repeat;
-  background-position: 0px 0px;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  display: none;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.mascot-terminal-robot:hover .terminal-robot-body {
-  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
-}
-
 /* ── REDUCED MOTION SUPPORT ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .mascot-chatgpt.chatgpt-forward,
@@ -3433,8 +3374,6 @@ footer {
   .gemini-part-armr,
   .gemini-part-handr,
   .constellation-spark,
-  .terminal-robot-body,
-  .terminal-robot-bubble,
   .prop-debris,
   .antenna-dish-rotator,
   .antenna-beacon-led,
@@ -3444,14 +3383,12 @@ footer {
   .prop-crystals::after {
     animation: none !important;
   }
-  .mascot-claude,
-  .mascot-terminal-robot {
+  .mascot-claude {
     transition: none !important;
   }
   .mascot-chatgpt:hover .chatgpt-body,
   .mascot-claude:hover .claude-body,
-  .mascot-gemini:hover .gemini-body,
-  .mascot-terminal-robot:hover .terminal-robot-body {
+  .mascot-gemini:hover .gemini-body {
     transform: none !important;
   }
 }
@@ -3463,9 +3400,7 @@ footer {
 .pixel-mascot.mascot-offscreen .claude-body,
 .pixel-mascot.mascot-offscreen .claude-bubble,
 .pixel-mascot.mascot-offscreen .gemini-orbit-wrap,
-.pixel-mascot.mascot-offscreen .gemini-bubble,
-.pixel-mascot.mascot-offscreen .terminal-robot-body,
-.pixel-mascot.mascot-offscreen .terminal-robot-bubble {
+.pixel-mascot.mascot-offscreen .gemini-bubble {
   animation-play-state: paused !important;
 }
 
@@ -3476,15 +3411,14 @@ footer {
 /* ── 1. Distant Deep-Space Nebula Cloud (Atmospheric Layer in About) ───── */
 .space-nebula-wrap {
   position: absolute;
-  top: -60px;
-  right: clamp(-60px, -2vw, 30px);
-  width: clamp(480px, 50vw, 780px);
+  top: -45px;
+  right: clamp(10px, 2.5vw, 45px);
+  width: clamp(460px, 44vw, 660px);
   height: auto;
   pointer-events: none;
   user-select: none;
   z-index: 1; /* Sits in distant cosmic background behind all section content (z-index 2) */
-  opacity: 0.50;
-  filter: brightness(0.72) contrast(0.94);
+  opacity: 0.58;
   will-change: transform;
 }
 
@@ -3492,7 +3426,7 @@ footer {
   width: 100%;
   height: auto;
   position: relative;
-  animation: nebulaSlowDrift 64s ease-in-out infinite alternate;
+  animation: nebulaSlowDrift 56s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -3501,19 +3435,36 @@ footer {
   height: auto;
   display: block;
   image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
+  animation: nebulaPurplePulse 16s ease-in-out infinite alternate;
+  will-change: opacity, filter;
   pointer-events: none;
   user-select: none;
 }
 
 @keyframes nebulaSlowDrift {
-  0%   { transform: translate3d(0, 0, 0); }
-  50%  { transform: translate3d(-18px, 6px, 0); }
-  100% { transform: translate3d(8px, -4px, 0); }
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-14px, 8px, 0);
+  }
+  100% {
+    transform: translate3d(10px, -6px, 0);
+  }
 }
 
-@supports (animation-timeline: scroll(root)) {
+@keyframes nebulaPurplePulse {
+  0%, 100% {
+    opacity: 0.92;
+    filter: brightness(0.96);
+  }
+  50% {
+    opacity: 1.0;
+    filter: brightness(1.06);
+  }
+}
+
+@supports (animation-timeline: view()) {
   .space-nebula-wrap {
     animation: nebulaScrollParallax linear both;
     animation-timeline: view();
@@ -3522,8 +3473,8 @@ footer {
 }
 
 @keyframes nebulaScrollParallax {
-  from { transform: translate3d(0, 35px, 0); }
-  to   { transform: translate3d(0, -45px, 0); }
+  from { transform: translate3d(0, 24px, 0); }
+  to   { transform: translate3d(0, -28px, 0); }
 }
 
 /* ── 2. Distant Abandoned Orbital Research Station in Projects Section ── */
@@ -3582,10 +3533,10 @@ footer {
 /* ── Responsive Refinements ─────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .space-nebula-wrap {
-    width: clamp(400px, 56vw, 600px);
-    top: -40px;
-    right: -30px;
-    opacity: 0.44;
+    width: clamp(420px, 50vw, 560px);
+    top: -35px;
+    right: 15px;
+    opacity: 0.50;
   }
   .projects-orbital-station {
     width: clamp(130px, 15vw, 175px);
@@ -3597,31 +3548,30 @@ footer {
 
 @media (max-width: 768px) {
   .space-nebula-wrap {
-    width: clamp(320px, 72vw, 460px);
-    top: -20px;
-    right: -20px;
-    opacity: 0.36;
+    width: clamp(380px, 56vw, 460px);
+    top: -25px;
+    right: 12px;
+    opacity: 0.44;
   }
   .projects-orbital-station {
-    width: 115px;
-    top: 155px;
-    right: 3%;
-    opacity: 0.45;
+    width: 105px;
+    top: 320px;
+    right: 2%;
+    opacity: 0.40;
+    filter: brightness(0.72) contrast(0.90);
   }
 }
 
 @media (max-width: 480px) {
   .space-nebula-wrap {
-    width: 280px;
-    top: 0px;
-    right: -25px;
-    opacity: 0.28;
-  }
-  .projects-orbital-station {
-    width: 78px;
-    top: 130px;
+    width: clamp(240px, 68vw, 280px);
+    top: -15px;
     right: 8px;
-    opacity: 0.36;
+    opacity: 0.35;
+  }
+  /* Hide orbital station on narrow mobile screens (375px-430px) to eliminate visual clutter */
+  .projects-orbital-station {
+    display: none;
   }
 }
 
@@ -3643,10 +3593,12 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .space-nebula-wrap,
   .space-nebula-drift,
+  .space-nebula-img,
   .projects-orbital-station,
   .orbital-station-drift-wrap {
     animation: none !important;
     transform: none !important;
+    filter: none !important;
   }
 }
 
