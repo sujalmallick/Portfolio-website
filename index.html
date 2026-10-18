@@ -257,7 +257,6 @@
         <div class="claude-fx" aria-hidden="true"></div>
       </div>
     </div>
-    </div>
     <div class="section-header reveal">
       <span class="section-label">02 / Experience</span>
       <h2>
@@ -863,15 +862,58 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-scenery-strip">
-        <!-- 1px Ground Line -->
-        <div class="footer-ground-line" id="footer-ground-line"></div>
+        <!-- Sky Space Debris Cluster (slow cosmic drift in background) -->
+        <div class="footer-prop prop-debris" id="prop-debris" aria-hidden="true">
+          <img src="./assets/footer-prop-debris.png" alt="" class="prop-img" width="44" height="26">
+        </div>
+
+        <!-- Continuous Pixel Sand Ground Bed (18px high, seamless repeating terrain) -->
+        <div class="footer-ground-line" id="footer-ground-line" aria-hidden="true"></div>
 
         <!-- Relative props strip (bottom: var(--ground-y)) -->
         <div class="footer-props-strip">
+          <!-- Grass Sprig (3.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-0" id="prop-grass-node-0" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
           <!-- 1. Left Lamp (6%) -->
           <div class="footer-prop prop-lamp-left" id="prop-lamp-left">
             <div class="prop-lamp-glow" aria-hidden="true"></div>
             <img src="./assets/footer-prop-lamp-left.png" alt="" class="prop-img" width="27" height="78">
+          </div>
+
+          <!-- Grass Tuft (8.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-1" id="prop-grass-node-1" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Ground Element 1: Luminous Space Crystals (10%) -->
+          <div class="footer-prop prop-crystals" id="prop-crystals" aria-hidden="true">
+            <img src="./assets/footer-prop-crystals.png" alt="" class="prop-img" width="28" height="22">
+          </div>
+
+          <!-- Grass Sprig (12.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-2" id="prop-grass-node-2" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
           </div>
 
           <!-- 2. Left Plant (14%) -->
@@ -879,19 +921,50 @@
             <img src="./assets/footer-prop-plant.png" alt="" class="prop-img" width="16" height="38">
           </div>
 
-          <!-- Grass 1 (19%) -->
-          <div class="footer-prop prop-grass prop-grass-1" id="prop-grass-1">
-            <svg class="grass-svg" viewBox="0 0 12 6" width="12" height="6" shape-rendering="crispEdges" aria-hidden="true">
-              <rect x="1" y="2" width="2" height="4" fill="#16a34a"/>
-              <rect x="4" y="0" width="2" height="6" fill="#22c55e"/>
-              <rect x="7" y="3" width="2" height="3" fill="#16a34a"/>
-              <rect x="2" y="3" width="1" height="2" fill="#22c55e"/>
+          <!-- Grass Tuft (16.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-3" id="prop-grass-node-3" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Ground Element 2: Space Rocks & Micro Flora (19%) -->
+          <div class="footer-prop prop-rocks-custom" id="prop-rocks-custom" aria-hidden="true">
+            <img src="./assets/footer-prop-rocks-custom.png" alt="" class="prop-img" width="32" height="12">
+          </div>
+
+          <!-- Grass Sprig (22.0%) -->
+          <div class="footer-prop prop-grass prop-grass-node-4" id="prop-grass-node-4" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
             </svg>
           </div>
 
           <!-- 3. Crates (24%) -->
           <div class="footer-prop prop-crates" id="prop-crates">
             <img src="./assets/footer-prop-crates-left.png" alt="" class="prop-img" width="36" height="45">
+          </div>
+
+          <!-- Grass Tuft (27.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-5" id="prop-grass-node-5" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
           </div>
 
           <!-- Interactive Autonomous Retro Droid (Patrols 5% to 30%) -->
@@ -903,9 +976,78 @@
             </div>
           </div>
 
+          <!-- Grass Sprig (32.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-6" id="prop-grass-node-6" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
           <!-- Terminator Character & Code Projectiles Wrapper (Patrols 32% to 54%) -->
           <div class="footer-prop prop-terminator" id="prop-terminator">
             <canvas id="footer-terminator-canvas"></canvas>
+          </div>
+
+          <!-- Grass Tuft (37.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-7" id="prop-grass-node-7" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Grass Sprig (42.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-8" id="prop-grass-node-8" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Grass Tuft (47.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-9" id="prop-grass-node-9" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Grass Sprig (52.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-10" id="prop-grass-node-10" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Grass Tuft (56.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-11" id="prop-grass-node-11" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
           </div>
 
           <!-- 4. Workstation (58%) -->
@@ -919,12 +1061,32 @@
             </div>
           </div>
 
-          <!-- Grass 2 (65%) -->
-          <div class="footer-prop prop-grass prop-grass-2" id="prop-grass-2">
-            <svg class="grass-svg" viewBox="0 0 10 5" width="10" height="5" shape-rendering="crispEdges" aria-hidden="true">
-              <rect x="0" y="2" width="2" height="3" fill="#16a34a"/>
-              <rect x="3" y="0" width="2" height="5" fill="#22c55e"/>
-              <rect x="6" y="1" width="2" height="4" fill="#16a34a"/>
+          <!-- Grass Sprig (62.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-12" id="prop-grass-node-12" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Ground Element 3: Heavy Cyber Power Conduit (63%) -->
+          <div class="footer-prop prop-conduit" id="prop-conduit" aria-hidden="true">
+            <img src="./assets/footer-prop-conduit.png" alt="" class="prop-img" width="48" height="8">
+            <div class="conduit-pulse-node" aria-hidden="true"></div>
+          </div>
+
+          <!-- Grass Tuft (67.0%) -->
+          <div class="footer-prop prop-grass prop-grass-node-13" id="prop-grass-node-13" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
             </svg>
           </div>
 
@@ -947,33 +1109,104 @@
             </div>
           </div>
 
-          <!-- Grass 3 (76%) -->
-          <div class="footer-prop prop-grass prop-grass-3" id="prop-grass-3">
-            <svg class="grass-svg" viewBox="0 0 14 7" width="14" height="7" shape-rendering="crispEdges" aria-hidden="true">
-              <rect x="1" y="3" width="2" height="4" fill="#16a34a"/>
-              <rect x="4" y="0" width="2" height="7" fill="#22c55e"/>
-              <rect x="7" y="2" width="2" height="5" fill="#16a34a"/>
-              <rect x="10" y="4" width="2" height="3" fill="#22c55e"/>
+          <!-- Grass Sprig (73.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-14" id="prop-grass-node-14" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
             </svg>
           </div>
 
-          <!-- 6. Right Lamp (82%) -->
+          <!-- Primary Prop 2: Mini Segmented Radar Dish (77%) -->
+          <div class="footer-prop prop-antenna" id="prop-antenna" role="button" tabindex="0" aria-label="Mini communication antenna">
+            <div class="antenna-dish-rotator">
+              <img src="./assets/footer-prop-antenna.png" alt="" class="prop-img" width="38" height="56">
+              <span class="antenna-beacon-led" aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <!-- Grass Tuft (80.0%) -->
+          <div class="footer-prop prop-grass prop-grass-node-15" id="prop-grass-node-15" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- 6. Right Lamp (83%) -->
           <div class="footer-prop prop-lamp-right" id="prop-lamp-right">
             <div class="prop-lamp-glow" aria-hidden="true"></div>
             <img src="./assets/footer-prop-lamp-right.png" alt="" class="prop-img" width="27" height="78">
           </div>
 
-          <!-- Grass 4 (88%) -->
-          <div class="footer-prop prop-grass prop-grass-4" id="prop-grass-4">
-            <svg class="grass-svg" viewBox="0 0 8 4" width="8" height="4" shape-rendering="crispEdges" aria-hidden="true">
-              <rect x="1" y="1" width="2" height="3" fill="#22c55e"/>
-              <rect x="4" y="0" width="2" height="4" fill="#16a34a"/>
+          <!-- Grass Sprig (85.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-16" id="prop-grass-node-16" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
             </svg>
           </div>
 
-          <!-- 7. Right Plant (92%) -->
+          <!-- Ground Element 4: Tech Floor Exhaust Vent (87%) -->
+          <div class="footer-prop prop-vent" id="prop-vent" aria-hidden="true">
+            <img src="./assets/footer-prop-vent.png" alt="" class="prop-img" width="34" height="9">
+            <div class="vent-amber-glow" aria-hidden="true"></div>
+          </div>
+
+          <!-- Grass Tuft (90.0%) -->
+          <div class="footer-prop prop-grass prop-grass-node-17" id="prop-grass-node-17" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- 7. Right Plant (91%) -->
           <div class="footer-prop prop-plant-right" id="prop-plant-right">
             <img src="./assets/footer-prop-plant.png" alt="" class="prop-img" width="16" height="38">
+          </div>
+
+          <!-- Grass Sprig (93.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-18" id="prop-grass-node-18" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 5 4" width="5" height="4" shape-rendering="crispEdges">
+              <rect x="1" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="1" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="1" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="3" y="1" width="1" height="3" fill="#15803d"/>
+            </svg>
+          </div>
+
+          <!-- Primary Prop 1: Heavy Outpost Workbench (95%) -->
+          <div class="footer-prop prop-workbench" id="prop-workbench" role="button" tabindex="0" aria-label="Outpost maintenance workbench">
+            <img src="./assets/footer-prop-workbench.png" alt="" class="prop-img" width="46" height="44">
+            <span class="workbench-led" aria-hidden="true"></span>
+          </div>
+
+          <!-- Grass Tuft (98.5%) -->
+          <div class="footer-prop prop-grass prop-grass-node-19" id="prop-grass-node-19" aria-hidden="true">
+            <svg class="grass-svg" viewBox="0 0 7 4" width="7" height="4" shape-rendering="crispEdges">
+              <rect x="0" y="1" width="2" height="3" fill="#15803d"/>
+              <rect x="0" y="1" width="1" height="2" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="4" fill="#22c55e"/>
+              <rect x="2" y="0" width="2" height="1" fill="#4ade80"/>
+              <rect x="2" y="2" width="1" height="2" fill="#15803d"/>
+              <rect x="5" y="1" width="2" height="3" fill="#16a34a"/>
+              <rect x="5" y="2" width="1" height="2" fill="#15803d"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -983,9 +1216,12 @@
   <!-- Pixelated Cosmic Starfield Background Canvas -->
   <canvas id="pixel-stars-canvas" aria-hidden="true"></canvas>
 
+  <!-- Retro Chunky Pixel-Art Asteroid Field -->
+  <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
+
   <!-- Roaming Pixel Space Rocket Companion Canvas -->
   <canvas id="space-rocket-canvas" aria-hidden="true"></canvas>
 
-  <script src="script.js?v=35"></script>
+  <script src="script.js?v=38"></script>
 </body>
 </html>

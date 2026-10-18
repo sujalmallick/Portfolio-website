@@ -975,6 +975,61 @@ document.addEventListener('keydown', function (e) {
     rAF = requestAnimationFrame(step);
   })();
 
+  /* ═══════════════════════════════════════════════════════════════════════════
+     FOOTER OUTPOST PROPS INTERACTIVITY
+     Interactive behaviors for communication dish antenna and tool workbench:
+     - Click / Keyboard (Enter/Space) on #prop-antenna triggers a rapid signal
+       transmission sweep (.is-transmitting) with cyan beacon pulsing.
+     - Click / Keyboard (Enter/Space) on #prop-workbench triggers a diagnostic
+       test sequence (.is-testing) with rapid LED indicator cycling.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  (function initFooterPropsInteractivity() {
+    var antenna = document.getElementById('prop-antenna');
+    var workbench = document.getElementById('prop-workbench');
+
+    if (antenna) {
+      var antennaTimeout = null;
+      function triggerAntennaTransmission() {
+        antenna.classList.add('is-transmitting');
+        if (antennaTimeout) clearTimeout(antennaTimeout);
+        antennaTimeout = setTimeout(function () {
+          antenna.classList.remove('is-transmitting');
+        }, 1300);
+      }
+      antenna.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerAntennaTransmission();
+      });
+      antenna.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          triggerAntennaTransmission();
+        }
+      });
+    }
+
+    if (workbench) {
+      var workbenchTimeout = null;
+      function triggerWorkbenchDiagnostic() {
+        workbench.classList.add('is-testing');
+        if (workbenchTimeout) clearTimeout(workbenchTimeout);
+        workbenchTimeout = setTimeout(function () {
+          workbench.classList.remove('is-testing');
+        }, 1300);
+      }
+      workbench.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerWorkbenchDiagnostic();
+      });
+      workbench.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          triggerWorkbenchDiagnostic();
+        }
+      });
+    }
+  })();
+
 
   /* ═══════════════════════════════════════════════════════════════════════════
      PIXELATED COSMIC STARFIELD BACKGROUND
@@ -1461,6 +1516,8 @@ document.addEventListener('keydown', function (e) {
       if (x > width - 10) x = width - 10;
       if (y < 10) y = 10;
       if (y > height - 10) y = height - 10;
+
+      window.__roamingRocketPos = { x: x, y: y, radius: Math.max(ROCKET_W, ROCKET_H) + 20 };
 
       // 3. Update active particles
       for (var i = particles.length - 1; i >= 0; i--) {
@@ -3163,4 +3220,381 @@ document.addEventListener('keydown', function (e) {
     init();
   }
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHUNKY PIXEL-ART ASTEROID FIELD (COSMIC GRAVITY & INERTIA ENGINE)
+   - Natural, irregular 3D cosmic distribution across all 8 page sections
+   - 3 distinct depth tiers (micro distant, mid-field, chunky near)
+   - Independent floating motion: distinct speeds, directions, orbits, rotations
+   - Orbital gravitational simulation with smooth momentum and damping
+   - Collision avoidance around all protected elements (text, buttons, cards,
+     mascots, footer scenery, and the roaming rocket companion)
+   - Zero pointer events interference; crisp pixel edges; reduced motion support
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function initChunkyPixelAsteroidField() {
+  function startEngine() {
+    var container = document.getElementById('asteroid-field');
+    if (!container) return;
+
+    var ASTEROID_CONFIGS = [
+      // Hero / Profile Section (4 asteroids)
+      { id: 0, sectionId: 'profile', relX: 0.05, relY: 0.14, tier: 1, sprite: 3, size: 16, orbitRx: 22, orbitRy: 18, orbitSpeed: 0.00045, wobbleSpeed: 0.0009, wobbleAmp: 6, rotSpeed: 0.025, phase: 0.4 },
+      { id: 1, sectionId: 'profile', relX: 0.94, relY: 0.12, tier: 2, sprite: 2, size: 26, orbitRx: 32, orbitRy: 24, orbitSpeed: 0.00055, wobbleSpeed: 0.0011, wobbleAmp: 8, rotSpeed: -0.045, phase: 1.8 },
+      { id: 2, sectionId: 'profile', relX: 0.035, relY: 0.54, tier: 3, sprite: 1, size: 42, orbitRx: 40, orbitRy: 30, orbitSpeed: 0.00065, wobbleSpeed: 0.0013, wobbleAmp: 10, rotSpeed: 0.065, phase: 3.2 },
+      { id: 3, sectionId: 'profile', relX: 0.92, relY: 0.74, tier: 1, sprite: 3, size: 15, orbitRx: 20, orbitRy: 16, orbitSpeed: 0.0004, wobbleSpeed: 0.0008, wobbleAmp: 5, rotSpeed: -0.02, phase: 4.5 },
+
+      // About Section (3 asteroids)
+      { id: 4, sectionId: 'about', relX: 0.95, relY: 0.18, tier: 3, sprite: 1, size: 38, orbitRx: 38, orbitRy: 28, orbitSpeed: 0.0006, wobbleSpeed: 0.0012, wobbleAmp: 9, rotSpeed: 0.055, phase: 0.9 },
+      { id: 5, sectionId: 'about', relX: 0.045, relY: 0.48, tier: 1, sprite: 3, size: 18, orbitRx: 24, orbitRy: 20, orbitSpeed: 0.00042, wobbleSpeed: 0.00085, wobbleAmp: 6, rotSpeed: -0.03, phase: 2.3 },
+      { id: 6, sectionId: 'about', relX: 0.93, relY: 0.80, tier: 2, sprite: 2, size: 27, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: 0.04, phase: 5.1 },
+
+      // Experience Section (3 asteroids)
+      { id: 7, sectionId: 'experience', relX: 0.05, relY: 0.22, tier: 2, sprite: 2, size: 28, orbitRx: 28, orbitRy: 22, orbitSpeed: 0.00052, wobbleSpeed: 0.00105, wobbleAmp: 7, rotSpeed: -0.042, phase: 1.1 },
+      { id: 8, sectionId: 'experience', relX: 0.94, relY: 0.52, tier: 1, sprite: 3, size: 16, orbitRx: 20, orbitRy: 16, orbitSpeed: 0.00038, wobbleSpeed: 0.00075, wobbleAmp: 5, rotSpeed: 0.022, phase: 3.7 },
+      { id: 9, sectionId: 'experience', relX: 0.04, relY: 0.82, tier: 3, sprite: 1, size: 40, orbitRx: 42, orbitRy: 32, orbitSpeed: 0.00062, wobbleSpeed: 0.00125, wobbleAmp: 10, rotSpeed: 0.06, phase: 4.8 },
+
+      // Projects Section (5 asteroids)
+      { id: 10, sectionId: 'projects', relX: 0.95, relY: 0.10, tier: 2, sprite: 2, size: 26, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.2 },
+      { id: 11, sectionId: 'projects', relX: 0.04, relY: 0.30, tier: 1, sprite: 3, size: 15, orbitRx: 18, orbitRy: 14, orbitSpeed: 0.00035, wobbleSpeed: 0.0007, wobbleAmp: 4, rotSpeed: -0.025, phase: 2.1 },
+      { id: 12, sectionId: 'projects', relX: 0.94, relY: 0.50, tier: 3, sprite: 1, size: 44, orbitRx: 45, orbitRy: 34, orbitSpeed: 0.00068, wobbleSpeed: 0.00135, wobbleAmp: 11, rotSpeed: -0.07, phase: 3.9 },
+      { id: 13, sectionId: 'projects', relX: 0.035, relY: 0.70, tier: 2, sprite: 2, size: 27, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: 0.045, phase: 1.5 },
+      { id: 14, sectionId: 'projects', relX: 0.95, relY: 0.90, tier: 1, sprite: 3, size: 18, orbitRx: 22, orbitRy: 18, orbitSpeed: 0.0004, wobbleSpeed: 0.0008, wobbleAmp: 5, rotSpeed: -0.03, phase: 5.4 },
+
+      // Hackathons Section (3 asteroids)
+      { id: 15, sectionId: 'hackathons', relX: 0.05, relY: 0.22, tier: 3, sprite: 1, size: 36, orbitRx: 36, orbitRy: 26, orbitSpeed: 0.00058, wobbleSpeed: 0.00115, wobbleAmp: 8, rotSpeed: 0.052, phase: 2.8 },
+      { id: 16, sectionId: 'hackathons', relX: 0.93, relY: 0.52, tier: 1, sprite: 3, size: 16, orbitRx: 20, orbitRy: 15, orbitSpeed: 0.00036, wobbleSpeed: 0.00072, wobbleAmp: 4, rotSpeed: -0.024, phase: 4.1 },
+      { id: 17, sectionId: 'hackathons', relX: 0.04, relY: 0.82, tier: 2, sprite: 2, size: 25, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00046, wobbleSpeed: 0.00092, wobbleAmp: 6, rotSpeed: 0.036, phase: 0.7 },
+
+      // Certificates Section (3 asteroids)
+      { id: 18, sectionId: 'certificates', relX: 0.94, relY: 0.18, tier: 2, sprite: 2, size: 28, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: -0.044, phase: 1.9 },
+      { id: 19, sectionId: 'certificates', relX: 0.05, relY: 0.52, tier: 1, sprite: 3, size: 14, orbitRx: 18, orbitRy: 14, orbitSpeed: 0.00034, wobbleSpeed: 0.00068, wobbleAmp: 4, rotSpeed: 0.02, phase: 3.4 },
+      { id: 20, sectionId: 'certificates', relX: 0.93, relY: 0.82, tier: 3, sprite: 1, size: 38, orbitRx: 38, orbitRy: 28, orbitSpeed: 0.0006, wobbleSpeed: 0.0012, wobbleAmp: 9, rotSpeed: 0.058, phase: 5.7 },
+
+      // Contacts Section (2 asteroids)
+      { id: 21, sectionId: 'contacts', relX: 0.04, relY: 0.32, tier: 2, sprite: 2, size: 26, orbitRx: 28, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00096, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.6 },
+      { id: 22, sectionId: 'contacts', relX: 0.95, relY: 0.68, tier: 1, sprite: 3, size: 17, orbitRx: 22, orbitRy: 16, orbitSpeed: 0.00038, wobbleSpeed: 0.00076, wobbleAmp: 5, rotSpeed: -0.026, phase: 2.6 },
+
+      // Footer Outpost Cosmic Background (2 asteroids)
+      { id: 23, sectionId: 'footer', relX: 0.10, relY: 0.20, tier: 3, sprite: 1, size: 34, orbitRx: 34, orbitRy: 24, orbitSpeed: 0.00055, wobbleSpeed: 0.0011, wobbleAmp: 8, rotSpeed: -0.05, phase: 4.3 },
+      { id: 24, sectionId: 'footer', relX: 0.90, relY: 0.22, tier: 2, sprite: 2, size: 24, orbitRx: 26, orbitRy: 18, orbitSpeed: 0.00045, wobbleSpeed: 0.0009, wobbleAmp: 6, rotSpeed: 0.034, phase: 1.2 }
+    ];
+
+    var PROTECTED_SELECTORS = [
+      '#profile .section__pic-container',
+      '#profile .section__text',
+      '#profile .btn-container',
+      '#profile .profile-cta',
+      '#profile .profile-socials',
+      '#hero-pixel-satellite',
+      '#distant-planet',
+      '.section-header',
+      '.about-text',
+      '.about-details-container',
+      '.skills-badge-container',
+      '.experience-details-container',
+      '.experience-category-card',
+      '.projects-grid',
+      '.project-card',
+      '.hackathons-grid',
+      '.hackathon-card',
+      '.certificates-grid',
+      '.certificate-card',
+      '.contact-card',
+      '.contact-form-container',
+      '.mascot-chatgpt',
+      '.mascot-claude',
+      '.mascot-gemini',
+      '.mascot-terminal-robot',
+      '.footer-scenery-strip',
+      '.footer-links-container',
+      '.footer-socials',
+      '.footer-copy'
+    ];
+
+    var protectedBoxes = [];
+    var asteroids = [];
+    var lastTime = null;
+    var simTime = 0;
+    var animFrameId = null;
+
+    function getSectionEl(id) {
+      if (id === 'footer') {
+        return document.querySelector('footer');
+      }
+      return document.getElementById(id);
+    }
+
+    container.innerHTML = '';
+    ASTEROID_CONFIGS.forEach(function (cfg) {
+      var el = document.createElement('div');
+      el.className = 'pixel-asteroid pixel-asteroid--tier-' + cfg.tier;
+      el.setAttribute('aria-hidden', 'true');
+
+      var nativeW = cfg.sprite === 1 ? 48 : (cfg.sprite === 2 ? 36 : 24);
+      var nativeH = cfg.sprite === 1 ? 44 : (cfg.sprite === 2 ? 28 : 22);
+      var renderH = Math.round(cfg.size * (nativeH / nativeW));
+
+      el.style.width = cfg.size + 'px';
+      el.style.height = renderH + 'px';
+
+      var img = document.createElement('img');
+      img.src = './assets/asteroid-' + cfg.sprite + '.png';
+      img.alt = '';
+      img.className = 'pixel-asteroid-img';
+      img.width = cfg.size;
+      img.height = renderH;
+      img.draggable = false;
+
+      el.appendChild(img);
+      container.appendChild(el);
+
+      var mass = cfg.tier === 3 ? 3.4 : (cfg.tier === 2 ? 2.0 : 1.0);
+      var maxSpeed = cfg.tier === 3 ? 0.65 : (cfg.tier === 2 ? 0.48 : 0.32);
+
+      asteroids.push({
+        el: el,
+        cfg: cfg,
+        width: cfg.size,
+        height: renderH,
+        radius: Math.max(cfg.size, renderH) / 2,
+        mass: mass,
+        maxSpeed: maxSpeed,
+        homeX: 0,
+        homeY: 0,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        angle: (cfg.id * 53) % 360,
+        initialized: false
+      });
+    });
+
+    function updateProtectedBoxes() {
+      protectedBoxes = [];
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      var scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+
+      PROTECTED_SELECTORS.forEach(function (sel) {
+        try {
+          var els = document.querySelectorAll(sel);
+          for (var i = 0; i < els.length; i++) {
+            var el = els[i];
+            if (el.offsetParent === null && el.offsetWidth === 0 && el.offsetHeight === 0) continue;
+            var r = el.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0) {
+              protectedBoxes.push({
+                left: r.left + scrollX,
+                top: r.top + scrollY,
+                right: r.right + scrollX,
+                bottom: r.bottom + scrollY,
+                cx: r.left + scrollX + r.width / 2,
+                cy: r.top + scrollY + r.height / 2
+              });
+            }
+          }
+        } catch (e) {}
+      });
+    }
+
+    function updateHomes() {
+      var docWidth = document.documentElement.clientWidth || window.innerWidth;
+      var docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      container.style.height = docHeight + 'px';
+
+      asteroids.forEach(function (ast) {
+        var secEl = getSectionEl(ast.cfg.sectionId);
+        if (!secEl) return;
+        var secRect = secEl.getBoundingClientRect();
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        var secTop = secRect.top + scrollY;
+        var secH = secEl.offsetHeight;
+
+        var targetX = docWidth * ast.cfg.relX - (ast.width / 2);
+        targetX = Math.max(10, Math.min(docWidth - ast.width - 10, targetX));
+        var targetY = secTop + (secH * ast.cfg.relY) - (ast.height / 2);
+
+        ast.homeX = targetX;
+        ast.homeY = targetY;
+
+        if (!ast.initialized) {
+          ast.x = targetX;
+          ast.y = targetY;
+          ast.vx = 0;
+          ast.vy = 0;
+          ast.initialized = true;
+        }
+      });
+
+      updateProtectedBoxes();
+    }
+
+    updateHomes();
+
+    var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var prefersReduced = motionQuery.matches;
+
+    if (prefersReduced) {
+      asteroids.forEach(function (ast) {
+        ast.el.style.transform = 'translate3d(' + ast.homeX.toFixed(1) + 'px, ' + ast.homeY.toFixed(1) + 'px, 0) rotate(' + ast.angle.toFixed(2) + 'deg)';
+      });
+      return;
+    }
+
+    function step(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      var dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+      lastTime = timestamp;
+
+      simTime += dt * 60;
+
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      var scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      var rocket = window.__roamingRocketPos;
+      var rocketDocX = rocket ? scrollX + rocket.x : -9999;
+      var rocketDocY = rocket ? scrollY + rocket.y : -9999;
+      var rocketRadius = rocket ? rocket.radius : 40;
+
+      for (var i = 0; i < asteroids.length; i++) {
+        var ast = asteroids[i];
+        var cfg = ast.cfg;
+
+        // 1. Orbital Gravity & Inertia
+        var t = simTime;
+        var orbitAngle = t * cfg.orbitSpeed + cfg.phase;
+        var wobble = Math.sin(t * cfg.wobbleSpeed) * cfg.wobbleAmp;
+        var wobbleY = Math.cos(t * cfg.wobbleSpeed * 0.8) * (cfg.wobbleAmp * 0.7);
+
+        var targetX = ast.homeX + Math.cos(orbitAngle) * cfg.orbitRx + wobble;
+        var targetY = ast.homeY + Math.sin(orbitAngle) * cfg.orbitRy + wobbleY;
+
+        var kGrav = 0.0016 / ast.mass;
+        var ax = (targetX - ast.x) * kGrav;
+        var ay = (targetY - ast.y) * kGrav;
+
+        // 2. Collision Avoidance against Protected Elements
+        var astRadius = ast.radius;
+        var safePadding = 32 + astRadius;
+
+        for (var b = 0; b < protectedBoxes.length; b++) {
+          var box = protectedBoxes[b];
+          if (ast.x + safePadding < box.left || ast.x - safePadding > box.right ||
+              ast.y + safePadding < box.top || ast.y - safePadding > box.bottom) {
+            continue;
+          }
+
+          var closestX = Math.max(box.left, Math.min(ast.x, box.right));
+          var closestY = Math.max(box.top, Math.min(ast.y, box.bottom));
+          var cdx = ast.x - closestX;
+          var cdy = ast.y - closestY;
+          var cdist = Math.sqrt(cdx * cdx + cdy * cdy);
+
+          if (cdist < safePadding) {
+            if (cdist < 0.01) {
+              var pushAngle = Math.atan2(ast.y - box.cy, ast.x - box.cx);
+              ax += Math.cos(pushAngle) * 0.9;
+              ay += Math.sin(pushAngle) * 0.9;
+            } else {
+              var repulse = (safePadding - cdist) / safePadding;
+              var repForce = repulse * repulse * (0.65 / ast.mass);
+              ax += (cdx / cdist) * repForce;
+              ay += (cdy / cdist) * repForce;
+            }
+          }
+        }
+
+        // 3. Dynamic Avoidance of Roaming Rocket Companion
+        if (rocket) {
+          var rdx = ast.x - rocketDocX;
+          var rdy = ast.y - rocketDocY;
+          var rdist = Math.sqrt(rdx * rdx + rdy * rdy);
+          var rocketSafeDist = rocketRadius + astRadius + 28;
+          if (rdist < rocketSafeDist) {
+            var rForce = ((rocketSafeDist - rdist) / rocketSafeDist) * (0.95 / ast.mass);
+            var dirX = rdist > 0.01 ? (rdx / rdist) : 1;
+            var dirY = rdist > 0.01 ? (rdy / rdist) : 0;
+            ax += dirX * rForce;
+            ay += dirY * rForce;
+          }
+        }
+
+        // 4. Asteroid-to-Asteroid Soft Separation
+        for (var j = i + 1; j < asteroids.length; j++) {
+          var other = asteroids[j];
+          var mdx = ast.x - other.x;
+          var mdy = ast.y - other.y;
+          var mDistSq = mdx * mdx + mdy * mdy;
+          var minDist = astRadius + other.radius + 18;
+          if (mDistSq < minDist * minDist) {
+            var mDist = Math.sqrt(mDistSq) || 0.1;
+            var sep = ((minDist - mDist) / minDist) * 0.15;
+            var sx = (mdx / mDist) * sep;
+            var sy = (mdy / mDist) * sep;
+            ax += sx / ast.mass;
+            ay += sy / ast.mass;
+            other.vx -= sx / other.mass;
+            other.vy -= sy / other.mass;
+          }
+        }
+
+        // 5. Integrate Physics: Inertia, Damping & Speed Clamping
+        ast.vx = (ast.vx + ax) * 0.985;
+        ast.vy = (ast.vy + ay) * 0.985;
+
+        var speed = Math.sqrt(ast.vx * ast.vx + ast.vy * ast.vy);
+        if (speed > ast.maxSpeed) {
+          ast.vx = (ast.vx / speed) * ast.maxSpeed;
+          ast.vy = (ast.vy / speed) * ast.maxSpeed;
+        }
+
+        ast.x += ast.vx;
+        ast.y += ast.vy;
+        ast.angle += cfg.rotSpeed;
+
+        // 6. Viewport Culling & DOM Rendering
+        var isVisible = (ast.y + ast.height >= scrollY - 250) && (ast.y <= scrollY + viewportHeight + 250);
+        if (isVisible) {
+          ast.el.style.transform = 'translate3d(' + ast.x.toFixed(1) + 'px, ' + ast.y.toFixed(1) + 'px, 0) rotate(' + ast.angle.toFixed(2) + 'deg)';
+        }
+      }
+
+      animFrameId = requestAnimationFrame(step);
+    }
+
+    animFrameId = requestAnimationFrame(step);
+
+    setInterval(updateProtectedBoxes, 3000);
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateHomes, 180);
+    });
+    window.addEventListener('orientationchange', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateHomes, 180);
+    });
+
+    motionQuery.addEventListener('change', function (e) {
+      if (e.matches) {
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        asteroids.forEach(function (ast) {
+          ast.el.style.transform = 'translate3d(' + ast.homeX.toFixed(1) + 'px, ' + ast.homeY.toFixed(1) + 'px, 0) rotate(' + ast.angle.toFixed(2) + 'deg)';
+        });
+      } else {
+        lastTime = null;
+        animFrameId = requestAnimationFrame(step);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startEngine);
+  } else {
+    startEngine();
+  }
+})();
+
 

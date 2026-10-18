@@ -89,7 +89,10 @@
     gap: 1rem;
   }
 
-  /* Projects: stack featured card & adjust padding */
+  /* Give Claude mascot and speech bubble breathing room above Experience divider */
+  #about {
+    padding-bottom: 7.5rem;
+  }
   .project-featured-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -154,9 +157,10 @@
   }
 
   .gemini-bubble {
-    width: 32px;
-    top: -34px;
-    right: -2px;
+    width: 40px;
+    top: -42px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -268,32 +272,33 @@
   }
 
   .chatgpt-bubble {
-    width: 36px;
-    top: -38px;
+    width: 40px;
+    top: -42px;
   }
 
   .mascot-claude {
-    transform: scale(0.78);
+    transform: scale(0.82);
     transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 36px;
-    top: -38px;
-    left: 16px;
+    width: 40px;
+    top: -42px;
+    left: 10px;
   }
 
   .mascot-gemini {
     right: 8px;
     top: -42px;
-    transform: scale(0.8);
+    transform: scale(0.82);
     transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 34px;
-    top: -36px;
-    right: -2px;
+    width: 40px;
+    top: -42px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
 .edu-divider-character {
@@ -360,36 +365,38 @@
   .mascot-chatgpt {
     left: 8px;
     bottom: -2px;
-    transform: scale(0.7);
+    transform: scale(0.78);
     transform-origin: bottom center;
   }
 
   .chatgpt-bubble {
-    width: 32px;
-    top: -34px;
+    width: 42px;
+    top: -44px;
   }
 
   .mascot-claude {
-    transform: scale(0.72);
+    transform: scale(0.78);
     transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 32px;
-    top: -34px;
-    left: 14px;
+    width: 38px;
+    top: -40px;
+    left: 8px;
   }
 
   .mascot-gemini {
     right: 4px;
     top: -38px;
-    transform: scale(0.74);
+    transform: scale(0.78);
     transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 30px;
-    top: -32px;
+    width: 38px;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
 .edu-divider-character {
@@ -434,36 +441,38 @@
   }
 
   .chatgpt-bubble {
-    width: 28px;
-    top: -30px;
+    width: 36px;
+    top: -38px;
   }
 
   .chatgpt-thruster-glow {
-    width: 16px;
+    width: 18px;
     height: 6px;
   }
 
   .mascot-claude {
-    transform: scale(0.65);
+    transform: scale(0.74);
     transform-origin: bottom left;
   }
 
   .claude-bubble {
-    width: 28px;
-    top: -30px;
-    left: 10px;
+    width: 36px;
+    top: -38px;
+    left: 6px;
   }
 
   .mascot-gemini {
     right: 0px;
     top: -34px;
-    transform: scale(0.68);
+    transform: scale(0.74);
     transform-origin: top right;
   }
 
   .gemini-bubble {
-    width: 26px;
-    top: -28px;
+    width: 36px;
+    top: -38px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
 .edu-divider-character {
