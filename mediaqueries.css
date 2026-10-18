@@ -40,11 +40,12 @@
   }
 
   .hero-pixel-satellite {
-    top: 7%;
-    left: 8%;
+    top: 14%;
+    left: 12%;
     right: auto;
     width: 28px;
     height: 28px;
+    z-index: 0;
   }
 
   /* About: single column */
@@ -354,10 +355,11 @@
   }
 
   .hero-pixel-satellite {
-    top: 6%;
-    left: 6%;
+    top: 12%;
+    left: 10%;
     width: 24px;
     height: 24px;
+    z-index: 0;
   }
 
   .title {

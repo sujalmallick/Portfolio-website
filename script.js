@@ -545,8 +545,8 @@ document.addEventListener('keydown', function (e) {
         if (bInfo && bInfo.img.complete && bInfo.img.naturalWidth > 0) {
           ctx.save();
           ctx.globalAlpha = Math.max(0, item.alpha);
-          var bw = bInfo.img.naturalWidth;
-          var bh = bInfo.img.naturalHeight;
+          var bw = bInfo.w || bInfo.img.naturalWidth;
+          var bh = bInfo.h || bInfo.img.naturalHeight;
           var bx = Math.round(item.x - bw / 2);
           var by = Math.round(drawCenterY - bh / 2);
           ctx.drawImage(bInfo.img, bx, by, bw, bh);
@@ -1114,69 +1114,96 @@ document.addEventListener('keydown', function (e) {
   })();
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     ROAMING PIXEL SPACE ROCKET COMPANION
-     Autonomous retro pixel-art rocket roaming randomly across the viewport with
-     dynamic main plasma plume, directional attitude (RCS) thrusters, and cursor
-     interaction.
+     PIXEL SPACE ROCKET COMPANION (HERO / PROFILE SECTION)
+     Stationary retro pixel-art rocket resting on mechanical landing legs in the
+     profile cosmic background. On mouse click, mobile tap, or keyboard Enter/Space,
+     triggers a visible launch sequence: thruster flares, pixel plasma emissions,
+     parabolic ascent and apogee arc, controlled descent with retro-burn braking,
+     and soft touchdown. Remains stationary once landed until activated again.
      ═══════════════════════════════════════════════════════════════════════════ */
   (function initRoamingPixelRocket() {
     var canvas = document.getElementById('space-rocket-canvas');
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
     if (!ctx) return;
+    var profile = document.getElementById('profile');
+    var btn = document.getElementById('pixel-rocket-btn');
 
     var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var rocketImg = new Image();
     rocketImg.src = 'assets/pixel-rocket.png';
 
-    // Screen dimensions
-    var width = window.innerWidth || 1200;
-    var height = window.innerHeight || 800;
+    // Section dimensions
+    var width = profile ? profile.clientWidth : (window.innerWidth || 1200);
+    var height = profile ? profile.clientHeight : (window.innerHeight || 800);
 
     // Responsive sizing (sprite native ratio: 216x508)
     var isMobile = width <= 600;
     var ROCKET_W = isMobile ? 24 : 32;
     var ROCKET_H = Math.round(ROCKET_W * (508 / 216));
+    var legDropDist = Math.round(ROCKET_H * 0.52);
 
-    // Flight & Landing State
-    var mode = 'ROAM'; // 'ROAM', 'APPROACH', 'LANDING', 'LANDED', 'TOUCH_REACTION'
-    var roamCountdown = 280 + Math.floor(Math.random() * 200); // 4-8s roam before initiating descent
-    var landingTarget = null;
-    var legDeploy = 0; // 0 to 1
-    var reactionTimer = 0;
+    // Rocket State
+    var mode = 'LANDED'; // 'LANDED', 'LAUNCH'
+    var isLaunching = false;
+    var legDeploy = 1; // 0 to 1
+    var angle = 0;
+    var x = 0;
+    var y = 0;
+    var vx = 0;
+    var vy = 0;
 
-    var x = width * 0.8;
-    var y = height * 0.3;
-    var vx = -0.7;
-    var vy = 0.5;
-    var angle = Math.atan2(vx, -vy);
-    var boostTimer = 0;
-    var frameCount = 0;
-
-    // Waypoint navigation
-    var targetX = width * 0.25;
-    var targetY = height * 0.65;
-    var waypointTimer = 200;
+    // Launch flight parameters
+    var launchStep = 0;
+    var launchStartX = 0;
+    var launchStartY = 0;
+    var arcApexX = 0;
+    var arcApexY = 0;
 
     // Particles
     var particles = [];
-
-    // Mouse interaction
-    var mouseX = -1000;
-    var mouseY = -1000;
-    var mouseActive = 0;
 
     // Loop control
     var isRunning = true;
     var rafId = null;
 
+    function getHomePos() {
+      var hx, hy;
+      if (width > 900) {
+        // Desktop: Open cosmic sky to the right of profile photo, below the planet
+        hx = Math.round(Math.min(width - 55, Math.max(width * 0.86, 1200)));
+        hy = Math.round(height * 0.50);
+      } else if (width > 600) {
+        // Tablet: Open right margin beside centered photo
+        hx = Math.round(width * 0.86);
+        hy = Math.round(height * 0.35);
+      } else {
+        // Mobile: Open right margin beside photo, clear of centered text
+        hx = Math.round(width - 32);
+        hy = Math.round(height * 0.34);
+      }
+      return { x: hx, y: hy };
+    }
+
+    function updateButtonPos() {
+      if (!btn) return;
+      var hitW = Math.max(56, ROCKET_W + 28);
+      var hitH = Math.max(76, ROCKET_H + 28);
+      btn.style.left = Math.round(x - hitW / 2) + 'px';
+      btn.style.top = Math.round(y - ROCKET_H / 2 - 14) + 'px';
+      btn.style.width = hitW + 'px';
+      btn.style.height = hitH + 'px';
+      btn.style.cursor = isLaunching ? 'default' : 'pointer';
+    }
+
     function resize() {
-      width = window.innerWidth || 1200;
-      height = window.innerHeight || 800;
+      width = profile ? profile.clientWidth : (window.innerWidth || 1200);
+      height = profile ? profile.clientHeight : (window.innerHeight || 800);
       isMobile = width <= 600;
       ROCKET_W = isMobile ? 24 : 32;
       ROCKET_H = Math.round(ROCKET_W * (508 / 216));
+      legDropDist = Math.round(ROCKET_H * 0.52);
 
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
@@ -1187,339 +1214,210 @@ document.addEventListener('keydown', function (e) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
       ctx.imageSmoothingEnabled = false;
-    }
 
-    function pickNewWaypoint() {
-      var marginX = Math.max(70, width * 0.12);
-      var marginY = Math.max(70, height * 0.12);
-      targetX = marginX + Math.random() * (width - 2 * marginX);
-      targetY = marginY + Math.random() * (height - 2 * marginY);
-      waypointTimer = 180 + Math.floor(Math.random() * 140);
-    }
-
-    function findVisibleLandingLine() {
-      var candidates = document.querySelectorAll('.reveal-divider, .about-education, footer');
-      var lines = [];
-      for (var i = 0; i < candidates.length; i++) {
-        var el = candidates[i];
-        var rect = el.getBoundingClientRect();
-        if (rect.top >= 100 && rect.top <= height - 120 && rect.width >= 240) {
-          var isEdu = el.classList.contains('about-education');
-          var minX = Math.max(40, rect.left + 50);
-          var maxX = isEdu ? (rect.left + rect.width * 0.55) : Math.min(width - 50, rect.right - 50);
-          if (maxX > minX + 50) {
-            lines.push({
-              x: minX + Math.random() * (maxX - minX),
-              y: Math.round(rect.top),
-              el: el
-            });
-          }
-        }
+      // Keep rocket stationed in its responsive home position when landed
+      if (!isLaunching) {
+        var home = getHomePos();
+        x = home.x;
+        y = home.y;
+        angle = 0;
+        legDeploy = 1;
+        updateButtonPos();
       }
-      if (lines.length === 0) return null;
-      return lines[Math.floor(Math.random() * lines.length)];
+    }
+
+    function triggerLaunch() {
+      if (isLaunching) return; // Prevent repeated clicks from breaking active flight
+      if (prefersReducedMotion) {
+        // Subtle coolant whisper puff without sudden motion
+        for (var p = 0; p < 6; p++) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * 8,
+            y: y + ROCKET_H * 0.44,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: 0.4 + Math.random() * 0.5,
+            color: Math.random() > 0.4 ? '#22D3EE' : '#FFFFFF',
+            size: Math.random() > 0.5 ? 2 : 1,
+            alpha: 0.9,
+            decay: 0.04
+          });
+        }
+        return;
+      }
+
+      isLaunching = true;
+      mode = 'LAUNCH';
+      launchStep = 0;
+      launchStartX = x;
+      launchStartY = y;
+
+      // Climb apex in open upper cosmic sky of profile
+      arcApexX = Math.round(width > 900 ? width * 0.56 : (width > 600 ? width * 0.50 : width * 0.42));
+      arcApexY = Math.round(Math.max(35, height * 0.10));
+      updateButtonPos();
     }
 
     function update() {
-      frameCount++;
-      if (boostTimer > 0) boostTimer--;
-      if (mouseActive > 0) mouseActive--;
-
-      var legDropDist = ROCKET_H * 0.52; // distance from rocket center to footpads
-
       // ── FLIGHT MODE STATE MACHINE ──
-      if (mode === 'ROAM') {
-        roamCountdown--;
-        if (roamCountdown <= 0) {
-          var targetLine = findVisibleLandingLine();
-          if (targetLine) {
-            landingTarget = targetLine;
-            mode = 'APPROACH';
-          } else {
-            roamCountdown = 240;
-          }
-        }
-
-        // 1. Waypoint countdown
-        waypointTimer--;
-        var distToTarget = Math.hypot(targetX - x, targetY - y);
-        if (distToTarget < 90 || waypointTimer <= 0) {
-          pickNewWaypoint();
-        }
-
-        // 2. Desired heading calculation
-        var dx = targetX - x;
-        var dy = targetY - y;
-        var desiredAngle = Math.atan2(dx, -dy);
-
-        // Mouse proximity evasion
-        if (mouseActive > 0) {
-          var mDist = Math.hypot(x - mouseX, y - mouseY);
-          if (mDist < 140) {
-            desiredAngle = Math.atan2(x - mouseX, -(y - mouseY));
-            if (boostTimer < 15) boostTimer = 15;
-          }
-        }
-
-        // Screen edge soft boundaries
-        var margin = isMobile ? 40 : 70;
-        if (x < margin) desiredAngle = Math.PI / 2;
-        else if (x > width - margin) desiredAngle = -Math.PI / 2;
-        else if (y < margin) desiredAngle = Math.PI;
-        else if (y > height - margin) desiredAngle = 0;
-
-        // Smooth heading rotation
-        var angleDiff = Math.atan2(Math.sin(desiredAngle - angle), Math.cos(desiredAngle - angle));
-        var turnRate = boostTimer > 0 ? 0.055 : 0.032;
-        angle += angleDiff * turnRate;
-
-        // Unit vectors based on current heading
-        var fx = Math.sin(angle);
-        var fy = -Math.cos(angle);
-        var rx = Math.cos(angle);
-        var ry = Math.sin(angle);
-        var lx = -rx;
-        var ly = -ry;
-
-        // Propulsion along heading
-        var thrust = boostTimer > 0 ? 0.11 : 0.042;
-        vx += fx * thrust;
-        vy += fy * thrust;
-
-        // Space drag (damping)
-        vx *= 0.982;
-        vy *= 0.982;
-
-        // Speed clamping
-        var maxSpeed = boostTimer > 0 ? 2.8 : 1.45;
-        var speed = Math.hypot(vx, vy);
-        if (speed > maxSpeed) {
-          vx = (vx / speed) * maxSpeed;
-          vy = (vy / speed) * maxSpeed;
-        }
-
-        // Update position
-        x += vx;
-        y += vy;
-
-        if (legDeploy > 0) legDeploy = Math.max(0, legDeploy - 0.05);
-
-        // ── THRUSTER EMISSION ──
-        // 1. Main Plasma Plume (rear nozzle)
-        var nozzleDist = ROCKET_H * 0.44;
-        var nx = x - fx * nozzleDist;
-        var ny = y - fy * nozzleDist;
-        var pCount = boostTimer > 0 ? 3 : (frameCount % 2 === 0 ? 2 : 1);
-
-        for (var p = 0; p < pCount; p++) {
-          var spread = (Math.random() - 0.5) * 0.8;
-          var pSpeed = (boostTimer > 0 ? 2.4 : 1.4) + Math.random() * 1.6;
-          var rand = Math.random();
-          var pColor = rand > 0.6 ? '#FFFFFF' : (rand > 0.25 ? '#22D3EE' : '#38BDF8');
-
-          particles.push({
-            x: nx + rx * (Math.random() - 0.5) * 4,
-            y: ny + ry * (Math.random() - 0.5) * 4,
-            vx: -fx * pSpeed + rx * spread,
-            vy: -fy * pSpeed + ry * spread,
-            color: pColor,
-            size: Math.random() > 0.4 ? 2 : 1,
-            alpha: 1,
-            decay: boostTimer > 0 ? 0.035 : 0.045
-          });
-        }
-
-        // 2. Small Attitude (RCS) Thrusters on side hull
-        var rcsDistX = ROCKET_W * 0.44;
-        var rcsDistY = ROCKET_H * 0.12;
-
-        if (angleDiff > 0.045) {
-          particles.push({
-            x: x + lx * rcsDistX - fx * rcsDistY,
-            y: y + ly * rcsDistX - fy * rcsDistY,
-            vx: lx * (1.1 + Math.random() * 0.9) - fx * 0.2,
-            vy: ly * (1.1 + Math.random() * 0.9) - fy * 0.2,
-            color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
-            size: 1,
-            alpha: 0.9,
-            decay: 0.07 + Math.random() * 0.04
-          });
-        } else if (angleDiff < -0.045) {
-          particles.push({
-            x: x + rx * rcsDistX - fx * rcsDistY,
-            y: y + ry * rcsDistX - fy * rcsDistY,
-            vx: rx * (1.1 + Math.random() * 0.9) - fx * 0.2,
-            vy: ry * (1.1 + Math.random() * 0.9) - fy * 0.2,
-            color: Math.random() > 0.3 ? '#22D3EE' : '#FFFFFF',
-            size: 1,
-            alpha: 0.9,
-            decay: 0.07 + Math.random() * 0.04
-          });
-        }
-
-      } else if (mode === 'APPROACH') {
-        if (landingTarget && landingTarget.el) {
-          var r = landingTarget.el.getBoundingClientRect();
-          if (r.top < 40 || r.top > height - 60) {
-            mode = 'ROAM';
-            roamCountdown = 240;
-            return;
-          }
-          landingTarget.y = Math.round(r.top);
-        }
-
-        var hoverY = landingTarget.y - legDropDist - 40;
-        var adx = landingTarget.x - x;
-        var ady = hoverY - y;
-        var distToHover = Math.hypot(adx, ady);
-
-        // Turn upright (angle = 0 points straight up)
-        var desiredAngle = 0;
-        var angleDiff = Math.atan2(Math.sin(desiredAngle - angle), Math.cos(desiredAngle - angle));
-        angle += angleDiff * 0.08;
-
-        vx += Math.sign(adx) * Math.min(0.08, Math.abs(adx) * 0.003);
-        vy += Math.sign(ady) * Math.min(0.08, Math.abs(ady) * 0.003);
-        vx *= 0.94;
-        vy *= 0.94;
-
-        x += vx;
-        y += vy;
-
-        if (frameCount % 12 === 0) {
-          particles.push({
-            x: x + (Math.random() - 0.5) * 6,
-            y: y + ROCKET_H * 0.44,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: 1.2,
-            color: '#22D3EE',
-            size: 1,
-            alpha: 0.7,
-            decay: 0.06
-          });
-        }
-
-        if (distToHover < 35 && Math.abs(angleDiff) < 0.15) {
-          mode = 'LANDING';
-        }
-
-      } else if (mode === 'LANDING') {
-        if (landingTarget && landingTarget.el) {
-          var r = landingTarget.el.getBoundingClientRect();
-          landingTarget.y = Math.round(r.top);
-        }
-
-        angle += (0 - angle) * 0.15;
-        if (legDeploy < 1) legDeploy = Math.min(1, legDeploy + 0.045);
-
-        var touchY = landingTarget.y - legDropDist;
-        x += (landingTarget.x - x) * 0.08;
-        vy = 0.38;
-        y += vy;
-
-        if (frameCount % 4 === 0) {
-          particles.push({
-            x: x + (Math.random() - 0.5) * 6,
-            y: y + ROCKET_H * 0.44,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: 1.2 + Math.random() * 0.6,
-            color: '#22D3EE',
-            size: 1,
-            alpha: 0.8,
-            decay: 0.06
-          });
-        }
-
-        if (y >= touchY) {
-          y = touchY;
-          vx = 0;
-          vy = 0;
-          mode = 'LANDED';
-
-          for (var s = 0; s < 6; s++) {
-            particles.push({
-              x: x + (Math.random() - 0.5) * 12,
-              y: touchY + legDropDist,
-              vx: (Math.random() - 0.5) * 1.5,
-              vy: -0.4 - Math.random() * 0.5,
-              color: '#CFC6B5',
-              size: Math.random() > 0.4 ? 2 : 1,
-              alpha: 0.9,
-              decay: 0.03
-            });
-          }
-        }
-
-      } else if (mode === 'LANDED') {
-        if (landingTarget && landingTarget.el) {
-          var r = landingTarget.el.getBoundingClientRect();
-          landingTarget.y = Math.round(r.top);
-          y = landingTarget.y - legDropDist;
-        }
-
-        angle = 0;
+      if (mode === 'LANDED') {
+        // Rocket remains completely stationary; no autodrift, no wandering
         vx = 0;
         vy = 0;
+        angle = 0;
         legDeploy = 1;
 
-        // Occasional faint idle coolant whisper (every 180 frames)
-        if (frameCount % 180 === 0) {
+        // Occasional faint idle coolant whisper (every 220 frames)
+        if (Math.random() < 0.005) {
           particles.push({
             x: x + (Math.random() - 0.5) * 6,
             y: y + ROCKET_H * 0.42,
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: -0.4,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: -0.3,
             color: '#CFC6B5',
             size: 1,
-            alpha: 0.5,
-            decay: 0.03
+            alpha: 0.4,
+            decay: 0.025
           });
         }
 
-      } else if (mode === 'TOUCH_REACTION') {
-        if (landingTarget && landingTarget.el) {
-          var r = landingTarget.el.getBoundingClientRect();
-          landingTarget.y = Math.round(r.top);
-        }
-        angle = 0;
-        vx = 0;
-        vy = 0;
-        legDeploy = 1;
-        reactionTimer--;
+      } else if (mode === 'LAUNCH') {
+        launchStep++;
 
-        // Gentle parabolic hop (max 4.5px up)
-        var bounceOffset = Math.sin((reactionTimer / 24) * Math.PI) * 4.5;
-        var baseY = landingTarget ? landingTarget.y - legDropDist : y;
-        y = baseY - bounceOffset;
+        var nozzleDist = ROCKET_H * 0.44;
 
-        if (reactionTimer <= 0) {
-          mode = 'LANDED';
-          y = baseY;
-          // Soft settle dust puff
-          for (var s = 0; s < 3; s++) {
+        if (launchStep <= 12) {
+          // Phase 1: Ignition & Flame Flare at landing site
+          legDeploy = Math.max(0, 1 - (launchStep / 12));
+          x = launchStartX + (Math.random() - 0.5) * 1.0;
+          y = launchStartY + (Math.random() - 0.5) * 1.0;
+
+          for (var p = 0; p < 4; p++) {
+            var rand = Math.random();
+            var pColor = rand > 0.6 ? '#FFFFFF' : (rand > 0.25 ? '#22D3EE' : '#38BDF8');
             particles.push({
-              x: x + (Math.random() - 0.5) * 10,
-              y: y + legDropDist,
-              vx: (Math.random() - 0.5) * 0.8,
-              vy: -0.3,
-              color: '#CFC6B5',
-              size: 1,
-              alpha: 0.7,
+              x: x + (Math.random() - 0.5) * 8,
+              y: y + nozzleDist,
+              vx: (Math.random() - 0.5) * 1.8,
+              vy: 2.4 + Math.random() * 2.0,
+              color: pColor,
+              size: Math.random() > 0.4 ? 2 : 1,
+              alpha: 1,
               decay: 0.04
             });
           }
+
+        } else if (launchStep <= 54) {
+          // Phase 2: Upward Lift & Ascent Acceleration
+          legDeploy = 0;
+          var t = (launchStep - 12) / 42; // 0 to 1
+          var easeY = Math.sin(t * (Math.PI / 2));
+          var easeX = t;
+          x = launchStartX + (arcApexX - launchStartX) * easeX;
+          y = launchStartY + (arcApexY - launchStartY) * easeY;
+
+          var desiredAngle = -0.24;
+          angle += (desiredAngle - angle) * 0.08;
+
+          // Main thruster plume backwards along heading
+          var fx = Math.sin(angle);
+          var fy = -Math.cos(angle);
+          var nx = x - fx * nozzleDist;
+          var ny = y - fy * nozzleDist;
+
+          for (var p = 0; p < 3; p++) {
+            var spread = (Math.random() - 0.5) * 0.8;
+            var pSpeed = 2.4 + Math.random() * 1.8;
+            particles.push({
+              x: nx + (Math.random() - 0.5) * 4,
+              y: ny + (Math.random() - 0.5) * 4,
+              vx: -fx * pSpeed + spread,
+              vy: -fy * pSpeed + spread,
+              color: Math.random() > 0.5 ? '#FFFFFF' : '#22D3EE',
+              size: Math.random() > 0.4 ? 2 : 1,
+              alpha: 1,
+              decay: 0.045
+            });
+          }
+
+        } else if (launchStep <= 86) {
+          // Phase 3: Cosmic Apogee Arc & RCS Attitude Burn
+          var tApogee = (launchStep - 54) / 32;
+          x = arcApexX + (launchStartX - arcApexX) * (tApogee * 0.25);
+          y = arcApexY + (launchStartY - arcApexY) * (tApogee * tApogee * 0.25);
+
+          angle += (0.12 - angle) * 0.06;
+
+          // Side RCS thrusters fire puffs on hull
+          if (launchStep % 3 === 0) {
+            particles.push({
+              x: x - Math.cos(angle) * (ROCKET_W * 0.44),
+              y: y - Math.sin(angle) * (ROCKET_W * 0.44),
+              vx: -Math.cos(angle) * 1.4,
+              vy: -Math.sin(angle) * 1.4,
+              color: '#22D3EE',
+              size: 1,
+              alpha: 0.85,
+              decay: 0.06
+            });
+          }
+
+        } else if (launchStep <= 134) {
+          // Phase 4: Descent & Retro-burn Braking
+          var tDesc = (launchStep - 86) / 48;
+          var curStartX = arcApexX + (launchStartX - arcApexX) * 0.25;
+          var curStartY = arcApexY + (launchStartY - arcApexY) * 0.25;
+          var easeDesc = 1 - Math.cos(tDesc * (Math.PI / 2));
+
+          x = curStartX + (launchStartX - curStartX) * tDesc;
+          y = curStartY + (launchStartY - curStartY) * easeDesc;
+
+          angle += (0 - angle) * 0.14;
+          legDeploy = Math.min(1, tDesc * 1.35);
+
+          // Retro thrusters firing downward in deceleration bursts
+          for (var p = 0; p < 2; p++) {
+            particles.push({
+              x: x + (Math.random() - 0.5) * 6,
+              y: y + nozzleDist,
+              vx: (Math.random() - 0.5) * 0.8,
+              vy: 1.6 + Math.random() * 1.0,
+              color: Math.random() > 0.4 ? '#22D3EE' : '#FFFFFF',
+              size: 1,
+              alpha: 0.8,
+              decay: 0.055
+            });
+          }
+
+        } else {
+          // Phase 5: Clean Touchdown on landing pad
+          x = launchStartX;
+          y = launchStartY;
+          angle = 0;
+          vx = 0;
+          vy = 0;
+          legDeploy = 1;
+          mode = 'LANDED';
+          isLaunching = false;
+
+          // Soft settle dust burst across footpads
+          for (var s = 0; s < 8; s++) {
+            particles.push({
+              x: x + (Math.random() - 0.5) * 14,
+              y: y + legDropDist,
+              vx: (Math.random() - 0.5) * 1.8,
+              vy: -0.3 - Math.random() * 0.4,
+              color: '#CFC6B5',
+              size: Math.random() > 0.4 ? 2 : 1,
+              alpha: 0.9,
+              decay: 0.035
+            });
+          }
+
+          updateButtonPos();
         }
       }
 
-      // Hard bounds safety check
-      if (x < 10) x = 10;
-      if (x > width - 10) x = width - 10;
-      if (y < 10) y = 10;
-      if (y > height - 10) y = height - 10;
-
-      window.__roamingRocketPos = { x: x, y: y, radius: Math.max(ROCKET_W, ROCKET_H) + 20 };
-
-      // 3. Update active particles
+      // Update active particles
       for (var i = particles.length - 1; i >= 0; i--) {
         var pt = particles[i];
         pt.x += pt.vx;
@@ -1530,9 +1428,20 @@ document.addEventListener('keydown', function (e) {
         }
       }
 
-      // Cap particle count
       if (particles.length > 70) {
         particles.splice(0, particles.length - 70);
+      }
+
+      // Keep asteroid avoidance position updated
+      if (profile) {
+        var profRect = profile.getBoundingClientRect();
+        window.__roamingRocketPos = {
+          x: profRect.left + x,
+          y: profRect.top + y,
+          radius: Math.max(ROCKET_W, ROCKET_H) + 16
+        };
+        window.__roamingRocketMode = mode;
+        window.__roamingRocketIsLaunching = isLaunching;
       }
     }
 
@@ -1620,8 +1529,8 @@ document.addEventListener('keydown', function (e) {
       ctx.clearRect(0, 0, width, height);
       if (rocketImg.complete && rocketImg.naturalWidth > 0) {
         ctx.save();
-        ctx.translate(Math.round(width * 0.88), Math.round(height * 0.18));
-        ctx.rotate(-0.4);
+        ctx.translate(Math.round(x), Math.round(y));
+        ctx.rotate(0);
         ctx.drawImage(rocketImg, -Math.round(ROCKET_W / 2), -Math.round(ROCKET_H / 2), ROCKET_W, ROCKET_H);
         ctx.restore();
       }
@@ -1634,46 +1543,53 @@ document.addEventListener('keydown', function (e) {
       if (prefersReducedMotion) {
         rocketImg.onload = drawStaticFallback;
         if (rocketImg.complete) drawStaticFallback();
-        return;
+      } else {
+        rocketImg.onload = function () {
+          if (!isRunning) return;
+          render();
+        };
       }
 
-      rocketImg.onload = function () {
-        if (!isRunning) return;
-        render();
-      };
+      // Hitbox Button Trigger (Primary click, tap, and keyboard trigger)
+      if (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          triggerLaunch();
+        });
 
-      // Mouse tracking for reactive flight
-      window.addEventListener('mousemove', function (e) {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        mouseActive = 90;
-      }, { passive: true });
-
-      // Interactive Click: Fun speed burst when flying, or gentle bounce reaction when landed
-      window.addEventListener('click', function (e) {
-        var clickDist = Math.hypot(x - e.clientX, y - e.clientY);
-        if (mode === 'LANDED' || mode === 'TOUCH_REACTION') {
-          if (clickDist < 160) {
-            mode = 'TOUCH_REACTION';
-            reactionTimer = 24;
-            // Small puff of exhaust
-            for (var p = 0; p < 4; p++) {
-              particles.push({
-                x: x + (Math.random() - 0.5) * 8,
-                y: y + ROCKET_H * 0.44,
-                vx: (Math.random() - 0.5) * 1.2,
-                vy: 0.6 + Math.random() * 0.6,
-                color: Math.random() > 0.5 ? '#22D3EE' : '#CFC6B5',
-                size: Math.random() > 0.5 ? 2 : 1,
-                alpha: 0.85,
-                decay: 0.05
-              });
-            }
+        btn.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            triggerLaunch();
           }
-        } else if (clickDist < 200) {
-          boostTimer = 40;
-          targetX = Math.random() > 0.5 ? width * 0.2 : width * 0.8;
-          targetY = Math.random() > 0.5 ? height * 0.2 : height * 0.8;
+        });
+
+        btn.addEventListener('pointerdown', function (e) {
+          triggerLaunch();
+        });
+      }
+
+      // Secondary Profile Section click / tap detection fallback
+      if (profile) {
+        profile.addEventListener('click', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          var px = e.clientX - rect.left;
+          var py = e.clientY - rect.top;
+          if (Math.hypot(x - px, y - py) < 48) {
+            triggerLaunch();
+          }
+        });
+      }
+
+      // Window pointer click fallback
+      window.addEventListener('click', function (e) {
+        if (!canvas) return;
+        var rect = canvas.getBoundingClientRect();
+        var canvasPx = e.clientX - rect.left;
+        var canvasPy = e.clientY - rect.top;
+        if (Math.hypot(x - canvasPx, y - canvasPy) < 48) {
+          triggerLaunch();
         }
       }, { passive: true });
 
@@ -3401,32 +3317,29 @@ document.addEventListener('keydown', function (e) {
       '#profile .section__pic-container',
       '#profile .section__text',
       '#profile .btn-container',
-      '#profile .profile-cta',
-      '#profile .profile-socials',
+      '#profile #socials-container',
       '#hero-pixel-satellite',
-      '#distant-planet',
+      '#hero-pixel-planet',
       '#projects-pixel-planet',
       '.section-header h2',
       '.section-header .section-label',
-      '.about-text',
-      '.about-details-container',
-      '.skills-badge-container',
-      '.experience-details-container',
-      '.experience-category-card',
-      '.hackathons-grid',
+      '.about-grid',
+      '.about-education',
+      '.marquee',
+      '.experience-layout',
+      '.project-featured',
+      '.project-grid',
       '.hackathon-card',
-      '.certificates-grid',
-      '.certificate-card',
+      '.cert-card',
       '.contact-card',
-      '.contact-form-container',
+      '.contact-form',
+      '#contact-form',
+      '.contact-info',
       '.mascot-chatgpt',
       '.mascot-claude',
       '.mascot-gemini',
       '.mascot-terminal-robot',
-      '.footer-scenery-strip',
-      '.footer-links-container',
-      '.footer-socials',
-      '.footer-copy'
+      '.footer-robot-patrol'
     ];
 
     var protectedBoxes = [];
@@ -3724,7 +3637,7 @@ document.addEventListener('keydown', function (e) {
   }
 })();
 
-
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DISTANT RINGED PIXEL PLANET (PROJECTS SECTION BACKGROUND)
