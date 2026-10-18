@@ -31,6 +31,14 @@
     margin: 0 auto;
   }
 
+  .hero-pixel-planet {
+    top: 6%;
+    right: 8%;
+    left: auto;
+    width: 40px;
+    height: 40px;
+  }
+
   /* About: single column */
   .about-grid {
     grid-template-columns: 1fr;
@@ -56,13 +64,7 @@
     transform-origin: top right;
   }
 
-  .mascot-terminal-robot {
-    transform: scale(0.88);
-    transform-origin: bottom right;
-    right: clamp(16px, 6vw, 60px);
-  }
-
-  .edu-divider-character {
+.edu-divider-character {
     right: 4%;
     transform: scale(0.9);
     transform-origin: top right;
@@ -286,19 +288,7 @@
     right: -2px;
   }
 
-  .mascot-terminal-robot {
-    transform: scale(0.78);
-    transform-origin: bottom right;
-    right: clamp(12px, 5vw, 40px);
-  }
-
-  .terminal-robot-bubble {
-    font-size: 10px;
-    padding: 2px 6px;
-    bottom: calc(100% + 4px);
-  }
-
-  .edu-divider-character {
+.edu-divider-character {
     right: 3%;
     transform: scale(0.82);
     transform-origin: top right;
@@ -309,21 +299,11 @@
     height: 29px;
   }
 
-  /* Footer living pixel world (Uncompressed 84px height for crisp pixel rendering) */
-  .footer-inner {
-    gap: 0.75rem;
-    min-height: 84px;
-  }
-
-  .footer-world-scene {
-    width: 100%;
-    height: 84px;
-    margin: 0 auto;
-  }
-
-  #footer-world-canvas {
-    width: 100%;
-    height: 84px;
+  /* Footer living pixel scenery */
+  .footer-scenery-strip,
+  .prop-terminator,
+  #footer-terminator-canvas {
+    height: 96px;
   }
 }
 
@@ -397,38 +377,12 @@
     top: -32px;
   }
 
-  .mascot-terminal-robot {
-    transform: scale(0.70);
-    transform-origin: bottom right;
-    right: 12px;
-  }
-
-  .terminal-robot-bubble {
-    font-size: 9.5px;
-    padding: 2px 5px;
-  }
-
-  .edu-divider-character {
+.edu-divider-character {
     right: 2%;
     transform: scale(0.75);
     transform-origin: top right;
   }
 
-  .footer-inner {
-    min-height: 84px;
-    gap: 0.5rem;
-    overflow: hidden;
-  }
-
-  .footer-world-scene {
-    width: 100%;
-    height: 84px;
-  }
-
-  #footer-world-canvas {
-    width: 100%;
-    height: 84px;
-  }
 }
 
 /* ── 380px — Ultra-Narrow Mobile (iPhone SE, Galaxy Fold) ───── */
@@ -497,26 +451,10 @@
     top: -28px;
   }
 
-  .mascot-terminal-robot {
-    transform: scale(0.62);
-    transform-origin: bottom right;
-    right: 8px;
-  }
-
-  .terminal-robot-bubble {
-    font-size: 9px;
-  }
-
-  .edu-divider-character {
+.edu-divider-character {
     right: 1%;
     transform: scale(0.68);
     transform-origin: top right;
   }
 
-  .footer-inner,
-  .footer-world-scene,
-  #footer-world-canvas {
-    height: 84px;
-    min-height: 84px;
-  }
 }

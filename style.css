@@ -14,13 +14,13 @@
   --accent:       #B85C38;
   --accent-hover: #96471E;
 
-  /* Light mode (default) */
-  --bg:           #FAFAF8;
-  --bg-surface:   #F2F1EC;
-  --text:         #111110;
-  --text-muted:   #69696A;
-  --border:       #D4D3CC;
-  --border-light: #E8E7E0;
+  /* Dark mode (Standard / Permanent) */
+  --bg:           #0F0F0E;
+  --bg-surface:   #1A1A18;
+  --text:         #EDECE5;
+  --text-muted:   #888882;
+  --border:       #2E2E2A;
+  --border-light: #232321;
 
   /* Layout */
   --nav-h:        64px;
@@ -32,7 +32,6 @@
   --ease: 0.28s ease;
 }
 
-/* Dark mode — manual override via data-theme="dark" */
 [data-theme="dark"] {
   --bg:           #0F0F0E;
   --bg-surface:   #1A1A18;
@@ -40,18 +39,6 @@
   --text-muted:   #888882;
   --border:       #2E2E2A;
   --border-light: #232321;
-}
-
-/* Dark mode — system preference, no manual override set yet */
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
-    --bg:           #0F0F0E;
-    --bg-surface:   #1A1A18;
-    --text:         #EDECE5;
-    --text-muted:   #888882;
-    --border:       #2E2E2A;
-    --border-light: #232321;
-  }
 }
 
 /* ── 2. RESET & BASE ──────────────────────────────────────────────────── */
@@ -133,37 +120,9 @@ nav {
   color: var(--text);
 }
 
-/* Theme toggle button */
+/* Theme toggle button (Hidden - pure dark mode) */
 .theme-toggle {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  width: 34px;
-  height: 34px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  transition: color var(--ease), border-color var(--ease);
-  flex-shrink: 0;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.theme-toggle:hover {
-  color: var(--text);
-  border-color: var(--text);
-}
-
-/* Sun icon in light mode */
-.theme-icon::before { content: '☀'; }
-
-/* Moon icon in dark mode */
-[data-theme="dark"] .theme-icon::before { content: '☽'; }
-
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) .theme-icon::before { content: '☽'; }
+  display: none !important;
 }
 
 /* ── 4. HAMBURGER NAV (mobile) ────────────────────────────────────────── */
@@ -309,6 +268,7 @@ section {
 
 /* ── 7. HERO / PROFILE ────────────────────────────────────────────────── */
 #profile {
+  position: relative;
   min-height: calc(100svh - var(--nav-h));
   display: flex;
   align-items: center;
@@ -331,6 +291,48 @@ section {
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+}
+
+/* Distant Small Pixel Planet (Far away in celestial background, not behind photo) */
+.hero-pixel-planet {
+  position: absolute;
+  top: 12%;
+  right: 12%;
+  width: 52px;
+  height: 52px;
+  z-index: 1; /* Sits in background sky, far from profile photo */
+  pointer-events: none;
+  user-select: none;
+  animation: hero-planet-drift 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-planet-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.07));
+}
+
+@keyframes hero-planet-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(5px, -7px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-pixel-planet {
+    animation: none !important;
+  }
 }
 
 .profile-photo {
@@ -1321,193 +1323,353 @@ section {
 }
 
 /* ── 12. FOOTER ────────────────────────────────────────────────────────── */
+footer.footer,
 footer {
-  border-top: 1px solid var(--border-light);
-  padding: 1.5rem var(--section-px);
+  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
   position: relative;
   overflow: hidden;
+  --ground-y: 18px;
 }
 
 .footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  max-width: var(--max-w);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   position: relative;
-  min-height: 96px;
-  justify-content: center;
+  background: transparent !important;
+  min-height: 100px;
 }
 
-/* Retro Pixel-Art Technology Workshop Scene (Middle / Center-Left) */
-/* Retro Living Pixel-Art World Scene */
-.footer-world-scene {
+.footer-scenery-strip {
   position: relative;
   width: 100%;
-  max-width: var(--max-w);
-  height: 96px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  user-select: none;
-  cursor: pointer;
-  margin: 0 auto;
+  height: 100px;
+  background: transparent !important;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-#footer-world-canvas {
+/* Ground line: one 1px element (2px max on retina), full width, color = rgba(140,160,200,0.18) or lower */
+.footer-ground-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 1px;
+  bottom: calc(var(--ground-y) - 1px);
+  background: rgba(140, 160, 200, 0.18);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Relative props strip anchored directly to the ground line */
+.footer-props-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--ground-y);
+  width: 100%;
+  height: 0;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.footer-prop {
+  position: absolute;
+  bottom: 0;
+  display: block;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.prop-img {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* 1. Left Lamp (6%) */
+.prop-lamp-left {
+  left: 6%;
+  width: 27px;
+  height: 78px;
+  z-index: 5;
+}
+
+/* 2. Left Plant (14%) */
+.prop-plant-left {
+  left: 14%;
+  width: 16px;
+  height: 38px;
+  z-index: 3;
+}
+
+/* Grass 1 (19%) */
+.prop-grass-1 {
+  left: 19%;
+  width: 12px;
+  height: 6px;
+  z-index: 4;
+}
+
+/* 3. Crates (24%) */
+.prop-crates {
+  left: 24%;
+  width: 36px;
+  height: 45px;
+  z-index: 4;
+}
+
+/* Interactive Autonomous Retro Droid (Patrols 5% to 30%) */
+.prop-droid {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 32px;
+  height: 36px;
+  z-index: 5;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.footer-droid-inner {
+  position: relative;
+  width: 32px;
+  height: 36px;
+}
+
+.footer-droid-flipper {
+  position: relative;
+  width: 32px;
+  height: 36px;
+  transform-origin: 50% 100%;
+}
+
+.footer-droid-sprite {
+  width: 32px;
+  height: 36px;
+  background-image: url('./assets/footer-droid-sheet.png');
+  background-size: 288px 36px;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Terminator Character & Code Projectiles Wrapper (Patrols clear gap 32% to 54%) */
+.prop-terminator {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 96px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+#footer-terminator-canvas {
   width: 100%;
   height: 96px;
   display: block;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+}
+
+/* 4. Workstation (58%) */
+.prop-workstation {
+  left: 58%;
+  width: 51px;
+  height: 62px;
+  z-index: 4;
+}
+
+/* Grass 2 (65%) */
+.prop-grass-2 {
+  left: 65%;
+  width: 10px;
+  height: 5px;
+  z-index: 4;
+}
+
+/* 5. Server Rack (70%) */
+.prop-server {
+  left: 70%;
+  width: 37px;
+  height: 77px;
+  z-index: 4;
+}
+
+/* Grass 3 (76%) */
+.prop-grass-3 {
+  left: 76%;
+  width: 14px;
+  height: 7px;
+  z-index: 4;
+}
+
+/* 6. Right Lamp (82%) */
+.prop-lamp-right {
+  left: 82%;
+  width: 27px;
+  height: 78px;
+  z-index: 5;
+}
+
+/* Grass 4 (88%) */
+.prop-grass-4 {
+  left: 88%;
+  width: 8px;
+  height: 4px;
+  z-index: 4;
+}
+
+/* 7. Right Plant (92%) */
+.prop-plant-right {
+  left: 92%;
+  width: 16px;
+  height: 38px;
+  z-index: 3;
+}
+
+/* Grass SVG rendering */
+.grass-svg {
+  display: block;
+  overflow: visible;
+  shape-rendering: crispEdges;
+}
+
+/* Lighting: amber glow radial-gradient (max 60px radius) behind each lamp */
+.prop-lamp-glow {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.28) 0%, rgba(245, 158, 11, 0.08) 50%, rgba(245, 158, 11, 0) 70%);
+  pointer-events: none;
+  animation: footer-lamp-flicker 3.2s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes footer-lamp-flicker {
+  0%, 100% { opacity: 0.95; transform: translateX(-50%) scale(1); }
+  35%      { opacity: 0.85; transform: translateX(-50%) scale(0.97); }
+  70%      { opacity: 1.0;  transform: translateX(-50%) scale(1.03); }
+  85%      { opacity: 0.78; transform: translateX(-50%) scale(0.95); }
+}
+
+/* Workstation CRT Monitor Screen & Green Terminal Code */
+.monitor-screen {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  width: 28px;
+  height: 22px;
+  padding: 2px;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.monitor-code-line {
+  height: 2px;
+  margin-bottom: 2px;
+  background: #22c55e;
+  box-shadow: 0 0 2px rgba(34, 197, 94, 0.4);
+}
+
+.monitor-code-line.cl-1 { width: 14px; animation: monitor-scan 2.6s steps(4) infinite; }
+.monitor-code-line.cl-2 { width: 20px; animation: monitor-scan 3.4s steps(5) infinite; }
+.monitor-code-line.cl-3 { width: 11px; animation: monitor-scan 2.1s steps(3) infinite; }
+
+.monitor-cursor {
+  width: 3px;
+  height: 2px;
+  background: #86efac;
+  animation: monitor-cursor-blink 0.85s steps(2) infinite;
+}
+
+@keyframes monitor-scan {
+  0%, 100% { opacity: 0.9; }
+  50%      { opacity: 0.6; }
+}
+
+@keyframes monitor-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* Server Rack Animated LEDs Overlay */
+.server-leds {
+  position: absolute;
+  top: 21px;
+  left: 9px;
+  width: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.server-led {
+  width: 2px;
+  height: 2px;
+  display: block;
+}
+
+.led-green   { background: #10b981; animation: server-blink 1.2s steps(2) infinite; }
+.led-emerald { background: #34d399; animation: server-blink 1.8s steps(2) infinite 0.3s; }
+.led-amber   { background: #f59e0b; animation: server-blink 2.2s steps(2) infinite 0.7s; }
+.led-cyan    { background: #38bdf8; animation: server-blink 1.5s steps(2) infinite 0.5s; }
+
+@keyframes server-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.15; }
+}
+
+/* Responsive Layout for Mobile / Tablet */
+@media (max-width: 768px) {
+  .prop-lamp-right,
+  .prop-plant-right,
+  .prop-grass-3,
+  .prop-grass-4 {
+    display: none !important;
+  }
+
+  .prop-lamp-left   { left: 3%; }
+  .prop-plant-left  { left: 11%; }
+  .prop-grass-1     { left: 16%; }
+  .prop-crates      { left: 22%; }
+  .prop-workstation { left: 62%; }
+  .prop-grass-2     { left: 74%; }
+  .prop-server      { left: 80%; }
+}
+
+@media (max-width: 480px) {
+  .prop-lamp-left {
+    display: none !important;
+  }
+  .prop-plant-left  { left: 2%; }
+  .prop-crates      { left: 12%; }
+  .prop-grass-1     { left: 23%; }
+  .prop-workstation { left: 68%; }
+  .prop-server      { left: 85%; }
 }
 
 /* ── PREMIUM UPGRADES ──────────────────────────────────────────────────── */
 
-/* 1. Theme-Matched Floating Pixel Terminal Mascot */
-.hero-terminal-mascot {
-  position: absolute;
-  top: -18%;
-  left: 65%;
-  width: 38%;
-  height: 38%;
-  pointer-events: none;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
-
-.mascot-monitor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1; /* Sits behind circular .profile-photo (z-index: 2) */
-  pointer-events: none;
-}
-
-.mascot-sprite {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  pointer-events: none;
-  user-select: none;
-}
-
-.mascot-paws {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3; /* Paws sit in front of .profile-photo (z-index: 2) circular border */
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Idle face is active by default */
-.mascot-sprite--idle {
-  opacity: 1;
-  animation: mascot-blink-cycle 4.5s steps(1) infinite;
-}
-
-/* Blinking frame toggled via keyframe */
-.mascot-sprite--blink {
-  opacity: 0;
-  animation: mascot-blink-eye 4.5s steps(1) infinite;
-}
-
-/* Happy frame (with sparks) shows on hover */
-.mascot-sprite--happy {
-  opacity: 0;
-  transition: opacity 0.1s steps(1);
-}
-
-/* Pixel speech bubble 'hi!' */
-.mascot-bubble {
-  position: absolute;
-  bottom: 84%;
-  right: 18%;
-  width: 55%;
-  height: auto;
-  z-index: 4;
-  opacity: 0;
-  transform: scale(0.6) translateY(6px);
-  transform-origin: bottom center;
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-}
-
-.mascot-bubble img {
-  display: block;
-  width: 100%;
-  height: auto;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-/* Hover over portrait triggers happy mascot & pops up 'hi!' speech bubble */
-.section__pic-container:hover .mascot-sprite--idle,
-.section__pic-container:hover .mascot-sprite--blink {
-  opacity: 0 !important;
-  animation: none !important;
-}
-
-.section__pic-container:hover .mascot-sprite--happy {
-  opacity: 1;
-}
-
-.section__pic-container:hover .mascot-bubble {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-
-/* Periodic blink animation cycle (blinks every 4.5s for ~180ms) */
-@keyframes mascot-blink-cycle {
-  0%, 88%, 94%, 100% {
-    opacity: 1;
-  }
-  89%, 93% {
-    opacity: 0;
-  }
-}
-
-@keyframes mascot-blink-eye {
-  0%, 88%, 94%, 100% {
-    opacity: 0;
-  }
-  89%, 93% {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-terminal-mascot {
-    animation: none !important;
-  }
-  .mascot-sprite--idle,
-  .mascot-sprite--blink {
-    animation: none !important;
-  }
-  .mascot-bubble {
-    transition: none !important;
-  }
-}
 
 
 /* 3. Typography Mask Reveal */
@@ -2228,76 +2390,47 @@ footer {
   transition: transform 0.24s ease-out, filter 0.24s ease-out;
 }
 
-/* ── Articulated Inline Pixel-Art Gemini SVG ────────────────────────── */
-.gemini-svg {
+.gemini-main-img {
   position: relative;
   display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  z-index: 2;
+}
+
+.gemini-arml-img,
+.gemini-armr-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
-
-/* Joint Transform-Box & Transform-Origins */
-.gemini-part-body {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: gemini-body-float 3.7s ease-in-out infinite;
-}
-
-.gemini-part-head {
-  transform-box: fill-box;
-  transform-origin: 47% 98%;
-  animation: gemini-head-tilt 4.1s ease-in-out infinite;
-  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.gemini-part-eyes {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  transition: transform 0.08s ease-out;
-}
-
-.mascot-gemini[data-blinking="true"] .gemini-part-eyes,
-.mascot-gemini.state-blink .gemini-part-eyes {
-  transform: scaleY(0.1);
-}
-
-.gemini-part-mouth {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: gemini-mouth-shift 3.3s ease-in-out infinite;
-}
-
-.gemini-part-arml {
-  transform-box: fill-box;
-  transform-origin: 90% 75%;
-  animation: gemini-arml-cycle 2.3s ease-in-out infinite;
+  z-index: 3;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.gemini-part-handl {
-  transform-box: fill-box;
-  transform-origin: 88% 95%;
-  animation: gemini-handl-cycle 1.7s ease-in-out infinite;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.gemini-arml-img {
+  transform-origin: 31% 55%;
 }
 
-.gemini-part-armr {
-  transform-box: fill-box;
-  transform-origin: 15% 15%;
-  animation: gemini-armr-cycle 2.9s ease-in-out infinite;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.gemini-armr-img {
+  transform-origin: 70% 62%;
 }
 
-.gemini-part-handr {
-  transform-box: fill-box;
-  transform-origin: 40% 15%;
-  animation: gemini-handr-cycle 2.1s ease-in-out infinite;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Visor eyelid / blink overlay */
+.gemini-visor-blink {
+  position: absolute;
+  top: 28%;
+  left: 45%;
+  width: 24px;
+  height: 10px;
+  background: #0d1224;
+  opacity: 0;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 4;
+  transition: opacity 0.08s ease;
 }
 
 /* Constellation Sparkles near Star in Hand */
@@ -2326,128 +2459,71 @@ footer {
 .c-spark-3 { top: 22px; left: 14px; background: #3B82F6; animation-delay: 1.2s; }
 .c-spark-4 { top: 12px; left: 0px;  background: #F59E0B; animation-delay: 1.8s; }
 
-/* ── Dynamic States via data-state attribute & classes ────────────── */
-.mascot-gemini[data-state="wave"] .gemini-part-armr,
-.mascot-gemini.state-wave .gemini-part-armr {
-  animation: gemini-armr-wave-action 0.35s ease-in-out infinite alternate !important;
-}
-.mascot-gemini[data-state="wave"] .gemini-part-handr,
-.mascot-gemini.state-wave .gemini-part-handr {
-  animation: gemini-handr-wave-action 0.35s ease-in-out infinite alternate !important;
+/* Dynamic states for Gemini */
+.mascot-gemini.state-blink .gemini-visor-blink {
+  opacity: 0.95;
 }
 
-.mascot-gemini[data-state="star-lift"] .gemini-part-arml,
-.mascot-gemini.state-star-lift .gemini-part-arml {
-  transform: rotate(-35deg) translateY(-3px) !important;
-  animation: none !important;
-}
-.mascot-gemini[data-state="star-lift"] .gemini-part-handl,
-.mascot-gemini.state-star-lift .gemini-part-handl {
-  transform: rotate(22deg) translateY(-2px) !important;
-  animation: none !important;
+.mascot-gemini.state-wave .gemini-armr-img {
+  transform: rotate(-24deg) translateY(-2px);
 }
 
-.mascot-gemini[data-state="think"] .gemini-part-head,
-.mascot-gemini.state-think .gemini-part-head {
-  transform: rotate(-4deg) translateY(-2px) !important;
-  animation: none !important;
-}
-.mascot-gemini[data-state="think"] .gemini-part-armr,
-.mascot-gemini.state-think .gemini-part-armr {
-  transform: rotate(-45deg) translateY(-3px) !important;
-  animation: none !important;
+.mascot-gemini.state-star-lift .gemini-arml-img {
+  transform: translateY(-4px) rotate(8deg);
 }
 
-.mascot-gemini[data-state="welcome"] .gemini-part-arml {
-  transform: rotate(-35deg) !important;
-  animation: none !important;
+.mascot-gemini.state-think .gemini-body {
+  transform: translateY(-2px) rotate(-3deg);
 }
-.mascot-gemini[data-state="welcome"] .gemini-part-armr {
-  transform: rotate(-32deg) !important;
-  animation: none !important;
-}
-.mascot-gemini[data-state="welcome"] .gemini-part-handl {
-  transform: rotate(20deg) !important;
-  animation: none !important;
-}
-.mascot-gemini[data-state="welcome"] .gemini-part-handr {
-  transform: rotate(-20deg) !important;
-  animation: none !important;
+.mascot-gemini.state-think .gemini-armr-img {
+  transform: translateY(-2px) rotate(12deg);
 }
 
-.mascot-gemini[data-state="happy"] .gemini-body,
 .mascot-gemini.state-happy .gemini-body {
   transform: translateY(-5px);
 }
-.mascot-gemini[data-state="happy"] .gemini-part-arml,
-.mascot-gemini.state-happy .gemini-part-arml {
-  transform: rotate(-32deg) translateY(-3px) !important;
-  animation: none !important;
+.mascot-gemini.state-happy .gemini-arml-img {
+  transform: translateY(-3px) rotate(10deg);
 }
-.mascot-gemini[data-state="happy"] .gemini-part-armr,
-.mascot-gemini.state-happy .gemini-part-armr {
-  transform: rotate(-28deg) !important;
-  animation: none !important;
+.mascot-gemini.state-happy .gemini-armr-img {
+  transform: rotate(-15deg);
 }
 
-/* Hover & React / Click celebration */
-.mascot-gemini:hover .gemini-body,
-.mascot-gemini[data-state="react"] .gemini-body,
-.mascot-gemini.is-acting .gemini-body {
+/* Hover / Proximity reactions */
+.mascot-gemini:hover .gemini-body {
   transform: translateY(-4px) scale(1.06);
   filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.55));
 }
 
-.mascot-gemini:hover .gemini-part-arml,
-.mascot-gemini[data-state="react"] .gemini-part-arml,
-.mascot-gemini.is-acting .gemini-part-arml {
-  transform: rotate(-35deg) translateY(-3px) !important;
-  animation: none !important;
+.mascot-gemini:hover .gemini-bubble {
+  transform: translateY(-4px) scale(1.08);
 }
 
-.mascot-gemini:hover .gemini-part-handl,
-.mascot-gemini[data-state="react"] .gemini-part-handl,
-.mascot-gemini.is-acting .gemini-part-handl {
-  transform: rotate(22deg) translateY(-2px) !important;
-  animation: none !important;
+/* Click / Tap reaction */
+.mascot-gemini.is-acting .gemini-body {
+  animation: gemini-celestial-surge 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-.mascot-gemini:hover .gemini-part-armr,
-.mascot-gemini[data-state="react"] .gemini-part-armr,
-.mascot-gemini.is-acting .gemini-part-armr {
-  animation: gemini-armr-wave-action 0.32s ease-in-out infinite alternate !important;
+.mascot-gemini.is-acting .gemini-arml-img {
+  transform: translateY(-5px) rotate(12deg) !important;
+}
+.mascot-gemini.is-acting .gemini-armr-img {
+  transform: rotate(-26deg) translateY(-2px) !important;
 }
 
-.mascot-gemini:hover .gemini-part-handr,
-.mascot-gemini[data-state="react"] .gemini-part-handr,
-.mascot-gemini.is-acting .gemini-part-handr {
-  animation: gemini-handr-wave-action 0.32s ease-in-out infinite alternate !important;
-}
-
-.mascot-gemini:hover .gemini-part-head,
-.mascot-gemini[data-state="react"] .gemini-part-head,
-.mascot-gemini.is-acting .gemini-part-head {
-  transform: rotate(-3deg) translateY(-2px) !important;
-  animation: none !important;
-}
-
-.mascot-gemini:hover .gemini-bubble,
-.mascot-gemini[data-state="react"] .gemini-bubble,
 .mascot-gemini.is-acting .gemini-bubble {
   animation: gemini-bubble-jump 0.85s ease-out !important;
 }
 
-.mascot-gemini.is-acting .constellation-spark,
-.mascot-gemini[data-state="react"] .constellation-spark {
+.mascot-gemini.is-acting .constellation-spark {
   animation: gemini-constellation-burst 0.85s ease-out forwards;
 }
 
-.mascot-gemini.is-acting .c-spark-1, .mascot-gemini[data-state="react"] .c-spark-1 { animation-delay: 0.05s; --tx: 0px; --ty: -12px; }
-.mascot-gemini.is-acting .c-spark-2, .mascot-gemini[data-state="react"] .c-spark-2 { animation-delay: 0.12s; --tx: 14px; --ty: -6px; }
-.mascot-gemini.is-acting .c-spark-3, .mascot-gemini[data-state="react"] .c-spark-3 { animation-delay: 0.08s; --tx: 8px; --ty: 12px; }
-.mascot-gemini.is-acting .c-spark-4, .mascot-gemini[data-state="react"] .c-spark-4 { animation-delay: 0.15s; --tx: -12px; --ty: -4px; }
+.mascot-gemini.is-acting .c-spark-1 { animation-delay: 0.05s; --tx: 0px; --ty: -12px; }
+.mascot-gemini.is-acting .c-spark-2 { animation-delay: 0.12s; --tx: 14px; --ty: -6px; }
+.mascot-gemini.is-acting .c-spark-3 { animation-delay: 0.08s; --tx: 8px; --ty: 12px; }
+.mascot-gemini.is-acting .c-spark-4 { animation-delay: 0.15s; --tx: -12px; --ty: -4px; }
 
-/* Keyframes */
 @keyframes gemini-bubble-bob {
   0%, 100% { transform: translateY(0px); }
   50%      { transform: translateY(-4px); }
@@ -2460,59 +2536,21 @@ footer {
 }
 
 @keyframes gemini-orbital-drift {
-  0%, 100% { transform: translate(0px, 0px); }
-  50%      { transform: translate(3.5px, -1.5px); }
-}
-
-@keyframes gemini-body-float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%      { transform: translateY(-2px) rotate(2deg); }
-}
-
-@keyframes gemini-head-tilt {
-  0%, 100% { transform: rotate(0deg); }
-  35%      { transform: rotate(2.5deg); }
-  70%      { transform: rotate(-2deg); }
-}
-
-@keyframes gemini-mouth-shift {
-  0%, 100% { transform: scaleX(1); }
-  50%      { transform: scaleX(1.2); }
-}
-
-@keyframes gemini-arml-cycle {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(-28deg); }
-}
-
-@keyframes gemini-handl-cycle {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(18deg); }
-}
-
-@keyframes gemini-armr-cycle {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(28deg); }
-}
-
-@keyframes gemini-handr-cycle {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(-18deg); }
-}
-
-@keyframes gemini-armr-wave-action {
-  0%   { transform: rotate(-15deg) translateY(-2px); }
-  100% { transform: rotate(-35deg) translateY(-4px); }
-}
-
-@keyframes gemini-handr-wave-action {
-  0%   { transform: rotate(-10deg); }
-  100% { transform: rotate(-24deg); }
+  0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+  35%      { transform: translate(3px, -4px) rotate(1.5deg); }
+  70%      { transform: translate(-3px, -2px) rotate(-1.5deg); }
 }
 
 @keyframes gemini-idle-sparkle {
   0%, 100% { opacity: 0.25; transform: scale(0.7); }
   50%      { opacity: 0.95; transform: scale(1.25); filter: drop-shadow(0 0 3px currentColor); }
+}
+
+@keyframes gemini-celestial-surge {
+  0%   { transform: scale(1); }
+  30%  { transform: translateY(-10px) scale(1.1) rotate(-2deg); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.7)); }
+  65%  { transform: translateY(1px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes gemini-constellation-burst {
@@ -2535,132 +2573,6 @@ footer {
   }
 }
 
-/* ── 4. TERMINAL ROBOT MASCOT (Walking on Hackathons Divider) ─────────── */
-.mascot-terminal-robot {
-  position: absolute;
-  top: -84px; /* Feet rest precisely on top of the 1px divider line */
-  right: clamp(24px, 8vw, 120px);
-  width: 75px;
-  height: 84px;
-  z-index: 10;
-  pointer-events: auto;
-  user-select: none;
-  cursor: pointer;
-  transform-origin: bottom right;
-  transition: right 0.25s linear;
-}
-
-.terminal-robot-bubble {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: rgba(9, 21, 16, 0.95);
-  border: 1px solid #10b981;
-  color: #34d399;
-  font-family: var(--font-mono, 'Courier New', monospace);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(16, 185, 129, 0.25);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  z-index: 20;
-}
-
-.terminal-robot-bubble::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 4px 4px 0 4px;
-  border-style: solid;
-  border-color: #10b981 transparent transparent transparent;
-}
-
-.terminal-robot-bubble.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.terminal-robot-bubble .bubble-prompt {
-  color: #10b981;
-  font-weight: 700;
-}
-
-.terminal-robot-bubble .bubble-text {
-  color: #6ee7b7;
-  letter-spacing: 0.02em;
-}
-
-.terminal-robot-body {
-  position: relative;
-  width: 75px;
-  height: 84px;
-  transform-origin: 50% 100%;
-  transition: transform 0.2s ease-out;
-}
-
-.terminal-robot-body.facing-left {
-  transform: scaleX(-1);
-}
-
-.terminal-robot-body.facing-right {
-  transform: scaleX(1);
-}
-
-.terminal-robot-sprite {
-  width: 75px;
-  height: 84px;
-  background-image: url('./assets/hackathon-robot-sheet.png');
-  background-size: 975px 84px;
-  background-repeat: no-repeat;
-  background-position: 0px 0px;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
-
-/* Terminal robot frames (13 frames, each 75px wide) */
-.trobot-frame-0  { background-position: 0px 0px; }
-.trobot-frame-1  { background-position: -75px 0px; }
-.trobot-frame-2  { background-position: -150px 0px; }
-.trobot-frame-3  { background-position: -225px 0px; }
-.trobot-frame-4  { background-position: -300px 0px; }
-.trobot-frame-5  { background-position: -375px 0px; }
-.trobot-frame-6  { background-position: -450px 0px; }
-.trobot-frame-7  { background-position: -525px 0px; }
-.trobot-frame-8  { background-position: -600px 0px; }
-.trobot-frame-9  { background-position: -675px 0px; }
-.trobot-frame-10 { background-position: -750px 0px; }
-.trobot-frame-11 { background-position: -825px 0px; }
-.trobot-frame-12 { background-position: -900px 0px; }
-
-/* Jump animation on Click */
-.mascot-terminal-robot.is-jumping .terminal-robot-body {
-  animation: trobot-jump 0.72s cubic-bezier(0.25, 1.25, 0.5, 1) !important;
-}
-
-@keyframes trobot-jump {
-  0%   { transform: translateY(0) scale(1, 1); }
-  25%  { transform: translateY(-16px) scale(0.96, 1.06); }
-  50%  { transform: translateY(-18px) scale(1.02, 0.98); }
-  75%  { transform: translateY(-2px) scale(1.04, 0.94); }
-  100% { transform: translateY(0) scale(1, 1); }
-}
-
-/* Hover reaction */
-.mascot-terminal-robot:hover .terminal-robot-body {
-  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
-}
-
 /* ── REDUCED MOTION SUPPORT ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .chatgpt-body,
@@ -2677,19 +2589,15 @@ footer {
   .gemini-part-handl,
   .gemini-part-armr,
   .gemini-part-handr,
-  .constellation-spark,
-  .terminal-robot-body,
-  .terminal-robot-bubble {
+  .constellation-spark {
     animation: none !important;
   }
-  .mascot-claude,
-  .mascot-terminal-robot {
+  .mascot-claude {
     transition: none !important;
   }
   .mascot-chatgpt:hover .chatgpt-body,
   .mascot-claude:hover .claude-body,
-  .mascot-gemini:hover .gemini-body,
-  .mascot-terminal-robot:hover .terminal-robot-body {
+  .mascot-gemini:hover .gemini-body {
     transform: none !important;
   }
 }
@@ -2701,15 +2609,6 @@ footer {
 .pixel-mascot.mascot-offscreen .claude-body,
 .pixel-mascot.mascot-offscreen .claude-bubble,
 .pixel-mascot.mascot-offscreen .gemini-orbit-wrap,
-.pixel-mascot.mascot-offscreen .gemini-bubble,
-.pixel-mascot.mascot-offscreen .gemini-part-body,
-.pixel-mascot.mascot-offscreen .gemini-part-head,
-.pixel-mascot.mascot-offscreen .gemini-part-mouth,
-.pixel-mascot.mascot-offscreen .gemini-part-arml,
-.pixel-mascot.mascot-offscreen .gemini-part-handl,
-.pixel-mascot.mascot-offscreen .gemini-part-armr,
-.pixel-mascot.mascot-offscreen .gemini-part-handr,
-.pixel-mascot.mascot-offscreen .terminal-robot-body,
-.pixel-mascot.mascot-offscreen .terminal-robot-bubble {
+.pixel-mascot.mascot-offscreen .gemini-bubble {
   animation-play-state: paused !important;
 }
