@@ -958,18 +958,18 @@ document.addEventListener('keydown', function (e) {
       bounds = getBounds();
       var curBounds = bounds;
       var maxSpan = curBounds.maxX - curBounds.minX;
-      var desiredDist = 80 + Math.random() * Math.min(140, maxSpan - 30);
+      var desiredDist = 50 + Math.random() * Math.min(110, Math.max(30, maxSpan - 30));
 
       var canContinue = false;
       var possibleTarget;
       if (facing === 1) {
         possibleTarget = x + desiredDist;
-        if (possibleTarget <= curBounds.maxX - 8) {
+        if (possibleTarget <= curBounds.maxX - 10) {
           canContinue = true;
         }
       } else {
         possibleTarget = x - desiredDist;
-        if (possibleTarget >= curBounds.minX + 8) {
+        if (possibleTarget >= curBounds.minX + 10) {
           canContinue = true;
         }
       }
@@ -979,7 +979,7 @@ document.addEventListener('keydown', function (e) {
         shouldTurn = true;
       } else if (Math.random() < 0.35) {
         var openSpaceOtherSide = facing === 1 ? (x - curBounds.minX) : (curBounds.maxX - x);
-        if (openSpaceOtherSide >= 80) {
+        if (openSpaceOtherSide >= 60) {
           shouldTurn = true;
         }
       }
@@ -987,19 +987,19 @@ document.addEventListener('keydown', function (e) {
       if (shouldTurn) {
         newFacing = -facing;
         var available = newFacing === 1 ? (curBounds.maxX - x) : (x - curBounds.minX);
-        var dist = 80 + Math.random() * Math.min(140, available - 10);
-        dist = Math.max(50, Math.min(dist, available - 8));
+        var dist = Math.min(available - 10, Math.max(25, 40 + Math.random() * 60));
+        dist = Math.max(20, dist);
         if (newFacing === 1) {
-          targetX = x + dist;
+          targetX = Math.min(curBounds.maxX - 6, x + dist);
         } else {
-          targetX = x - dist;
+          targetX = Math.max(curBounds.minX + 6, x - dist);
         }
         state = 'TURN';
         turnTimer = 0;
         oldFacing = facing;
         setIdle();
       } else {
-        targetX = possibleTarget;
+        targetX = Math.max(curBounds.minX + 6, Math.min(curBounds.maxX - 6, possibleTarget));
         startX = x;
         moveElapsed = 0;
         state = 'MOVE';
@@ -1066,15 +1066,18 @@ document.addEventListener('keydown', function (e) {
         var curSpeed = baseSpeed * Math.min(easeIn, easeOut);
 
         var stepDist = curSpeed * dt;
-        if (remaining <= stepDist || remaining < 0.5) {
-          x = targetX;
+        bounds = getBounds();
+        var atLeftWall = (facing === -1 && x <= bounds.minX + 2);
+        var atRightWall = (facing === 1 && x >= bounds.maxX - 2);
+
+        if (remaining <= stepDist || remaining < 1.0 || atLeftWall || atRightWall) {
+          x = Math.max(bounds.minX, Math.min(bounds.maxX, (atLeftWall ? bounds.minX : (atRightWall ? bounds.maxX : targetX))));
           state = 'PAUSE';
-          // Random pause between moves (1.0s to 3.0s)
-          stateTimer = 1.0 + Math.random() * 2.0;
+          // Random pause between moves (1.2s to 2.6s)
+          stateTimer = 1.2 + Math.random() * 1.4;
           setIdle();
         } else {
           x += facing * stepDist;
-          bounds = getBounds();
           if (x < bounds.minX) x = bounds.minX;
           if (x > bounds.maxX) x = bounds.maxX;
         }
