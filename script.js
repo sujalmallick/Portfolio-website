@@ -239,10 +239,10 @@ document.addEventListener('keydown', function (e) {
   // ── PROTECTED Terminator Character & Code Projectiles ─────────────────────────
   // STRICT RULE: Original Terminator sprites and projectile assets remain untouched
   var robotImg = new Image();
-  robotImg.src = 'assets/wasteland/cyborg-shooter.png';
+  robotImg.src = 'assets/wasteland/cyborg-shooter-0.png';
 
   var robotStepImg = new Image();
-  robotStepImg.src = 'assets/wasteland/cyborg-shooter.png';
+  robotStepImg.src = 'assets/wasteland/cyborg-shooter-1.png';
 
   var muzzleImg = new Image();
   muzzleImg.src = 'assets/muzzle-flash.png';
@@ -264,7 +264,7 @@ document.addEventListener('keydown', function (e) {
   var ROBOT_DRAW_H = 74;
   var BARREL_OFFSET_X = 2;
   var BARREL_OFFSET_Y = 27;
-  var WALK_SPEED = 0.44;
+  var WALK_SPEED = 0.32; // Slower deliberate mechanical walking pace
 
   // Runtime State
   var frameCount = 0;
@@ -279,7 +279,7 @@ document.addEventListener('keydown', function (e) {
   var robotTargetX = 460;
   var facing = -1; // -1 = left, 1 = right
   var patrolState = 'IDLE_SCAN'; // 'IDLE_SCAN', 'WALK', 'AIM_FIRE'
-  var stateTimer = 60;
+  var stateTimer = 90;
   var walkFrame = 0;
   var walkStepTimer = 0;
   var burstRemaining = 0;
@@ -311,6 +311,7 @@ document.addEventListener('keydown', function (e) {
     height = 96;
     canvas.width = width;
     canvas.height = height;
+    ctx.imageSmoothingEnabled = false; // Nearest-neighbor crisp pixel edges
 
     var layout = getSceneLayout(width, height);
     if (robotX < layout.minPatrolX) robotX = layout.minPatrolX;
@@ -366,8 +367,8 @@ document.addEventListener('keydown', function (e) {
           facing = robotTargetX > robotX ? 1 : -1;
         } else {
           patrolState = 'AIM_FIRE';
-          burstRemaining = isOverdrive ? 4 : 3;
-          burstCooldown = 0;
+          burstRemaining = isOverdrive ? 3 : 2;
+          burstCooldown = 28; // Deliberate pre-fire aim delay
           facing = Math.random() < 0.6 ? -1 : 1;
         }
       }
@@ -378,13 +379,13 @@ document.addEventListener('keydown', function (e) {
       if (Math.abs(moveDist) <= currentSpeed) {
         robotX = robotTargetX;
         patrolState = 'AIM_FIRE';
-        burstRemaining = isOverdrive ? 4 : 3;
-        burstCooldown = 12;
+        burstRemaining = isOverdrive ? 3 : 2;
+        burstCooldown = 28; // Deliberate aim pause
         facing = Math.random() < 0.65 ? -1 : 1;
       } else {
         robotX += (moveDist > 0 ? 1 : -1) * currentSpeed;
         walkStepTimer++;
-        if (walkStepTimer >= 14) {
+        if (walkStepTimer >= 18) { // Deliberate mechanical stride cadence
           walkStepTimer = 0;
           walkFrame = walkFrame === 0 ? 1 : 0;
         }
@@ -432,10 +433,10 @@ document.addEventListener('keydown', function (e) {
         recoilOffset = isOverdrive ? 3.4 : 2.0;
         spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
         burstRemaining--;
-        burstCooldown = isOverdrive ? 14 : 24;
+        burstCooldown = isOverdrive ? 26 : 48; // Deliberate slower firing interval
       } else if (burstRemaining <= 0 && burstCooldown <= 0) {
         patrolState = 'IDLE_SCAN';
-        stateTimer = 55 + Math.floor(Math.random() * 45);
+        stateTimer = 180 + Math.floor(Math.random() * 80); // Slower pause (~3 to 4.5s) between bursts
       }
     }
 
@@ -510,6 +511,7 @@ document.addEventListener('keydown', function (e) {
   }
 
   function render() {
+    ctx.imageSmoothingEnabled = false; // Nearest-neighbor crisp pixel edges
     // 1. Transparent Clear (Site background and starfield show through 100%!)
     ctx.clearRect(0, 0, width, height);
 
@@ -518,7 +520,7 @@ document.addEventListener('keydown', function (e) {
 
     // 2. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Burst Stream)
     var isMoving = (patrolState === 'WALK');
-    var stepBob = isMoving ? (Math.sin(frameCount * 0.32) * 1.2) : 0;
+    var stepBob = isMoving ? (walkFrame === 1 ? 1 : 0) : 0;
     var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
     var rx = Math.round(drawRobotX);
     var ry = Math.round(gY - ROBOT_DRAW_H + stepBob);
@@ -838,6 +840,13 @@ document.addEventListener('keydown', function (e) {
      Flipper element sets scaleX for facing and squash animation.
      Delta-time based movement with ease-in/ease-out.
      ═══════════════════════════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     WASTELAND SERVICE DROID (Articulated 16-Bit Caterpillar Unit)
+     Autonomous patrol along the wasteland baseline (X=40 to X=280 desktop).
+     CSS keyframes handle 4-frame articulated walk cycle (.is-moving),
+     gentle chassis breathing (.is-idle), and interactive cheerful hop (.is-happy).
+     Flipper element sets scaleX for facing and squash turnaround.
+     ═══════════════════════════════════════════════════════════════════════════ */
   (function initFooterDroid() {
     var wrap = document.getElementById('footer-droid-wrap');
     if (!wrap) return;
@@ -855,7 +864,7 @@ document.addEventListener('keydown', function (e) {
     // Single State Machine: 'IDLE' | 'MOVE' | 'PAUSE' | 'TURN' | 'HAPPY'
     var state = 'IDLE';
     var stateTimer = 1.0; // Initial idle duration (seconds)
-    var turnDuration = 0.2; // 200ms squash & turn
+    var turnDuration = 0.22; // 220ms turnaround
     var turnTimer = 0;
     var oldFacing = 1;
     var newFacing = -1;
@@ -866,8 +875,6 @@ document.addEventListener('keydown', function (e) {
     var targetX = 65;
     var startX = 65;
     var moveElapsed = 0;
-    var walkTimer = 0;
-    var walkFrame = 0;
 
     var baseSpeed = 32; // px/s (strictly between 25 and 40 px/s)
     var easeDuration = 0.3; // 300ms ease-in / ease-out
@@ -896,16 +903,22 @@ document.addEventListener('keydown', function (e) {
     targetX = x;
     wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
     flipper.style.transform = 'scaleX(' + facing + ')';
+    inner.classList.add('is-idle');
 
-    function setFrame(frameIdx) {
-      sprite.style.backgroundPosition = (-(frameIdx * 32)) + 'px 0px';
+    function setMoving() {
+      inner.classList.add('is-moving');
+      inner.classList.remove('is-idle', 'is-happy');
+    }
+
+    function setIdle() {
+      inner.classList.add('is-idle');
+      inner.classList.remove('is-moving');
     }
 
     function pickNextMove() {
       bounds = getBounds();
       var curBounds = bounds;
       var maxSpan = curBounds.maxX - curBounds.minX;
-      // Randomized walk distance between 80px and 220px
       var desiredDist = 80 + Math.random() * Math.min(140, maxSpan - 30);
 
       var canContinue = false;
@@ -945,13 +958,13 @@ document.addEventListener('keydown', function (e) {
         state = 'TURN';
         turnTimer = 0;
         oldFacing = facing;
-        setFrame(0);
+        setIdle();
       } else {
         targetX = possibleTarget;
         startX = x;
         moveElapsed = 0;
         state = 'MOVE';
-        setFrame(4);
+        setMoving();
       }
     }
 
@@ -972,18 +985,14 @@ document.addEventListener('keydown', function (e) {
       if (prefersReducedMotion) {
         wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
         flipper.style.transform = 'scaleX(' + facing + ')';
-        setFrame(0);
+        inner.classList.remove('is-moving', 'is-happy');
+        inner.classList.add('is-idle');
         rAF = requestAnimationFrame(step);
         return;
       }
 
       if (state === 'IDLE') {
         stateTimer -= dt;
-        if (stateTimer < 0.35 && stateTimer > 0.15) {
-          setFrame(1); // Subtle optic blink
-        } else {
-          setFrame(0);
-        }
         if (stateTimer <= 0) {
           pickNextMove();
         }
@@ -999,7 +1008,6 @@ document.addEventListener('keydown', function (e) {
           currentScale = newFacing * (0.15 + 0.85 * p2); // Expand 0.15 -> 1.0
         }
         flipper.style.transform = 'scaleX(' + currentScale.toFixed(3) + ')';
-        setFrame(0);
 
         if (progress >= 1) {
           facing = newFacing;
@@ -1007,7 +1015,7 @@ document.addEventListener('keydown', function (e) {
           startX = x;
           moveElapsed = 0;
           state = 'MOVE';
-          setFrame(4);
+          setMoving();
         }
       } else if (state === 'MOVE') {
         moveElapsed += dt;
@@ -1024,39 +1032,25 @@ document.addEventListener('keydown', function (e) {
           state = 'PAUSE';
           // Random pause between moves (1.0s to 3.0s)
           stateTimer = 1.0 + Math.random() * 2.0;
-          setFrame(0);
+          setIdle();
         } else {
           x += facing * stepDist;
           bounds = getBounds();
           if (x < bounds.minX) x = bounds.minX;
           if (x > bounds.maxX) x = bounds.maxX;
-
-          walkTimer += dt;
-          if (walkTimer >= 0.13) {
-            walkTimer = 0;
-            walkFrame = (walkFrame + 1) % 4;
-            setFrame(4 + walkFrame); // Cycles frames 4, 5, 6, 7
-          }
         }
-        // Outer wrapper sets translate3d with Math.round(x) only
         wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
       } else if (state === 'PAUSE') {
         stateTimer -= dt;
-        if (stateTimer < 0.8 && stateTimer > 0.4) {
-          setFrame(2); // Look around
-        } else {
-          setFrame(0);
-        }
         if (stateTimer <= 0) {
           pickNextMove();
         }
       } else if (state === 'HAPPY') {
         stateTimer -= dt;
-        setFrame(8); // Happy hop
         if (stateTimer <= 0) {
           state = 'PAUSE';
           stateTimer = 1.0;
-          setFrame(0);
+          setIdle();
         }
       }
 
@@ -1065,7 +1059,7 @@ document.addEventListener('keydown', function (e) {
 
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden) {
-        lastTime = performance.now(); // Reset dt so no jump occurs
+        lastTime = performance.now();
       }
     });
 
@@ -1076,10 +1070,31 @@ document.addEventListener('keydown', function (e) {
       wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
     });
 
-    wrap.addEventListener('click', function (e) {
-      e.stopPropagation();
+    function triggerHappyHop() {
+      if (state === 'HAPPY') return;
       state = 'HAPPY';
       stateTimer = 0.65;
+      inner.classList.remove('is-idle', 'is-moving');
+      inner.classList.add('is-happy');
+      setTimeout(function () {
+        if (state === 'HAPPY') {
+          inner.classList.remove('is-happy');
+          inner.classList.add('is-idle');
+        }
+      }, 650);
+    }
+
+    wrap.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerHappyHop();
+    });
+
+    wrap.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        triggerHappyHop();
+      }
     });
 
     rAF = requestAnimationFrame(step);
@@ -1264,14 +1279,16 @@ document.addEventListener('keydown', function (e) {
     var vx = 0;
     var vy = 0;
 
-    // Space drift physics state
+    // Space drift physics state (Autonomous wandering waypoints across cosmic sky)
     var drift = {
       x: 0,
       y: 0,
       vx: 0,
       vy: 0,
       angle: 0,
-      time: Math.random() * 2000,
+      targetX: 0,
+      targetY: 0,
+      waypointTimer: 0,
       initialized: false
     };
 
@@ -1290,27 +1307,27 @@ document.addEventListener('keydown', function (e) {
     var rafId = null;
 
     function getHomeConfig() {
-      var hx, hy, rx, ry;
+      var minX, maxX, minY, maxY;
       if (width > 900) {
-        // Desktop: Open cosmic sky to the right of profile photo
-        hx = Math.round(Math.min(width - 65, Math.max(width * 0.88, 1260)));
-        hy = Math.round(height * 0.48);
-        rx = 38;
-        ry = 30;
+        // Desktop: Open cosmic sky to the right of profile content
+        minX = Math.round(width * 0.64);
+        maxX = Math.round(width - 45);
+        minY = Math.round(height * 0.14);
+        maxY = Math.round(height * 0.72);
       } else if (width > 600) {
-        // Tablet: Right margin beside centered photo
-        hx = Math.round(Math.min(width - 45, Math.max(width * 0.86, 620)));
-        hy = Math.round(height * 0.36);
-        rx = 22;
-        ry = 18;
+        // Tablet: Cosmic sky beside centered profile card
+        minX = Math.round(width * 0.68);
+        maxX = Math.round(width - 32);
+        minY = Math.round(height * 0.16);
+        maxY = Math.round(height * 0.58);
       } else {
-        // Mobile: Clear right margin beside photo
-        hx = Math.round(width - 34);
-        hy = Math.round(height * 0.30);
-        rx = 12;
-        ry = 10;
+        // Mobile: Upper-right cosmic sky area
+        minX = Math.round(width - 55);
+        maxX = Math.round(width - 24);
+        minY = Math.round(height * 0.16);
+        maxY = Math.round(height * 0.44);
       }
-      return { x: hx, y: hy, rx: rx, ry: ry };
+      return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
     }
 
     function resize() {
@@ -1331,16 +1348,18 @@ document.addEventListener('keydown', function (e) {
       ctx.scale(dpr, dpr);
       ctx.imageSmoothingEnabled = false;
 
-      var home = getHomeConfig();
+      var bounds = getHomeConfig();
       if (!drift.initialized) {
-        drift.x = home.x;
-        drift.y = home.y;
-        x = home.x;
-        y = home.y;
+        drift.x = (bounds.minX + bounds.maxX) / 2;
+        drift.y = (bounds.minY + bounds.maxY) / 2;
+        drift.targetX = drift.x;
+        drift.targetY = drift.y;
+        x = drift.x;
+        y = drift.y;
         drift.initialized = true;
       } else if (!isLaunching) {
-        drift.x = Math.max(home.x - home.rx, Math.min(home.x + home.rx, drift.x));
-        drift.y = Math.max(home.y - home.ry, Math.min(home.y + home.ry, drift.y));
+        drift.x = Math.max(bounds.minX, Math.min(bounds.maxX, drift.x));
+        drift.y = Math.max(bounds.minY, Math.min(bounds.maxY, drift.y));
         x = drift.x;
         y = drift.y;
       }
@@ -1361,52 +1380,49 @@ document.addEventListener('keydown', function (e) {
 
     function update() {
       if (mode === 'DRIFT') {
-        drift.time += 1;
-        var t = drift.time;
-        var home = getHomeConfig();
+        drift.waypointTimer--;
+        var bounds = getHomeConfig();
 
-        // Organic multi-harmonic drifting target (non-repeating orbital perturbations)
-        var targetOffsetX = Math.sin(t * 0.0052) * home.rx + Math.sin(t * 0.0125 + 1.2) * (home.rx * 0.45);
-        var targetOffsetY = Math.cos(t * 0.0046 + 0.8) * home.ry + Math.sin(t * 0.0098 + 2.1) * (home.ry * 0.35);
-
-        var targetX = home.x + targetOffsetX;
-        var targetY = home.y + targetOffsetY;
-
-        // Gravitational / inertial spring restoring acceleration
-        var ax = (targetX - drift.x) * 0.00075;
-        var ay = (targetY - drift.y) * 0.00075;
-
-        // Space vacuum damping & momentum
-        drift.vx = (drift.vx + ax) * 0.985;
-        drift.vy = (drift.vy + ay) * 0.985;
-
-        // Restrained speed limit (slow distant spacecraft feel)
-        var speed = Math.hypot(drift.vx, drift.vy);
-        var maxDriftSpeed = isMobile ? 0.16 : 0.25;
-        if (speed > maxDriftSpeed) {
-          drift.vx = (drift.vx / speed) * maxDriftSpeed;
-          drift.vy = (drift.vy / speed) * maxDriftSpeed;
+        var distToTarget = Math.hypot(drift.targetX - drift.x, drift.targetY - drift.y);
+        if (drift.waypointTimer <= 0 || distToTarget < 16) {
+          drift.targetX = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
+          drift.targetY = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
+          drift.waypointTimer = 180 + Math.floor(Math.random() * 180); // Variable 3-6s legs
         }
+
+        var dx = drift.targetX - drift.x;
+        var dy = drift.targetY - drift.y;
+        var dist = Math.hypot(dx, dy);
+
+        // Smooth cruise speed across open cosmic sky
+        var maxSpeed = isMobile ? 0.32 : 0.52;
+        var desiredSpeed = Math.min(maxSpeed, dist * 0.016);
+        var desiredVx = dist > 1 ? (dx / dist) * desiredSpeed : 0;
+        var desiredVy = dist > 1 ? (dy / dist) * desiredSpeed : 0;
+
+        // Inertial damping & gradual acceleration
+        drift.vx += (desiredVx - drift.vx) * 0.024;
+        drift.vy += (desiredVy - drift.vy) * 0.024;
 
         drift.x += drift.vx;
         drift.y += drift.vy;
 
-        // Subtle banking rotation that follows travel heading (clamped to max ~8.5°)
-        var targetAngle = Math.max(-0.15, Math.min(0.15, drift.vx * 0.55));
-        drift.angle += (targetAngle - drift.angle) * 0.04;
+        // Trajectory banking follows heading
+        var targetAngle = Math.max(-0.22, Math.min(0.22, drift.vx * 0.42));
+        drift.angle += (targetAngle - drift.angle) * 0.05;
 
         x = drift.x;
         y = drift.y;
         angle = drift.angle;
         legDeploy = 0;
 
-        // Occasional faint RCS micro-particle (very subtle space ambience)
-        if (Math.random() < 0.025) {
+        // Subtle RCS micro-particle
+        if (Math.random() < 0.03) {
           particles.push({
-            x: x + (Math.random() - 0.5) * 4,
-            y: y + ROCKET_H * 0.44,
-            vx: -Math.sin(angle) * 0.4 + (Math.random() - 0.5) * 0.3,
-            vy: Math.cos(angle) * 0.7 + 0.2,
+            x: x + (Math.random() - 0.5) * 3,
+            y: y + ROCKET_H * 0.42,
+            vx: -Math.sin(angle) * 0.35 + (Math.random() - 0.5) * 0.25,
+            vy: Math.cos(angle) * 0.6 + 0.15,
             color: Math.random() > 0.4 ? '#22D3EE' : '#FFFFFF',
             size: 1,
             alpha: 0.65,
@@ -3656,3 +3672,37 @@ document.addEventListener('keydown', function (e) {
     start();
   }
 })();
+
+/* ════════════════════════════════════════════════════════════════════
+   ABANDONED DROID HEAD INTERACTIVE SENSOR CONTROLLER
+   ════════════════════════════════════════════════════════════════════ */
+(function initAbandonedDroidHead() {
+  function setup() {
+    var droidHead = document.getElementById('prop-droid-head');
+    if (!droidHead) return;
+
+    var activeTimeout = null;
+    function triggerSensor() {
+      droidHead.classList.add('active-sensor');
+      if (activeTimeout) clearTimeout(activeTimeout);
+      activeTimeout = setTimeout(function () {
+        droidHead.classList.remove('active-sensor');
+      }, 1600);
+    }
+
+    droidHead.addEventListener('click', triggerSensor);
+    droidHead.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerSensor();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+})();
+
