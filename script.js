@@ -248,23 +248,23 @@ document.addEventListener('keydown', function (e) {
   muzzleImg.src = 'assets/muzzle-flash.png';
 
   var badgeImages = {
-    html:   { img: new Image(), src: 'assets/badge-html.png',   w: 20, h: 20 },
-    css:    { img: new Image(), src: 'assets/badge-css.png',    w: 20, h: 20 },
-    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 17 },
-    python: { img: new Image(), src: 'assets/badge-python.png', w: 19, h: 21 },
-    code:   { img: new Image(), src: 'assets/badge-code.png',   w: 18, h: 14 }
+    html:   { img: new Image(), src: 'assets/badge-html.png',   w: 20, h: 20, glow: '#f97316' },
+    css:    { img: new Image(), src: 'assets/badge-css.png',    w: 20, h: 20, glow: '#38bdf8' },
+    js:     { img: new Image(), src: 'assets/badge-js.png',     w: 20, h: 20, glow: '#facc15' },
+    react:  { img: new Image(), src: 'assets/badge-react.png',  w: 20, h: 20, glow: '#22d3ee' },
+    python: { img: new Image(), src: 'assets/badge-python.png', w: 20, h: 20, glow: '#38bdf8' }
   };
-  var BADGE_SEQUENCE = ['html', 'css', 'js', 'python', 'code'];
+  var BADGE_SEQUENCE = ['html', 'css', 'js', 'react', 'python'];
   for (var k in badgeImages) {
     badgeImages[k].img.src = badgeImages[k].src;
   }
 
   // Terminator Geometry & Motion Constants
-  var ROBOT_DRAW_W = 58;
-  var ROBOT_DRAW_H = 58;
+  var ROBOT_DRAW_W = 75;
+  var ROBOT_DRAW_H = 74;
   var BARREL_OFFSET_X = 2;
-  var BARREL_OFFSET_Y = 24;
-  var WALK_SPEED = 0.42;
+  var BARREL_OFFSET_Y = 27;
+  var WALK_SPEED = 0.44;
 
   // Runtime State
   var frameCount = 0;
@@ -404,7 +404,7 @@ document.addEventListener('keydown', function (e) {
         var key = BADGE_SEQUENCE[nextBadgeIndex];
         nextBadgeIndex = (nextBadgeIndex + 1) % BADGE_SEQUENCE.length;
 
-        var projVx = facing * (isOverdrive ? 3.4 : 2.4);
+        var projVx = facing * (isOverdrive ? 3.6 : 2.8);
 
         // Spawn Badge
         streamItems.push({
@@ -432,7 +432,7 @@ document.addEventListener('keydown', function (e) {
         recoilOffset = isOverdrive ? 3.4 : 2.0;
         spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
         burstRemaining--;
-        burstCooldown = isOverdrive ? 12 : 20;
+        burstCooldown = isOverdrive ? 14 : 24;
       } else if (burstRemaining <= 0 && burstCooldown <= 0) {
         patrolState = 'IDLE_SCAN';
         stateTimer = 55 + Math.floor(Math.random() * 45);
@@ -529,8 +529,7 @@ document.addEventListener('keydown', function (e) {
       var item = streamItems[bIdx];
       if (item.alpha <= 0.02) continue;
 
-      var floatY = Math.sin(item.dist * 0.06 + item.waveOffset) * 1.4;
-      var drawCenterY = Math.round(item.y + floatY);
+      var drawCenterY = Math.round(item.y);
 
       if (item.type === 'dot') {
         ctx.save();
@@ -549,6 +548,8 @@ document.addEventListener('keydown', function (e) {
           var bh = bInfo.h || bInfo.img.naturalHeight;
           var bx = Math.round(item.x - bw / 2);
           var by = Math.round(drawCenterY - bh / 2);
+          ctx.shadowColor = bInfo.glow || '#22d3ee';
+          ctx.shadowBlur = 6;
           ctx.drawImage(bInfo.img, bx, by, bw, bh);
           ctx.restore();
         }
@@ -719,6 +720,115 @@ document.addEventListener('keydown', function (e) {
 
   init();
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WASTELAND TOWERS INTERACTIVITY & MULTI-PLANE DEPTH CONTROLLER
+   - Smooth mouse parallax across distant mountains, citadel, cables & factories
+   - Click overcharge & radar ping on Citadel Tower (#tower-citadel)
+   - Click steam purge & venting on Left Factory (#tower-factory)
+   - Click winch cycling & hazard cycle on Right Refinery (#tower-refinery)
+   - 16-bit HUD badge updates & accessible keyboard activation
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function initWastelandTowersDepthAndInteractivity() {
+  var scenery = document.querySelector('.footer-scenery-strip.wasteland-scenery') || document.querySelector('.footer-scenery-strip');
+  if (!scenery) return;
+
+  var citadel = document.getElementById('tower-citadel');
+  var factory = document.getElementById('tower-factory');
+  var refinery = document.getElementById('tower-refinery');
+  var mountains = document.querySelector('.wasteland-mountains');
+  var cables = document.querySelector('.wasteland-cables-svg');
+
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 1. Multi-Plane Mouse Parallax Depth
+  if (!prefersReducedMotion) {
+    var targetNormX = 0;
+    var currentNormX = 0;
+    var rafParallax = null;
+
+    function applyParallax() {
+      currentNormX += (targetNormX - currentNormX) * 0.08;
+
+      if (mountains) {
+        mountains.style.transform = 'translateX(' + (currentNormX * 3.5).toFixed(2) + 'px)';
+      }
+      if (citadel) {
+        citadel.style.transform = 'translateX(calc(-50% + ' + (currentNormX * 6.5).toFixed(2) + 'px))';
+      }
+      if (cables) {
+        cables.style.transform = 'translateX(' + (currentNormX * 2.0).toFixed(2) + 'px)';
+      }
+      if (factory) {
+        factory.style.transform = 'translateX(' + (currentNormX * 4.5).toFixed(2) + 'px)';
+      }
+      if (refinery) {
+        refinery.style.transform = 'translateX(' + (currentNormX * 4.5).toFixed(2) + 'px)';
+      }
+
+      if (Math.abs(targetNormX - currentNormX) > 0.001) {
+        rafParallax = requestAnimationFrame(applyParallax);
+      } else {
+        rafParallax = null;
+      }
+    }
+
+    scenery.addEventListener('mousemove', function (e) {
+      var rect = scenery.getBoundingClientRect();
+      var relX = (e.clientX - rect.left) / rect.width;
+      targetNormX = (relX - 0.5) * 2;
+      if (!rafParallax) {
+        rafParallax = requestAnimationFrame(applyParallax);
+      }
+    });
+
+    scenery.addEventListener('mouseleave', function () {
+      targetNormX = 0;
+      if (!rafParallax) {
+        rafParallax = requestAnimationFrame(applyParallax);
+      }
+    });
+  }
+
+  // 2. Tower Interactivity: Clicks & Status Transitions
+  function setupTowerAction(el, activeClass, activeStatusText, defaultStatusText, pulseDuration) {
+    if (!el) return;
+    var statusEl = el.querySelector('.hud-status');
+    var isBusy = false;
+
+    function trigger() {
+      if (isBusy) return;
+      isBusy = true;
+      el.classList.add(activeClass);
+      el.classList.add('show-hud');
+      if (statusEl) statusEl.textContent = activeStatusText;
+
+      setTimeout(function () {
+        el.classList.remove(activeClass);
+        if (statusEl) statusEl.textContent = defaultStatusText;
+        el.classList.remove('show-hud');
+        isBusy = false;
+      }, pulseDuration || 1800);
+    }
+
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      trigger();
+    });
+
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        trigger();
+      }
+    });
+  }
+
+  setupTowerAction(citadel, 'is-pulsing', '⚡ OVERCHARGE +250MW', 'ΩN CORE ACTIVE', 1800);
+  setupTowerAction(factory, 'is-venting', '💨 STEAM PURGED', 'SMELTER RUNNING', 1800);
+  setupTowerAction(refinery, 'is-cycling', '⚠️ WINCH CYCLED', 'CARGO DOCKED', 1800);
+})();
+
 
   /* ═══════════════════════════════════════════════════════════════════════════
      AUTONOMOUS INTERACTIVE FOOTER DROID
