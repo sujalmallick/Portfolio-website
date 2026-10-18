@@ -8,5 +8,6 @@
 
 # Dependencies & OS
 node_modules/
+scratch/
 .DS_Store
 Thumbs.db

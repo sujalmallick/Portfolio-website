@@ -2158,36 +2158,177 @@ document.addEventListener('keydown', function (e) {
     var cooldownUntil = 0;
     var actionTimer = null;
     var schedulerTimer = null;
+    var blinkTimer = null;
 
-    function clearStateClasses() {
-      el.classList.remove('state-blink', 'state-wave', 'state-star-lift', 'state-think', 'state-happy');
+    function clearState() {
+      el.removeAttribute('data-state');
+      el.classList.remove('is-acting', 'state-wave', 'state-star-lift', 'state-think', 'state-happy', 'state-welcome');
     }
 
-    function triggerAction() {
+    function triggerReact() {
+      var now = Date.now();
+      if (isActing || now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 1250;
+
+      clearState();
+      el.setAttribute('data-state', 'react');
+      el.classList.add('is-acting');
+
+      if (actionTimer) clearTimeout(actionTimer);
+      actionTimer = setTimeout(function () {
+        clearState();
+        isActing = false;
+      }, 1200);
+    }
+
+    // Hover / Pointer reaction
+    el.addEventListener('pointerenter', function () {
+      triggerReact();
+    });
+
+    // Click reaction
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerReact();
+    });
+
+    // Keyboard reaction
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerReact();
+      }
+    });
+
+    // Touch support
+    el.addEventListener('touchstart', function (e) {
+      e.stopPropagation();
+      triggerReact();
+    }, { passive: true });
+
+    // Dedicated Blinking Loop: scaleY(0.1) on traced eye pixels for 120ms every 3-6s
+    function scheduleBlink() {
+      var delay = 3000 + Math.random() * 3000; // 3-6s
+      blinkTimer = setTimeout(function () {
+        if (!el.classList.contains('mascot-offscreen')) {
+          el.setAttribute('data-blinking', 'true');
+          setTimeout(function () {
+            el.removeAttribute('data-blinking');
+          }, 120);
+        }
+        scheduleBlink();
+      }, delay);
+    }
+    scheduleBlink();
+
+    if (prefersReduced) return;
+
+    // Autonomous desynchronized actions every 8-12s
+    var actions = ['welcome', 'wave', 'star-lift', 'think', 'welcome'];
+    function runNextAction() {
+      if (el.classList.contains('mascot-offscreen') || isActing) {
+        schedulerTimer = setTimeout(runNextAction, 4000);
+        return;
+      }
+
+      var choice = actions[Math.floor(Math.random() * actions.length)];
+      clearState();
+
+      el.setAttribute('data-state', choice);
+      if (choice === 'welcome') el.classList.add('state-welcome');
+      else if (choice === 'wave') el.classList.add('state-wave');
+      else if (choice === 'star-lift') el.classList.add('state-star-lift');
+      else if (choice === 'think') el.classList.add('state-think');
+
+      setTimeout(function () {
+        if (!isActing) clearState();
+      }, 1200);
+
+      var nextDelay = 8000 + Math.floor(Math.random() * 4000); // 8-12s
+      schedulerTimer = setTimeout(runNextAction, nextDelay);
+    }
+
+    schedulerTimer = setTimeout(runNextAction, 8000);
+  })();
+
+  // 4. Terminal Robot Controller (Hackathons Divider Line Walker)
+  (function initHackathonRobot() {
+    var el = document.getElementById('mascot-terminal-robot');
+    if (!el) return;
+
+    var body = el.querySelector('.terminal-robot-body');
+    var sprite = el.querySelector('.terminal-robot-sprite');
+    var bubble = document.getElementById('terminal-robot-bubble');
+    var bubbleText = bubble ? bubble.querySelector('.bubble-text') : null;
+    if (!body || !sprite) return;
+
+    var isActing = false;
+    var isHovered = false;
+    var cooldownUntil = 0;
+    var actionTimer = null;
+    var bubbleTimer = null;
+    var idleTimer = null;
+
+    var MESSAGES = [
+      'ready',
+      'npm run build',
+      'hackathon sprint',
+      'git push',
+      'ship it!',
+      'done \u2713',
+      'hello_world',
+      '100% build'
+    ];
+
+    function setFrame(fNum) {
+      sprite.className = 'terminal-robot-sprite trobot-frame-' + fNum;
+    }
+
+    function showBubble(text, duration) {
+      if (!bubble || !bubbleText) return;
+      bubbleText.textContent = text;
+      bubble.classList.add('is-visible');
+      if (bubbleTimer) clearTimeout(bubbleTimer);
+      bubbleTimer = setTimeout(function () {
+        bubble.classList.remove('is-visible');
+      }, duration || 2400);
+    }
+
+    // Initialize frame to Idle 0
+    setFrame(6);
+
+    // Click / Tap reaction (Jump)
+    function triggerJump() {
       var now = Date.now();
       if (isActing || now < cooldownUntil) return;
       isActing = true;
       cooldownUntil = now + 950;
 
-      clearStateClasses();
-      el.classList.add('is-acting');
+      if (idleTimer) clearTimeout(idleTimer);
+
+      setFrame(12); // Frame 12: Jump with !!
+      el.classList.add('is-jumping');
+      showBubble('lets go!', 1800);
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
-        el.classList.remove('is-acting');
+        el.classList.remove('is-jumping');
+        setFrame(6);
         isActing = false;
-      }, 850);
+        idleTimer = setTimeout(planNextWalk, 2800);
+      }, 720);
     }
 
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerAction();
+      triggerJump();
     });
 
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerAction();
+        triggerJump();
       }
     });
 
@@ -2203,45 +2344,169 @@ document.addEventListener('keydown', function (e) {
       if (e.changedTouches && e.changedTouches[0]) {
         var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
         var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerAction();
+        if (dx < 10 && dy < 10) triggerJump();
       }
     }, { passive: true });
 
+    // Hover reaction (Wave / Greet)
+    el.addEventListener('mouseenter', function () {
+      if (isActing) return;
+      isHovered = true;
+      setFrame(11); // Wave
+      showBubble('hello_world', 2000);
+    });
+
+    el.addEventListener('mouseleave', function () {
+      isHovered = false;
+      if (isActing) return;
+      setFrame(6); // Return to idle
+    });
+
     if (prefersReduced) return;
 
-    // Desynchronized autonomous behavior
-    var actions = ['blink', 'blink', 'wave', 'starLift', 'think', 'happy'];
-    function runNextAction() {
-      if (el.classList.contains('mascot-offscreen') || isActing) {
-        schedulerTimer = setTimeout(runNextAction, 3200);
+    // Divider line walking state machine
+    var mode = 'IDLE'; // 'IDLE', 'WALKING', 'TURNING'
+    var currentRight = 48;
+    var targetRight = 48;
+    var direction = 1; // +1: moving left (right increases), -1: moving right (right decreases)
+    var walkStepTick = 0;
+    var walkCycle = [0, 1, 2, 3, 4, 5];
+    var cycleIdx = 0;
+
+    // Initialize CSS right
+    el.style.right = currentRight + 'px';
+
+    function getBounds() {
+      var parent = el.offsetParent || document.getElementById('hackathons') || document.body;
+      var parentW = parent.offsetWidth || window.innerWidth;
+      var minR = 24;
+      var maxR = Math.max(minR + 50, Math.min(180, Math.round(parentW * 0.22)));
+      return { minR: minR, maxR: maxR };
+    }
+
+    function planNextWalk() {
+      if (isActing || isHovered || el.classList.contains('mascot-offscreen')) {
+        idleTimer = setTimeout(planNextWalk, 2500);
         return;
       }
 
-      var choice = actions[Math.floor(Math.random() * actions.length)];
-      clearStateClasses();
-
-      if (choice === 'blink') {
-        el.classList.add('state-blink');
-        setTimeout(clearStateClasses, 160);
-      } else if (choice === 'wave') {
-        el.classList.add('state-wave');
-        setTimeout(clearStateClasses, 1100);
-      } else if (choice === 'starLift') {
-        el.classList.add('state-star-lift');
-        setTimeout(clearStateClasses, 1200);
-      } else if (choice === 'think') {
-        el.classList.add('state-think');
-        setTimeout(clearStateClasses, 1300);
-      } else if (choice === 'happy') {
-        el.classList.add('state-happy');
-        setTimeout(clearStateClasses, 950);
+      var bounds = getBounds();
+      var candidate;
+      for (var i = 0; i < 5; i++) {
+        candidate = bounds.minR + Math.random() * (bounds.maxR - bounds.minR);
+        if (Math.abs(candidate - currentRight) >= 36) break;
       }
 
-      var nextDelay = 4800 + Math.floor(Math.random() * 3400);
-      schedulerTimer = setTimeout(runNextAction, nextDelay);
+      targetRight = Math.round(candidate);
+      var newDirection = targetRight > currentRight ? 1 : -1;
+      var currentFacing = body.classList.contains('facing-right') ? 'right' : 'left';
+      var desiredFacing = newDirection > 0 ? 'left' : 'right';
+
+      if (currentFacing !== desiredFacing) {
+        // Natural turn animation: pause, look, then flip
+        mode = 'TURNING';
+        setFrame(8); // Look frame
+        setTimeout(function () {
+          if (isActing || isHovered) return;
+          if (desiredFacing === 'left') {
+            body.classList.remove('facing-right');
+            body.classList.add('facing-left');
+          } else {
+            body.classList.remove('facing-left');
+            body.classList.add('facing-right');
+          }
+          setFrame(6);
+          setTimeout(function () {
+            if (isActing || isHovered) return;
+            direction = newDirection;
+            mode = 'WALKING';
+            walkStepTick = 0;
+            cycleIdx = 0;
+            setFrame(walkCycle[0]);
+          }, 240);
+        }, 320);
+      } else {
+        direction = newDirection;
+        mode = 'WALKING';
+        walkStepTick = 0;
+        cycleIdx = 0;
+        setFrame(walkCycle[0]);
+      }
     }
 
-    schedulerTimer = setTimeout(runNextAction, 4500);
+    function scheduleIdleGesture() {
+      if (mode !== 'IDLE' || isActing || isHovered) return;
+      var r = Math.random();
+      if (r < 0.4) {
+        // Blink
+        setFrame(9);
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing && !isHovered) setFrame(6);
+        }, 180);
+      } else if (r < 0.7) {
+        // Happy squint
+        setFrame(10);
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing && !isHovered) setFrame(6);
+        }, 900);
+      } else {
+        // Look around + occasional message
+        setFrame(8);
+        if (Math.random() < 0.5) {
+          var msg = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+          showBubble(msg, 2200);
+        }
+        setTimeout(function () {
+          if (mode === 'IDLE' && !isActing && !isHovered) setFrame(6);
+        }, 1100);
+      }
+    }
+
+    // Animation frame loop
+    var lastRafTime = performance.now();
+    function walkLoop(now) {
+      requestAnimationFrame(walkLoop);
+
+      if (el.classList.contains('mascot-offscreen') || isActing || isHovered) {
+        return;
+      }
+
+      var dt = Math.min(34, now - lastRafTime);
+      lastRafTime = now;
+
+      if (mode === 'WALKING') {
+        var dist = Math.abs(targetRight - currentRight);
+        var stepSpeed = 0.036 * dt; // ~0.55px per frame
+
+        if (dist <= stepSpeed) {
+          currentRight = targetRight;
+          el.style.right = Math.round(currentRight) + 'px';
+          mode = 'IDLE';
+          setFrame(6); // Idle 0
+
+          // Idle pause duration before next walk (5s to 9s)
+          var idleDuration = 5000 + Math.floor(Math.random() * 4000);
+          setTimeout(scheduleIdleGesture, Math.round(idleDuration * 0.35));
+          if (Math.random() < 0.6) {
+            setTimeout(scheduleIdleGesture, Math.round(idleDuration * 0.7));
+          }
+          idleTimer = setTimeout(planNextWalk, idleDuration);
+        } else {
+          currentRight += direction * stepSpeed;
+          el.style.right = currentRight.toFixed(1) + 'px';
+
+          walkStepTick += dt;
+          if (walkStepTick >= 135) { // Step every 135ms
+            walkStepTick = 0;
+            cycleIdx = (cycleIdx + 1) % walkCycle.length;
+            setFrame(walkCycle[cycleIdx]);
+          }
+        }
+      }
+    }
+
+    requestAnimationFrame(walkLoop);
+    idleTimer = setTimeout(planNextWalk, 3600);
   })();
 
   // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery
@@ -2256,7 +2521,7 @@ document.addEventListener('keydown', function (e) {
       });
     }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
 
-    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini'].forEach(function (id) {
+    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini', 'mascot-terminal-robot'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) mascotObserver.observe(el);
     });
