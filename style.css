@@ -1346,13 +1346,13 @@ footer {
 .footer-world-scene {
   position: relative;
   width: 100%;
-  max-width: 1060px;
+  max-width: var(--max-w);
   height: 96px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   user-select: none;
-  cursor: default;
+  cursor: pointer;
   margin: 0 auto;
 }
 

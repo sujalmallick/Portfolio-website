@@ -264,10 +264,9 @@ document.addEventListener('keydown', function (e) {
   var propImages = {
     lampLeft:    { img: new Image(), src: 'assets/footer-prop-lamp-left.png',    w: 27, h: 78 },
     plant:       { img: new Image(), src: 'assets/footer-prop-plant.png',        w: 16, h: 38 },
-    droid:       { img: new Image(), src: 'assets/footer-prop-droid.png',        w: 23, h: 47 },
     desk:        { img: new Image(), src: 'assets/footer-prop-desk.png',         w: 51, h: 62 },
     server:      { img: new Image(), src: 'assets/footer-prop-server.png',       w: 37, h: 77 },
-    cratesLeft:  { img: new Image(), src: 'assets/footer-prop-crates-left.png', w: 36, h: 45 },
+    cratesLeft:  { img: new Image(), src: 'assets/footer-prop-crates-left.png', w: 36, h: 43 },
     rocks:       { img: new Image(), src: 'assets/footer-prop-rocks.png',        w: 44, h: 17 },
     cratesRight: { img: new Image(), src: 'assets/footer-prop-crates-right.png',w: 30, h: 31 },
     lampRight:   { img: new Image(), src: 'assets/footer-prop-lamp-right.png',   w: 27, h: 78 }
@@ -276,7 +275,16 @@ document.addEventListener('keydown', function (e) {
     propImages[pKey].img.src = propImages[pKey].src;
   }
 
-  // ── 2. PROTECTED Terminator Character & Code Projectiles ────────────────────
+  // ── 2. Interactive R2-D2 Droid Sprite Sheet ──────────────────────────────────
+  var droidSheet = new Image();
+  droidSheet.src = 'assets/footer-droid-sheet.png';
+  var DROID_FRAME_W = 64;
+  var DROID_FRAME_H = 72;
+  var DROID_DRAW_W = 32;
+  var DROID_DRAW_H = 36;
+  var DROID_BASELINE_OFFSET = 31; // 62 * 0.5 = 31px
+
+  // ── 3. PROTECTED Terminator Character & Code Projectiles ────────────────────
   // STRICT RULE: Original Terminator sprites and projectile assets remain untouched
   var robotImg = new Image();
   robotImg.src = 'assets/pixel-terminator.png';
@@ -304,9 +312,7 @@ document.addEventListener('keydown', function (e) {
   var ROBOT_DRAW_H = 55;
   var BARREL_OFFSET_X = 2;
   var BARREL_OFFSET_Y = 24;
-  var BADGE_SPACING = 38;
-  var BASE_SPEED = 1.05;
-  var WALK_SPEED = 0.58;
+  var WALK_SPEED = 0.42;
 
   // Runtime State
   var frameCount = 0;
@@ -316,15 +322,32 @@ document.addEventListener('keydown', function (e) {
   var nextBadgeIndex = 0;
   var isHovered = false;
 
-  // Protected Terminator Patrol State
+  // Protected Terminator Patrol & Firing State
   var robotX = 640;
+  var robotTargetX = 640;
   var facing = -1; // -1 = left, 1 = right
-  var patrolState = 'PATROL_LEFT';
-  var stateTimer = 0;
+  var patrolState = 'IDLE_SCAN'; // 'IDLE_SCAN', 'WALK', 'AIM_FIRE'
+  var stateTimer = 60;
   var walkFrame = 0;
   var walkStepTimer = 0;
+  var burstRemaining = 0;
+  var burstCooldown = 0;
 
-  // Badge Conveyor Stream Items & Particles
+  // Interactive R2-D2 Droid State
+  var droid = {
+    x: 132,
+    facing: 1, // 1 = right, -1 = left
+    state: 'IDLE', // 'IDLE', 'LOOK', 'WALK', 'HAPPY'
+    stateTimer: 80,
+    walkFrame: 0,
+    walkTimer: 0,
+    targetX: 132,
+    lookFrame: 2, // 2 = look_r, 3 = look_l
+    happyTimer: 0,
+    happyMax: 38
+  };
+
+  // Badge Stream Items & Particles
   var streamItems = [];
   var pixelDust = [];
   var muzzleSparks = [];
@@ -345,7 +368,7 @@ document.addEventListener('keydown', function (e) {
     { xOff: 21, yOff: 63, period: 46, phase: 3,  color: '#10b981' }
   ];
 
-  // Twinkling Night Sky Stars (Matching Reference Image)
+  // Twinkling Night Sky Stars (Matching Reference Artwork)
   var nightStars = [
     { x: 30,  y: 18, size: 2, color: '#f1f5f9', phase: 0.4 },
     { x: 74,  y: 32, size: 1, color: '#38bdf8', phase: 1.8 },
@@ -368,7 +391,7 @@ document.addEventListener('keydown', function (e) {
     { x: 978, y: 16, size: 2, color: '#f1f5f9', phase: 1.6 }
   ];
 
-  // Responsive scene layout calculation
+  // Responsive scene layout calculation with generous, breathable spacing
   function getSceneLayout(w, h) {
     var gY = h - 9;
     var isMobile = w < 600;
@@ -383,54 +406,63 @@ document.addEventListener('keydown', function (e) {
     };
 
     if (isDesktop) {
-      layout.lampLeft = { show: true, x: 18, y: gY - 78, w: 27, h: 78, lanternX: 35, lanternY: gY - 58 };
-      layout.plant = { show: true, x: 56, y: gY - 38, w: 16, h: 38 };
-      layout.droid = { show: true, x: 80, y: gY - 47, w: 23, h: 47 };
-      layout.desk = { show: true, x: 112, y: gY - 62, w: 51, h: 62 };
-      layout.server = { show: true, x: 172, y: gY - 77, w: 37, h: 77 };
-      layout.cratesLeft = { show: true, x: 217, y: gY - 43, w: 36, h: 43 };
-      layout.wsRight = 217 + 36; // 253
+      // Well-spaced workstation grouping on left
+      layout.lampLeft = { show: true, x: 24, y: gY - 78, w: 27, h: 78, lanternX: 41, lanternY: gY - 58 };
+      layout.plant = { show: true, x: 76, y: gY - 38, w: 16, h: 38 };
+      layout.showDroid = true;
+      layout.droidMinX = 106;
+      layout.droidMaxX = 156;
+      layout.desk = { show: true, x: 186, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 262, y: gY - 77, w: 37, h: 77 };
+      layout.cratesLeft = { show: true, x: 324, y: gY - 43, w: 36, h: 43 };
+      layout.wsRight = 324 + 36; // 360
 
-      layout.rocks = { show: true, x: Math.max(layout.wsRight + 260, w - 145), y: gY - 17, w: 44, h: 17 };
-      layout.cratesRight = { show: true, x: Math.max(layout.wsRight + 310, w - 90), y: gY - 31, w: 30, h: 31 };
-      layout.lampRight = { show: true, x: Math.max(layout.wsRight + 348, w - 48), y: gY - 78, w: 27, h: 78, lanternX: Math.max(layout.wsRight + 348, w - 48) + 10, lanternY: gY - 58 };
+      // Natural right-side props
+      layout.rocks = { show: true, x: Math.max(layout.wsRight + 260, w - 165), y: gY - 17, w: 44, h: 17 };
+      layout.cratesRight = { show: true, x: Math.max(layout.wsRight + 310, w - 105), y: gY - 31, w: 30, h: 31 };
+      layout.lampRight = { show: true, x: Math.max(layout.wsRight + 360, w - 48), y: gY - 78, w: 27, h: 78, lanternX: Math.max(layout.wsRight + 360, w - 48) + 10, lanternY: gY - 58 };
       layout.rpLeft = layout.rocks.x;
 
-      layout.minPatrolX = layout.wsRight + 45;
-      layout.maxPatrolX = Math.min(layout.rpLeft - 65, Math.max(layout.minPatrolX + 60, w * 0.78));
+      // Terminator broad patrol zone in clear negative space
+      layout.minPatrolX = layout.wsRight + 35;
+      layout.maxPatrolX = Math.min(layout.rpLeft - 65, Math.max(layout.minPatrolX + 80, w * 0.78));
     } else if (isTablet) {
       layout.lampLeft = { show: false };
-      layout.plant = { show: true, x: 14, y: gY - 38, w: 16, h: 38 };
-      layout.droid = { show: false };
-      layout.desk = { show: true, x: 38, y: gY - 62, w: 51, h: 62 };
-      layout.server = { show: true, x: 96, y: gY - 77, w: 37, h: 77 };
-      layout.cratesLeft = { show: true, x: 140, y: gY - 43, w: 36, h: 43 };
-      layout.wsRight = 140 + 36; // 176
+      layout.plant = { show: true, x: 16, y: gY - 38, w: 16, h: 38 };
+      layout.showDroid = true;
+      layout.droidMinX = 42;
+      layout.droidMaxX = 80;
+      layout.desk = { show: true, x: 96, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 158, y: gY - 77, w: 37, h: 77 };
+      layout.cratesLeft = { show: true, x: 206, y: gY - 43, w: 36, h: 43 };
+      layout.wsRight = 206 + 36; // 242
 
       layout.rocks = { show: false };
-      layout.cratesRight = { show: true, x: w - 82, y: gY - 31, w: 30, h: 31 };
-      layout.lampRight = { show: true, x: w - 44, y: gY - 78, w: 27, h: 78, lanternX: w - 44 + 10, lanternY: gY - 58 };
+      layout.cratesRight = { show: true, x: w - 85, y: gY - 31, w: 30, h: 31 };
+      layout.lampRight = { show: true, x: w - 44, y: gY - 78, w: 27, h: 78, lanternX: w - 34, lanternY: gY - 58 };
       layout.rpLeft = layout.cratesRight.x;
 
-      layout.minPatrolX = layout.wsRight + 35;
-      layout.maxPatrolX = Math.min(layout.rpLeft - 60, Math.max(layout.minPatrolX + 50, w * 0.76));
+      layout.minPatrolX = layout.wsRight + 30;
+      layout.maxPatrolX = Math.min(layout.rpLeft - 60, Math.max(layout.minPatrolX + 60, w * 0.76));
     } else {
-      // Dedicated Mobile arrangement (< 600px): Clean prioritized workstation on left
+      // Dedicated Mobile arrangement (< 600px): Clean prioritized workstation
       layout.lampLeft = { show: false };
       layout.plant = { show: true, x: 8, y: gY - 38, w: 16, h: 38 };
-      layout.droid = { show: false };
-      layout.desk = { show: true, x: 28, y: gY - 62, w: 51, h: 62 };
-      layout.server = { show: true, x: 84, y: gY - 77, w: 37, h: 77 };
+      layout.showDroid = true;
+      layout.droidMinX = 30;
+      layout.droidMaxX = 56;
+      layout.desk = { show: true, x: 72, y: gY - 62, w: 51, h: 62 };
+      layout.server = { show: true, x: 130, y: gY - 77, w: 37, h: 77 };
       layout.cratesLeft = { show: false };
-      layout.wsRight = 84 + 37; // 121
+      layout.wsRight = 130 + 37; // 167
 
       layout.rocks = { show: false };
       layout.cratesRight = { show: false };
       layout.lampRight = { show: false };
       layout.rpLeft = w;
 
-      layout.minPatrolX = layout.wsRight + 22;
-      layout.maxPatrolX = Math.max(layout.minPatrolX + 45, w - 56);
+      layout.minPatrolX = layout.wsRight + 20;
+      layout.maxPatrolX = Math.max(layout.minPatrolX + 45, w - 55);
     }
     return layout;
   }
@@ -445,12 +477,15 @@ document.addEventListener('keydown', function (e) {
     var layout = getSceneLayout(width, height);
     if (robotX < layout.minPatrolX) robotX = layout.minPatrolX;
     if (robotX > layout.maxPatrolX) robotX = layout.maxPatrolX;
+    if (droid.x < layout.droidMinX) droid.x = layout.droidMinX;
+    if (droid.x > layout.droidMaxX) droid.x = layout.droidMaxX;
   }
 
-  function spawnMuzzleSparks(x, y) {
+  function spawnMuzzleSparks(x, y, dir) {
     var count = isOverdrive ? 5 : 3;
+    var baseAngle = dir === -1 ? Math.PI : 0;
     for (var i = 0; i < count; i++) {
-      var angle = Math.PI + (Math.random() - 0.5) * 0.8;
+      var angle = baseAngle + (Math.random() - 0.5) * 0.8;
       var spd = 1.4 + Math.random() * 2.4;
       muzzleSparks.push({
         x: x,
@@ -465,6 +500,68 @@ document.addEventListener('keydown', function (e) {
     }
   }
 
+  // Autonomous Droid update
+  function updateDroid(layout) {
+    if (!layout.showDroid) return;
+    var minX = layout.droidMinX;
+    var maxX = layout.droidMaxX;
+
+    if (droid.state === 'HAPPY') {
+      droid.happyTimer++;
+      if (droid.happyTimer >= droid.happyMax) {
+        droid.happyTimer = 0;
+        droid.state = 'IDLE';
+        droid.stateTimer = 70 + Math.floor(Math.random() * 60);
+      }
+      return;
+    }
+
+    if (droid.state === 'IDLE') {
+      droid.stateTimer--;
+      if (droid.stateTimer <= 0) {
+        var roll = Math.random();
+        if (roll < 0.45 && maxX > minX + 10) {
+          droid.state = 'WALK';
+          droid.targetX = minX + Math.random() * (maxX - minX);
+          droid.facing = droid.targetX > droid.x ? 1 : -1;
+        } else if (roll < 0.8) {
+          droid.state = 'LOOK';
+          droid.lookFrame = Math.random() < 0.5 ? 2 : 3;
+          droid.stateTimer = 40 + Math.floor(Math.random() * 35);
+        } else {
+          droid.stateTimer = 50 + Math.floor(Math.random() * 60);
+        }
+      }
+    } else if (droid.state === 'LOOK') {
+      droid.stateTimer--;
+      if (droid.stateTimer <= 0) {
+        droid.state = 'IDLE';
+        droid.stateTimer = 60 + Math.floor(Math.random() * 60);
+      }
+    } else if (droid.state === 'WALK') {
+      var dSpeed = 0.28;
+      var dist = droid.targetX - droid.x;
+      if (Math.abs(dist) <= dSpeed) {
+        droid.x = droid.targetX;
+        droid.state = 'IDLE';
+        droid.stateTimer = 60 + Math.floor(Math.random() * 60);
+        droid.walkFrame = 0;
+      } else {
+        droid.facing = dist > 0 ? 1 : -1;
+        droid.x += droid.facing * dSpeed;
+        droid.walkTimer++;
+        if (droid.walkTimer >= 8) {
+          droid.walkTimer = 0;
+          droid.walkFrame = (droid.walkFrame + 1) % 4; // cycles walk frames 4, 5, 6, 7
+        }
+      }
+    }
+
+    // Keep droid clamped within its local workstation zone
+    if (droid.x < minX) droid.x = minX;
+    if (droid.x > maxX) droid.x = maxX;
+  }
+
   function update() {
     frameCount++;
 
@@ -476,76 +573,128 @@ document.addEventListener('keydown', function (e) {
     recoilOffset *= 0.82;
     if (recoilOffset < 0.1) recoilOffset = 0;
 
-    var streamSpeed = isOverdrive ? BASE_SPEED * 1.9 : BASE_SPEED;
-    var wSpeed = isOverdrive ? WALK_SPEED * 1.5 : WALK_SPEED;
     var layout = getSceneLayout(width, height);
     var groundY = layout.groundY;
     var robotY = groundY - ROBOT_DRAW_H + 2;
     var wsRight = layout.wsRight;
 
-    // Terminator Robot Patrol (Strictly Preserved Behavior)
-    if (patrolState === 'PATROL_LEFT') {
-      facing = -1;
-      robotX -= wSpeed;
-      walkStepTimer++;
-      if (walkStepTimer >= 8) {
-        walkStepTimer = 0;
-        walkFrame = (walkFrame + 1) % 2;
-      }
-      if (robotX <= layout.minPatrolX) {
-        robotX = layout.minPatrolX;
-        patrolState = 'SCAN';
-        stateTimer = 48; // pause, scan, and fire
-        walkFrame = 0;
-      }
-    } else if (patrolState === 'PATROL_RIGHT') {
-      facing = 1;
-      robotX += wSpeed;
-      walkStepTimer++;
-      if (walkStepTimer >= 8) {
-        walkStepTimer = 0;
-        walkFrame = (walkFrame + 1) % 2;
-      }
-      if (robotX >= layout.maxPatrolX) {
-        robotX = layout.maxPatrolX;
-        patrolState = 'SCAN';
-        stateTimer = 44; // pause and turn around
-        walkFrame = 0;
-      }
-    } else if (patrolState === 'SCAN') {
+    // Update Droid
+    updateDroid(layout);
+
+    // Terminator State Machine: IDLE_SCAN -> WALK -> AIM_FIRE
+    var wSpeed = isOverdrive ? 0.72 : WALK_SPEED;
+
+    if (patrolState === 'IDLE_SCAN') {
       walkFrame = 0;
       stateTimer--;
       if (stateTimer <= 0) {
-        if (facing === -1) {
-          patrolState = 'PATROL_RIGHT';
-          facing = 1;
+        var actionRoll = Math.random();
+        if (actionRoll < 0.45 && !prefersReducedMotion) {
+          // Enter AIM_FIRE burst
+          patrolState = 'AIM_FIRE';
+          burstRemaining = isOverdrive ? 4 : 2;
+          burstCooldown = 4;
         } else {
-          patrolState = 'PATROL_LEFT';
-          facing = -1;
+          // Pick a new patrol destination along ground line
+          patrolState = 'WALK';
+          robotTargetX = layout.minPatrolX + Math.random() * (layout.maxPatrolX - layout.minPatrolX);
+          facing = robotTargetX > robotX ? 1 : -1;
         }
+      }
+    } else if (patrolState === 'WALK') {
+      var dist = robotTargetX - robotX;
+      if (Math.abs(dist) <= wSpeed) {
+        robotX = robotTargetX;
+        patrolState = 'IDLE_SCAN';
+        stateTimer = 50 + Math.floor(Math.random() * 50);
+        walkFrame = 0;
+      } else {
+        facing = dist > 0 ? 1 : -1;
+        robotX += facing * wSpeed;
+        walkStepTimer++;
+        if (walkStepTimer >= 9) {
+          walkStepTimer = 0;
+          walkFrame = (walkFrame + 1) % 2;
+        }
+      }
+
+      // Check boundary limits
+      if (robotX <= layout.minPatrolX) {
+        robotX = layout.minPatrolX;
+        facing = 1;
+        patrolState = 'IDLE_SCAN';
+        stateTimer = 45;
+        walkFrame = 0;
+      } else if (robotX >= layout.maxPatrolX) {
+        robotX = layout.maxPatrolX;
+        facing = -1;
+        patrolState = 'IDLE_SCAN';
+        stateTimer = 45;
+        walkFrame = 0;
+      }
+    } else if (patrolState === 'AIM_FIRE') {
+      walkFrame = 0;
+      burstCooldown--;
+      if (burstCooldown <= 0 && burstRemaining > 0) {
+        var isMoving = false;
+        var stepBob = 0;
+        var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
+        var muzzleTipX = facing === -1 ? (drawRobotX + BARREL_OFFSET_X) : (drawRobotX + ROBOT_DRAW_W - BARREL_OFFSET_X);
+        var muzzleTipY = robotY + BARREL_OFFSET_Y;
+
+        var key = BADGE_SEQUENCE[nextBadgeIndex];
+        nextBadgeIndex = (nextBadgeIndex + 1) % BADGE_SEQUENCE.length;
+
+        var projVx = facing * (isOverdrive ? 1.6 : 1.15);
+
+        // Spawn Badge
+        streamItems.push({
+          type: 'badge',
+          key: key,
+          x: muzzleTipX,
+          y: muzzleTipY,
+          vx: projVx,
+          alpha: 1,
+          dist: 0,
+          waveOffset: Math.random() * 6.28
+        });
+
+        // Spawn Glowing Cyan Separator Dot
+        streamItems.push({
+          type: 'dot',
+          x: muzzleTipX - facing * 14,
+          y: muzzleTipY,
+          vx: projVx,
+          alpha: 1,
+          dist: 0,
+          waveOffset: Math.random() * 6.28
+        });
+
+        recoilOffset = isOverdrive ? 3.4 : 2.0;
+        spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
+        burstRemaining--;
+        burstCooldown = isOverdrive ? 12 : 20;
+      } else if (burstRemaining <= 0 && burstCooldown <= 0) {
+        patrolState = 'IDLE_SCAN';
+        stateTimer = 55 + Math.floor(Math.random() * 45);
       }
     }
 
-    var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
-    var stepBob = isMoving ? (Math.sin(frameCount * 0.32) * 1.4) : 0;
-    var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
-    var muzzleTipX = drawRobotX + BARREL_OFFSET_X;
-    var muzzleTipY = robotY + BARREL_OFFSET_Y + stepBob;
-
-    // Badge Conveyor Stream Update
+    // Badge Stream Update & Dissolution
     for (var i = streamItems.length - 1; i >= 0; i--) {
       var item = streamItems[i];
-      item.x -= streamSpeed;
+      item.x += item.vx;
+      item.dist += Math.abs(item.vx);
 
-      // Dissolve near workstation boundary and spawn glowing pixel dust
-      if (item.x < wsRight + 25) {
-        item.alpha = Math.max(0, (item.x - wsRight) / 25);
-        if (Math.random() < 0.35) {
+      // Left boundary dissolution (near workstation)
+      if (item.vx < 0 && item.x <= wsRight + 30) {
+        item.alpha = Math.max(0, (item.x - wsRight) / 30);
+        if (Math.random() < 0.4) {
           pixelDust.push({
-            x: item.x + Math.random() * 10,
-            y: item.y + (Math.random() - 0.5) * 10,
-            vx: -0.8 - Math.random() * 0.8,
-            vy: (Math.random() - 0.5) * 1.2,
+            x: item.x + Math.random() * 8,
+            y: item.y + (Math.random() - 0.5) * 8,
+            vx: -0.6 - Math.random() * 0.6,
+            vy: (Math.random() - 0.5) * 1.0,
             color: Math.random() > 0.4 ? '#22d3ee' : '#cfc6b5',
             alpha: 1,
             size: Math.random() > 0.5 ? 2 : 1,
@@ -553,42 +702,29 @@ document.addEventListener('keydown', function (e) {
           });
         }
       }
-
-      if (item.x < wsRight - 10 || item.alpha <= 0) {
-        streamItems.splice(i, 1);
-      }
-    }
-
-    // Firing logic: fire tech badges from blaster muzzle when facing left
-    if (facing === -1) {
-      var rightmost = streamItems.length > 0 ? streamItems[streamItems.length - 1] : null;
-      var spawnStartX = muzzleTipX - 16;
-
-      if (!rightmost || (spawnStartX - rightmost.x) >= (BADGE_SPACING / 2)) {
-        if (!rightmost || rightmost.type === 'dot') {
-          // Spawn next badge
-          var key = BADGE_SEQUENCE[nextBadgeIndex];
-          nextBadgeIndex = (nextBadgeIndex + 1) % BADGE_SEQUENCE.length;
-          streamItems.push({
-            type: 'badge',
-            key: key,
-            x: spawnStartX,
-            y: muzzleTipY,
+      // Right boundary dissolution (near right outpost)
+      else if (item.vx > 0 && item.x >= layout.rpLeft - 30) {
+        item.alpha = Math.max(0, (layout.rpLeft - item.x) / 30);
+        if (Math.random() < 0.4) {
+          pixelDust.push({
+            x: item.x - Math.random() * 8,
+            y: item.y + (Math.random() - 0.5) * 8,
+            vx: 0.6 + Math.random() * 0.6,
+            vy: (Math.random() - 0.5) * 1.0,
+            color: Math.random() > 0.4 ? '#22d3ee' : '#cfc6b5',
             alpha: 1,
-            waveOffset: Math.random() * 6.28
-          });
-          recoilOffset = isOverdrive ? 3.0 : 1.8;
-          spawnMuzzleSparks(muzzleTipX, muzzleTipY);
-        } else {
-          // Spawn glowing separator dot between badges
-          streamItems.push({
-            type: 'dot',
-            x: spawnStartX,
-            y: muzzleTipY,
-            alpha: 1,
-            waveOffset: Math.random() * 6.28
+            size: Math.random() > 0.5 ? 2 : 1,
+            decay: 0.04 + Math.random() * 0.03
           });
         }
+      }
+      // Distance fade after traveling across scene
+      else if (item.dist > 340) {
+        item.alpha -= 0.025;
+      }
+
+      if (item.alpha <= 0 || item.x < wsRight - 10 || item.x > layout.rpLeft + 15) {
+        streamItems.splice(i, 1);
       }
     }
 
@@ -628,6 +764,66 @@ document.addEventListener('keydown', function (e) {
     ctx.beginPath();
     ctx.arc(lampX, lampY, 26, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  // Draw Interactive R2-D2 Droid
+  function drawDroid(ctx, layout) {
+    if (!layout.showDroid || !droidSheet.complete || droidSheet.naturalWidth <= 0) return;
+    var gY = layout.groundY;
+    var dy = gY - DROID_BASELINE_OFFSET;
+    var jumpY = 0;
+
+    var frameIdx = 0;
+    if (droid.state === 'HAPPY') {
+      frameIdx = 8;
+      var progress = droid.happyTimer / droid.happyMax;
+      jumpY = Math.sin(progress * Math.PI) * 6;
+    } else if (droid.state === 'IDLE') {
+      if ((frameCount % 110) < 12) {
+        frameIdx = 1; // Optic blink
+      } else {
+        frameIdx = 0;
+      }
+    } else if (droid.state === 'LOOK') {
+      frameIdx = droid.lookFrame;
+    } else if (droid.state === 'WALK') {
+      frameIdx = 4 + droid.walkFrame;
+    }
+
+    var drawX = Math.round(droid.x);
+    var drawY = Math.round(dy - jumpY);
+
+    ctx.save();
+    if (droid.facing === 1) {
+      ctx.drawImage(
+        droidSheet,
+        frameIdx * DROID_FRAME_W, 0, DROID_FRAME_W, DROID_FRAME_H,
+        drawX, drawY, DROID_DRAW_W, DROID_DRAW_H
+      );
+    } else {
+      ctx.translate(drawX + DROID_DRAW_W, drawY);
+      ctx.scale(-1, 1);
+      ctx.drawImage(
+        droidSheet,
+        frameIdx * DROID_FRAME_W, 0, DROID_FRAME_W, DROID_FRAME_H,
+        0, 0, DROID_DRAW_W, DROID_DRAW_H
+      );
+    }
+    ctx.restore();
+
+    // Subtle optic sensor glint when happy or blinking
+    if (droid.state === 'HAPPY') {
+      var pulse = 0.5 + 0.5 * Math.sin(frameCount * 0.25);
+      ctx.save();
+      ctx.fillStyle = '#38bdf8';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 6;
+      ctx.globalAlpha = Math.max(0, pulse);
+      var eyeX = droid.facing === 1 ? (drawX + 18) : (drawX + DROID_DRAW_W - 20);
+      var eyeY = drawY + 8;
+      ctx.fillRect(eyeX, eyeY, 2, 2);
+      ctx.restore();
+    }
   }
 
   function render() {
@@ -670,7 +866,7 @@ document.addEventListener('keydown', function (e) {
       ctx.fillRect(stX + 14, gY + 1, 4, 1);
     }
 
-    // Scattered pixel-art grass tufts (matching reference image)
+    // Scattered pixel-art grass tufts (matching reference artwork)
     var grassInterval = 38;
     for (var gx = 10; gx < width - 12; gx += grassInterval) {
       var seed = (gx * 17) % 7;
@@ -700,18 +896,8 @@ document.addEventListener('keydown', function (e) {
       ctx.restore();
     }
 
-    // Retro Capsule Droid
-    if (layout.droid.show && propImages.droid.img.complete && propImages.droid.img.naturalWidth > 0) {
-      ctx.drawImage(propImages.droid.img, layout.droid.x, layout.droid.y, layout.droid.w, layout.droid.h);
-      // Cyan optic sensor pulse
-      var opticPulse = 0.5 + 0.5 * Math.sin(frameCount * 0.08);
-      ctx.fillStyle = opticPulse > 0.35 ? '#38bdf8' : '#0284c7';
-      ctx.fillRect(layout.droid.x + 10, layout.droid.y + 19, 3, 3);
-      if ((frameCount % 160) < 14) {
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(layout.droid.x + 15, layout.droid.y + 19, 2, 2);
-      }
-    }
+    // Interactive R2-D2 Droid
+    drawDroid(ctx, layout);
 
     // Desk with CRT Monitor
     if (layout.desk.show && propImages.desk.img.complete && propImages.desk.img.naturalWidth > 0) {
@@ -748,6 +934,7 @@ document.addEventListener('keydown', function (e) {
     // Server Rack (with 4 tiers of blinking LEDs)
     if (layout.server.show && propImages.server.img.complete && propImages.server.img.naturalWidth > 0) {
       ctx.drawImage(propImages.server.img, layout.server.x, layout.server.y, layout.server.w, layout.server.h);
+
       for (var lIdx = 0; lIdx < serverLeds.length; lIdx++) {
         var led = serverLeds[lIdx];
         var isLedOn = ((frameCount + led.phase) % led.period) < (led.period * 0.52);
@@ -758,7 +945,7 @@ document.addEventListener('keydown', function (e) {
       }
     }
 
-    // Left Wooden Crates (with retro terminal)
+    // Left Wooden Crates
     if (layout.cratesLeft.show && propImages.cratesLeft.img.complete && propImages.cratesLeft.img.naturalWidth > 0) {
       ctx.drawImage(propImages.cratesLeft.img, layout.cratesLeft.x, layout.cratesLeft.y, layout.cratesLeft.w, layout.cratesLeft.h);
     }
@@ -779,21 +966,21 @@ document.addEventListener('keydown', function (e) {
       drawStreetlampGlow(layout.lampRight.lanternX, layout.lampRight.lanternY, 2.5);
     }
 
-    // 5. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Stream)
-    var isMoving = (patrolState === 'PATROL_LEFT' || patrolState === 'PATROL_RIGHT');
-    var stepBob = isMoving ? (Math.sin(frameCount * 0.32) * 1.4) : 0;
+    // 5. Streaming Tech Badges & Glowing Cyan Dots (Terminator Code Burst Stream)
+    var isMoving = (patrolState === 'WALK');
+    var stepBob = isMoving ? (Math.sin(frameCount * 0.32) * 1.2) : 0;
     var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
     var rx = Math.round(drawRobotX);
     var ry = Math.round(gY - ROBOT_DRAW_H + 2 + stepBob);
-    var muzzleTipX = rx + BARREL_OFFSET_X;
+    var muzzleTipX = facing === -1 ? (rx + BARREL_OFFSET_X) : (rx + ROBOT_DRAW_W - BARREL_OFFSET_X);
     var muzzleTipY = ry + BARREL_OFFSET_Y;
 
     for (var bIdx = 0; bIdx < streamItems.length; bIdx++) {
       var item = streamItems[bIdx];
       if (item.alpha <= 0.02) continue;
 
-      var floatY = Math.sin(item.x * 0.05 + item.waveOffset) * 1.4;
-      var drawCenterY = Math.round(muzzleTipY + floatY);
+      var floatY = Math.sin(item.dist * 0.06 + item.waveOffset) * 1.4;
+      var drawCenterY = Math.round(item.y + floatY);
 
       if (item.type === 'dot') {
         ctx.save();
@@ -831,20 +1018,26 @@ document.addEventListener('keydown', function (e) {
     }
 
     // 7. Cyan Muzzle Flash (When Terminator fires)
-    if (facing === -1 && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
+    if (patrolState === 'AIM_FIRE' && burstCooldown > (isOverdrive ? 6 : 12) && muzzleImg.complete && muzzleImg.naturalWidth > 0) {
       ctx.save();
       var mPulse = isOverdrive ? (1.15 + 0.25 * Math.sin(frameCount * 0.6)) : (0.85 + 0.15 * Math.sin(frameCount * 0.35));
       var mWidth = Math.round(20 * mPulse);
       var mHeight = Math.round(18 * mPulse);
       var mJitterX = (Math.random() - 0.5) * 0.8;
       var mJitterY = (Math.random() - 0.5) * 0.8;
-      var mX = Math.round(muzzleTipX - mWidth + 2 + mJitterX);
+      var mX = facing === -1 ? Math.round(muzzleTipX - mWidth + 2 + mJitterX) : Math.round(muzzleTipX - 2 + mJitterX);
       var mY = Math.round(muzzleTipY - mHeight / 2 + mJitterY);
 
       ctx.globalAlpha = isOverdrive ? 1 : 0.92;
       ctx.shadowColor = '#22d3ee';
       ctx.shadowBlur = isOverdrive ? 10 : 6;
-      ctx.drawImage(muzzleImg, mX, mY, mWidth, mHeight);
+      if (facing === 1) {
+        ctx.translate(mX + mWidth, mY);
+        ctx.scale(-1, 1);
+        ctx.drawImage(muzzleImg, 0, 0, mWidth, mHeight);
+      } else {
+        ctx.drawImage(muzzleImg, mX, mY, mWidth, mHeight);
+      }
       ctx.restore();
     }
 
@@ -866,13 +1059,15 @@ document.addEventListener('keydown', function (e) {
     if (droidSprite.complete && droidSprite.naturalWidth > 0) {
       ctx.save();
       if (facing === -1) {
-        // Facing Left (Firing towards workstation)
+        // Facing Left
         ctx.drawImage(droidSprite, rx, ry, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
         // Glowing Cyan Visor Glint
-        if (patrolState === 'SCAN' || Math.sin(frameCount * 0.08) > 0.6) {
+        if (patrolState === 'IDLE_SCAN' || patrolState === 'AIM_FIRE' || Math.sin(frameCount * 0.08) > 0.6) {
           ctx.fillStyle = '#22d3ee';
-          ctx.globalAlpha = 0.8;
+          ctx.shadowColor = '#22d3ee';
+          ctx.shadowBlur = 4;
+          ctx.globalAlpha = 0.85;
           ctx.fillRect(rx + 9, ry + 15, 3, 2);
         }
       } else {
@@ -882,9 +1077,11 @@ document.addEventListener('keydown', function (e) {
         ctx.drawImage(droidSprite, 0, 0, ROBOT_DRAW_W, ROBOT_DRAW_H);
 
         // Visor Glint
-        if (patrolState === 'SCAN' || Math.sin(frameCount * 0.08) > 0.6) {
+        if (patrolState === 'IDLE_SCAN' || patrolState === 'AIM_FIRE' || Math.sin(frameCount * 0.08) > 0.6) {
           ctx.fillStyle = '#22d3ee';
-          ctx.globalAlpha = 0.8;
+          ctx.shadowColor = '#22d3ee';
+          ctx.shadowBlur = 4;
+          ctx.globalAlpha = 0.85;
           ctx.fillRect(9, 15, 3, 2);
         }
       }
@@ -899,19 +1096,37 @@ document.addEventListener('keydown', function (e) {
     rafId = requestAnimationFrame(loop);
   }
 
-  // Interactive Click Easter Egg: Rapid-fire overdrive
+  // Interactive Click Handlers: Droid Happy Hop & Terminator Overdrive Burst
   if (container) {
-    container.addEventListener('click', function () {
-      isOverdrive = true;
-      overdriveTimer = 90; // ~1.5s overdrive
-      recoilOffset = 3.6;
+    container.addEventListener('click', function (e) {
+      var rect = canvas.getBoundingClientRect();
+      var clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+      var clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
       var layout = getSceneLayout(width, height);
-      var groundY = layout.groundY;
-      var ry = groundY - ROBOT_DRAW_H + 2;
-      var muzzleTipX = robotX + BARREL_OFFSET_X;
-      var muzzleTipY = ry + BARREL_OFFSET_Y;
-      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
-      spawnMuzzleSparks(muzzleTipX, muzzleTipY);
+      var gY = layout.groundY;
+
+      // 1. Check if user clicked near R2-D2 Droid
+      if (layout.showDroid && Math.abs(clickX - (droid.x + DROID_DRAW_W / 2)) < 36 && clickY >= gY - 48) {
+        droid.state = 'HAPPY';
+        droid.happyTimer = 0;
+        return;
+      }
+
+      // 2. Otherwise trigger Terminator Rapid-Fire Overdrive burst
+      isOverdrive = true;
+      overdriveTimer = 90;
+      patrolState = 'AIM_FIRE';
+      burstRemaining = 4;
+      burstCooldown = 2;
+      recoilOffset = 3.6;
+
+      var robotY = gY - ROBOT_DRAW_H + 2;
+      var drawRobotX = robotX + (facing === -1 ? recoilOffset : -recoilOffset);
+      var muzzleTipX = facing === -1 ? (drawRobotX + BARREL_OFFSET_X) : (drawRobotX + ROBOT_DRAW_W - BARREL_OFFSET_X);
+      var muzzleTipY = robotY + BARREL_OFFSET_Y;
+      spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
+      spawnMuzzleSparks(muzzleTipX, muzzleTipY, facing);
     });
 
     container.addEventListener('mouseenter', function () {
