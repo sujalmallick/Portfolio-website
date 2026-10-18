@@ -159,8 +159,6 @@
   .gemini-bubble {
     width: 40px;
     top: -42px;
-    left: 50%;
-    transform: translateX(-50%);
   }
 }
 
@@ -297,8 +295,32 @@
   .gemini-bubble {
     width: 40px;
     top: -42px;
-    left: 50%;
-    transform: translateX(-50%);
+  }
+
+  /* ChatGPT Forward Propulsion Motion on Mobile */
+  @keyframes chatgpt-thrust-forward-mobile {
+    0% {
+      transform: scale(0.78) translateX(0) translateY(0);
+    }
+    16% {
+      transform: scale(0.78) translateX(-3px) translateY(1px) rotate(-2deg);
+    }
+    40% {
+      transform: scale(0.78) translateX(24px) translateY(-4px) rotate(2deg);
+    }
+    62% {
+      transform: scale(0.78) translateX(22px) translateY(-2px) rotate(1deg);
+    }
+    84% {
+      transform: scale(0.78) translateX(7px) translateY(-1px);
+    }
+    100% {
+      transform: scale(0.78) translateX(0) translateY(0);
+    }
+  }
+
+  .mascot-chatgpt.chatgpt-forward {
+    animation: chatgpt-thrust-forward-mobile 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
   }
 
 .edu-divider-character {
@@ -395,8 +417,6 @@
   .gemini-bubble {
     width: 38px;
     top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
 .edu-divider-character {
@@ -471,8 +491,32 @@
   .gemini-bubble {
     width: 36px;
     top: -38px;
-    left: 50%;
-    transform: translateX(-50%);
+  }
+
+  /* ChatGPT Forward Propulsion Motion on Ultra-Narrow Mobile */
+  @keyframes chatgpt-thrust-forward-narrow {
+    0% {
+      transform: scale(0.62) translateX(0) translateY(0);
+    }
+    16% {
+      transform: scale(0.62) translateX(-2px);
+    }
+    40% {
+      transform: scale(0.62) translateX(16px) translateY(-3px);
+    }
+    62% {
+      transform: scale(0.62) translateX(15px) translateY(-1px);
+    }
+    84% {
+      transform: scale(0.62) translateX(5px);
+    }
+    100% {
+      transform: scale(0.62) translateX(0) translateY(0);
+    }
+  }
+
+  .mascot-chatgpt.chatgpt-forward {
+    animation: chatgpt-thrust-forward-narrow 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
   }
 
 .edu-divider-character {

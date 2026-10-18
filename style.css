@@ -199,6 +199,7 @@ section {
 
 .section-header {
   margin-bottom: clamp(2.5rem, 4vw, 3.25rem);
+  max-width: fit-content;
 }
 
 .section-label {
@@ -2397,6 +2398,68 @@ footer {
   }
 }
 
+/* ── Distant Ringed Pixel Planet in Projects Section ──────────────────── */
+.projects-pixel-planet {
+  position: absolute;
+  top: 36px;
+  right: 6%;
+  width: 76px;
+  height: 62px;
+  z-index: 1; /* Sits behind project cards (z-index 2) in cosmic void */
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.82;
+  filter: brightness(0.88) contrast(0.96);
+  will-change: transform;
+}
+
+.projects-planet-drift-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.projects-planet-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 1024px) {
+  .projects-pixel-planet {
+    width: 64px;
+    height: 52px;
+    top: 30px;
+    right: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-pixel-planet {
+    width: 50px;
+    height: 41px;
+    top: 22px;
+    right: 4%;
+    opacity: 0.76;
+    filter: brightness(0.84) contrast(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projects-pixel-planet,
+  .projects-planet-drift-wrap {
+    transform: none !important;
+  }
+}
+
+
 /* ── Roaming Pixel Space Rocket Companion ──────────────────────────────── */
 #space-rocket-canvas {
   position: fixed;
@@ -2447,7 +2510,7 @@ footer {
   pointer-events: none;
 }
 
-/* Floating Speech Bubbles with Logos */
+/* Floating Speech Bubbles with Logos (Revealed strictly on double-click) */
 .mascot-bubble {
   position: absolute;
   pointer-events: none;
@@ -2455,7 +2518,16 @@ footer {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  transition: transform 0.22s ease-out;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+              visibility 0.28s;
+}
+
+.mascot-bubble.bubble-active {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ── 1. CHATGPT MASCOT (Beside About Heading 'systems & intelligence') ─ */
@@ -2477,16 +2549,24 @@ footer {
   pointer-events: auto;
   user-select: none;
   cursor: pointer;
+  transition: transform 0.35s ease-out;
 }
 
 .chatgpt-bubble {
   position: absolute;
   top: -46px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(8px) scale(0.65);
   width: 44px;
-  animation: chatgpt-bubble-bob 3.8s ease-in-out infinite;
   z-index: 25;
+}
+
+.chatgpt-bubble.bubble-active {
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.chatgpt-bubble.bubble-active .mascot-bubble-img {
+  animation: chatgpt-bubble-bob 3.8s ease-in-out infinite;
 }
 
 .chatgpt-body {
@@ -2603,8 +2683,39 @@ footer {
 }
 
 @keyframes chatgpt-bubble-bob {
-  0%, 100% { transform: translateX(-50%) translateY(0px); }
-  50%      { transform: translateX(-50%) translateY(-3px); }
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* ChatGPT Forward Propulsion Motion on Double-Click */
+@keyframes chatgpt-thrust-forward {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  16% {
+    /* Slight backward windup & forward tilt */
+    transform: translateX(-4px) translateY(2px) rotate(-3deg);
+  }
+  40% {
+    /* Swift, smooth propulsion forward to the right */
+    transform: translateX(44px) translateY(-5px) rotate(3deg);
+  }
+  62% {
+    /* Hover glide at the forward point */
+    transform: translateX(42px) translateY(-2px) rotate(1deg);
+  }
+  84% {
+    /* Graceful return glide */
+    transform: translateX(12px) translateY(-1px) rotate(0deg);
+  }
+  100% {
+    /* Settled back to starting position */
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+.mascot-chatgpt.chatgpt-forward {
+  animation: chatgpt-thrust-forward 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
 }
 
 /* ── 2. CLAUDE MASCOT (Walking on About/Exp Divider) ─────────────────── */
@@ -2622,9 +2733,17 @@ footer {
   position: absolute;
   top: -46px;
   left: 12px;
+  transform: translateY(8px) scale(0.65);
   width: 44px;
-  animation: claude-bubble-bob 3.6s ease-in-out infinite;
   z-index: 25;
+}
+
+.claude-bubble.bubble-active {
+  transform: translateY(0) scale(1);
+}
+
+.claude-bubble.bubble-active .mascot-bubble-img {
+  animation: claude-bubble-bob 3.6s ease-in-out infinite;
 }
 
 .claude-body {
@@ -2722,10 +2841,19 @@ footer {
   position: absolute;
   top: -46px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(8px) scale(0.65);
   width: 44px;
-  animation: gemini-bubble-bob 3.9s ease-in-out infinite;
+  height: 48px;
+  filter: drop-shadow(0 4px 10px rgba(56, 189, 248, 0.28));
   z-index: 25;
+}
+
+.gemini-bubble.bubble-active {
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.gemini-bubble.bubble-active .mascot-bubble-img {
+  animation: gemini-bubble-bob 3.9s ease-in-out infinite;
 }
 
 .gemini-body {
@@ -2823,8 +2951,8 @@ footer {
 }
 
 @keyframes gemini-bubble-bob {
-  0%, 100% { transform: translateX(-50%) translateY(0px); }
-  50%      { transform: translateX(-50%) translateY(-3px); }
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-3px); }
 }
 
 /* ── 4. TERMINAL ROBOT MASCOT (Walking on Hackathons Divider) ─────────── */
@@ -2942,6 +3070,7 @@ footer {
 
 /* ── REDUCED MOTION SUPPORT ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+  .mascot-chatgpt.chatgpt-forward,
   .chatgpt-body,
   .chatgpt-bubble,
   .chatgpt-thruster-glow,

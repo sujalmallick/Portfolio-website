@@ -1706,11 +1706,41 @@ document.addEventListener('keydown', function (e) {
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hasFinePointer = window.matchMedia('(pointer: fine)').matches;
 
+  // Shared AI Mascot Speech-Bubble Manager (Ensures only one logo bubble is visible at any time)
+  var currentActiveBubble = null;
+  var bubbleDismissTimer = null;
+
+  function showOnlyMascotBubble(bubbleEl, durationMs) {
+    var dur = durationMs || 2800;
+    if (currentActiveBubble && currentActiveBubble !== bubbleEl) {
+      currentActiveBubble.classList.remove('bubble-active');
+      currentActiveBubble.setAttribute('aria-hidden', 'true');
+    }
+    if (bubbleDismissTimer) {
+      clearTimeout(bubbleDismissTimer);
+      bubbleDismissTimer = null;
+    }
+
+    if (!bubbleEl) return;
+    bubbleEl.classList.add('bubble-active');
+    bubbleEl.setAttribute('aria-hidden', 'false');
+    currentActiveBubble = bubbleEl;
+
+    bubbleDismissTimer = setTimeout(function () {
+      bubbleEl.classList.remove('bubble-active');
+      bubbleEl.setAttribute('aria-hidden', 'true');
+      if (currentActiveBubble === bubbleEl) {
+        currentActiveBubble = null;
+      }
+    }, dur);
+  }
+
   // 1. ChatGPT Companion Controller
   (function initChatGPT() {
     var el = document.getElementById('mascot-chatgpt');
     if (!el) return;
 
+    var bubbleEl = el.querySelector('.chatgpt-bubble');
     var currentState = 'idle';
     var isActing = false;
     var cooldownUntil = 0;
@@ -1725,21 +1755,73 @@ document.addEventListener('keydown', function (e) {
       el.setAttribute('data-state', st);
     }
 
-    function triggerReaction() {
+    function triggerDoubleClickAction() {
       var now = Date.now();
-      if (isActing || now < cooldownUntil) return;
+      if (now < cooldownUntil) return;
       isActing = true;
-      cooldownUntil = now + 1200;
+      cooldownUntil = now + 2800;
 
+      // 1. Show only this mascot's speech bubble with its OpenAI logo
+      showOnlyMascotBubble(bubbleEl, 2800);
+
+      // 2. Animate mascot moving forward to the right
+      el.classList.remove('chatgpt-forward');
+      void el.offsetWidth; // Force CSS reflow to cleanly restart keyframe animation
+      el.classList.add('chatgpt-forward');
+
+      // 3. Cheerful celebratory reaction during flight
       setState('celebrate');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
         isActing = false;
+        el.classList.remove('chatgpt-forward');
         setState('idle');
-      }, 1200);
+      }, 2800);
     }
 
+    // Double-click triggers speech bubble and forward motion
+    el.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerDoubleClickAction();
+    });
+
+    // Single click is strictly suppressed to avoid single-click triggers
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    // Double-tap detection for touch screens (two taps within 350ms)
+    var lastTapTime = 0;
+    el.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      var tapGap = now - lastTapTime;
+      if (tapGap > 30 && tapGap < 350) {
+        e.preventDefault();
+        triggerDoubleClickAction();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+      }
+    }, { passive: false });
+
+    // Keyboard accessibility: double-press Enter/Space triggers action
+    var lastKeyTime = 0;
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var now = Date.now();
+        if (now - lastKeyTime > 30 && now - lastKeyTime < 450) {
+          triggerDoubleClickAction();
+          lastKeyTime = 0;
+        } else {
+          lastKeyTime = now;
+        }
+      }
+    });
+
+    // Hover keeps the subtle tilt without triggering bubble or forward move
     el.addEventListener('pointerenter', function () {
       if (!isActing) {
         setState('tilt');
@@ -1748,34 +1830,6 @@ document.addEventListener('keydown', function (e) {
         }, 800);
       }
     });
-
-    el.addEventListener('click', function (e) {
-      e.stopPropagation();
-      triggerReaction();
-    });
-
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        triggerReaction();
-      }
-    });
-
-    var touchStartX = 0, touchStartY = 0;
-    el.addEventListener('touchstart', function (e) {
-      if (e.touches && e.touches[0]) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    el.addEventListener('touchend', function (e) {
-      if (e.changedTouches && e.changedTouches[0]) {
-        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerReaction();
-      }
-    }, { passive: true });
 
     if (prefersReduced) return;
 
@@ -1868,12 +1922,18 @@ document.addEventListener('keydown', function (e) {
     window.addEventListener('resize', calibrateFeet);
     setTimeout(calibrateFeet, 300);
 
-    function triggerReaction(pointerX) {
-      var now = Date.now();
-      if (isActing || now < cooldownUntil) return;
-      isActing = true;
-      cooldownUntil = now + 1200;
+    var claudeBubble = el.querySelector('.claude-bubble');
 
+    function triggerDoubleClickAction(pointerX) {
+      var now = Date.now();
+      if (now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 2800;
+
+      // 1. Show only Claude's Anthropic speech bubble
+      showOnlyMascotBubble(claudeBubble, 2800);
+
+      // 2. Orient body and trigger alert/surprised reaction
       if (typeof pointerX === 'number') {
         var rect = el.getBoundingClientRect();
         var mascotCenter = rect.left + rect.width / 2;
@@ -1892,40 +1952,65 @@ document.addEventListener('keydown', function (e) {
       actionTimer = setTimeout(function () {
         isActing = false;
         setState('idle');
-      }, 1200);
+      }, 2800);
     }
 
-    el.addEventListener('pointerenter', function (e) {
-      triggerReaction(e.clientX);
+    // Double-click triggers Claude speech bubble & reaction
+    el.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerDoubleClickAction(e.clientX);
     });
 
+    // Single-click is strictly suppressed to avoid single-click triggers
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerReaction(e.clientX);
     });
 
+    // Double-tap support for mobile/touch screens (two taps within 350ms)
+    var lastTapTime = 0;
+    el.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      var tapGap = now - lastTapTime;
+      if (tapGap > 30 && tapGap < 350) {
+        e.preventDefault();
+        var touch = e.changedTouches && e.changedTouches[0];
+        triggerDoubleClickAction(touch ? touch.clientX : null);
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+      }
+    }, { passive: false });
+
+    // Keyboard accessibility: double-press Enter or Space triggers reaction
+    var lastKeyTime = 0;
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerReaction();
+        var now = Date.now();
+        if (now - lastKeyTime > 30 && now - lastKeyTime < 450) {
+          triggerDoubleClickAction();
+          lastKeyTime = 0;
+        } else {
+          lastKeyTime = now;
+        }
       }
     });
 
-    var touchStartX = 0, touchStartY = 0;
-    el.addEventListener('touchstart', function (e) {
-      if (e.touches && e.touches[0]) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+    // Hover subtly faces pointer without popping speech bubble
+    el.addEventListener('pointerenter', function (e) {
+      if (!isActing && typeof e.clientX === 'number') {
+        var rect = el.getBoundingClientRect();
+        var mascotCenter = rect.left + rect.width / 2;
+        if (e.clientX < mascotCenter) {
+          claudeBody.classList.remove('facing-right');
+          claudeBody.classList.add('facing-left');
+        } else {
+          claudeBody.classList.remove('facing-left');
+          claudeBody.classList.add('facing-right');
+        }
       }
-    }, { passive: true });
-
-    el.addEventListener('touchend', function (e) {
-      if (e.changedTouches && e.changedTouches[0]) {
-        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerReaction(touchStartX);
-      }
-    }, { passive: true });
+    });
 
     if (prefersReduced) return;
 
@@ -2069,52 +2154,77 @@ document.addEventListener('keydown', function (e) {
       el.setAttribute('data-state', st);
     }
 
-    function triggerReaction() {
-      var now = Date.now();
-      if (isActing || now < cooldownUntil) return;
-      isActing = true;
-      cooldownUntil = now + 1200;
+    var geminiBubble = el.querySelector('.gemini-bubble');
 
+    function triggerDoubleClickAction() {
+      var now = Date.now();
+      if (now < cooldownUntil) return;
+      isActing = true;
+      cooldownUntil = now + 2800;
+
+      // 1. Show only Gemini's Google Gemini speech bubble
+      showOnlyMascotBubble(geminiBubble, 2800);
+
+      // 2. Trigger celebration constellation sparkles & joyful eyes
       setState('celebrate');
 
       if (actionTimer) clearTimeout(actionTimer);
       actionTimer = setTimeout(function () {
         isActing = false;
         setState('idle');
-      }, 1200);
+      }, 2800);
     }
 
-    el.addEventListener('pointerenter', function () {
-      triggerReaction();
+    // Double-click triggers Gemini speech bubble & celebration
+    el.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerDoubleClickAction();
     });
 
+    // Single-click is strictly suppressed to avoid single-click triggers
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      triggerReaction();
     });
 
+    // Double-tap support for mobile/touch screens (two taps within 350ms)
+    var lastTapTime = 0;
+    el.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      var tapGap = now - lastTapTime;
+      if (tapGap > 30 && tapGap < 350) {
+        e.preventDefault();
+        triggerDoubleClickAction();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+      }
+    }, { passive: false });
+
+    // Keyboard accessibility: double-press Enter or Space triggers reaction
+    var lastKeyTime = 0;
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerReaction();
+        var now = Date.now();
+        if (now - lastKeyTime > 30 && now - lastKeyTime < 450) {
+          triggerDoubleClickAction();
+          lastKeyTime = 0;
+        } else {
+          lastKeyTime = now;
+        }
       }
     });
 
-    var touchStartX = 0, touchStartY = 0;
-    el.addEventListener('touchstart', function (e) {
-      if (e.touches && e.touches[0]) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+    // Hover subtly blinks without popping speech bubble
+    el.addEventListener('pointerenter', function () {
+      if (!isActing && currentState === 'idle') {
+        setState('blink');
+        setTimeout(function () {
+          if (!isActing && currentState === 'blink') setState('idle');
+        }, 180);
       }
-    }, { passive: true });
-
-    el.addEventListener('touchend', function (e) {
-      if (e.changedTouches && e.changedTouches[0]) {
-        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-        var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-        if (dx < 10 && dy < 10) triggerReaction();
-      }
-    }, { passive: true });
+    });
 
     if (prefersReduced) return;
 
@@ -3254,7 +3364,7 @@ document.addEventListener('keydown', function (e) {
       { id: 9, sectionId: 'experience', relX: 0.04, relY: 0.82, tier: 3, sprite: 1, size: 40, orbitRx: 42, orbitRy: 32, orbitSpeed: 0.00062, wobbleSpeed: 0.00125, wobbleAmp: 10, rotSpeed: 0.06, phase: 4.8 },
 
       // Projects Section (5 asteroids)
-      { id: 10, sectionId: 'projects', relX: 0.95, relY: 0.10, tier: 2, sprite: 2, size: 26, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.2 },
+      { id: 10, sectionId: 'projects', relX: 0.96, relY: 0.24, tier: 2, sprite: 2, size: 26, orbitRx: 26, orbitRy: 20, orbitSpeed: 0.00048, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.038, phase: 0.2 },
       { id: 11, sectionId: 'projects', relX: 0.04, relY: 0.30, tier: 1, sprite: 3, size: 15, orbitRx: 18, orbitRy: 14, orbitSpeed: 0.00035, wobbleSpeed: 0.0007, wobbleAmp: 4, rotSpeed: -0.025, phase: 2.1 },
       { id: 12, sectionId: 'projects', relX: 0.94, relY: 0.50, tier: 3, sprite: 1, size: 44, orbitRx: 45, orbitRy: 34, orbitSpeed: 0.00068, wobbleSpeed: 0.00135, wobbleAmp: 11, rotSpeed: -0.07, phase: 3.9 },
       { id: 13, sectionId: 'projects', relX: 0.035, relY: 0.70, tier: 2, sprite: 2, size: 27, orbitRx: 30, orbitRy: 22, orbitSpeed: 0.0005, wobbleSpeed: 0.001, wobbleAmp: 7, rotSpeed: 0.045, phase: 1.5 },
@@ -3287,7 +3397,9 @@ document.addEventListener('keydown', function (e) {
       '#profile .profile-socials',
       '#hero-pixel-satellite',
       '#distant-planet',
-      '.section-header',
+      '#projects-pixel-planet',
+      '.section-header h2',
+      '.section-header .section-label',
       '.about-text',
       '.about-details-container',
       '.skills-badge-container',
@@ -3598,3 +3710,135 @@ document.addEventListener('keydown', function (e) {
 })();
 
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DISTANT RINGED PIXEL PLANET (PROJECTS SECTION BACKGROUND)
+   - Slow, continuous rotation creating a calm, distant-in-space effect
+   - Subtle dual-harmonic orbital drift with gentle celestial gravity and inertia
+   - Independent motion state (position, velocity, angle, angular velocity)
+   - Collision avoidance against section header and dynamic rocket companion
+   - Fully scoped within Projects section; reduced motion compliance
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function initDistantRingedPlanet() {
+  function start() {
+    var planet = document.getElementById('projects-pixel-planet');
+    var driftWrap = document.getElementById('projects-planet-drift-wrap');
+    var projectsSec = document.getElementById('projects');
+    if (!planet || !driftWrap || !projectsSec) return;
+
+    var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var prefersReduced = motionQuery.matches;
+
+    // Independent state with high celestial mass (smooth inertia)
+    var state = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      angle: -8, // Initial subtle cosmic tilt
+      rotSpeed: 0.022, // ~1.3 deg/sec slow, deliberate continuous rotation
+      orbitRx: 18,
+      orbitRy: 12,
+      orbitFreq: 0.00032,
+      wobbleFreq: 0.00075,
+      wobbleAmp: 4.5,
+      phase: 1.85,
+      mass: 8.5,
+      time: 0
+    };
+
+    if (prefersReduced) {
+      planet.style.transform = 'translate3d(0, 0, 0)';
+      driftWrap.style.transform = 'rotate(' + state.angle + 'deg)';
+      return;
+    }
+
+    var animFrame = null;
+    var lastTime = null;
+
+    function step(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      var dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+      lastTime = timestamp;
+
+      state.time += dt * 60;
+      var t = state.time;
+
+      // 1. Dual-harmonic orbital gravity target
+      var targetX = Math.cos(t * state.orbitFreq + state.phase) * state.orbitRx +
+                    Math.sin(t * state.wobbleFreq) * state.wobbleAmp;
+      var targetY = Math.sin(t * state.orbitFreq + state.phase) * state.orbitRy +
+                    Math.cos(t * state.wobbleFreq * 0.75) * (state.wobbleAmp * 0.65);
+
+      // Restoring celestial gravitational acceleration towards orbital equilibrium
+      var kGrav = 0.0009 / state.mass;
+      var ax = (targetX - state.x) * kGrav;
+      var ay = (targetY - state.y) * kGrav;
+
+      // 2. Dynamic avoidance of roaming rocket companion
+      var rocket = window.__roamingRocketPos;
+      if (rocket) {
+        var planetRect = planet.getBoundingClientRect();
+        var planetCX = planetRect.left + planetRect.width / 2;
+        var planetCY = planetRect.top + planetRect.height / 2;
+        var rdx = planetCX - rocket.x;
+        var rdy = planetCY - rocket.y;
+        var rdist = Math.sqrt(rdx * rdx + rdy * rdy);
+        var safeDist = (planetRect.width / 2) + rocket.radius + 30;
+        if (rdist < safeDist) {
+          var rForce = ((safeDist - rdist) / safeDist) * (0.8 / state.mass);
+          var dirX = rdist > 0.01 ? (rdx / rdist) : 1;
+          var dirY = rdist > 0.01 ? (rdy / rdist) : 0;
+          ax += dirX * rForce;
+          ay += dirY * rForce;
+        }
+      }
+
+      // 3. Integrate inertia, vacuum damping & speed limit
+      state.vx = (state.vx + ax) * 0.990;
+      state.vy = (state.vy + ay) * 0.990;
+
+      var speed = Math.sqrt(state.vx * state.vx + state.vy * state.vy);
+      var maxSpeed = 0.28;
+      if (speed > maxSpeed) {
+        state.vx = (state.vx / speed) * maxSpeed;
+        state.vy = (state.vy / speed) * maxSpeed;
+      }
+
+      state.x += state.vx;
+      state.y += state.vy;
+
+      // 4. Continuous deliberate rotation
+      state.angle += state.rotSpeed;
+
+      // 5. Viewport check & transform updates
+      var secRect = projectsSec.getBoundingClientRect();
+      var inView = (secRect.bottom > -200 && secRect.top < window.innerHeight + 200);
+      if (inView) {
+        planet.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px, ' + state.y.toFixed(2) + 'px, 0)';
+        driftWrap.style.transform = 'rotate(' + state.angle.toFixed(2) + 'deg)';
+      }
+
+      animFrame = requestAnimationFrame(step);
+    }
+
+    animFrame = requestAnimationFrame(step);
+
+    motionQuery.addEventListener('change', function (e) {
+      if (e.matches) {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        planet.style.transform = 'translate3d(0, 0, 0)';
+        driftWrap.style.transform = 'rotate(' + state.angle + 'deg)';
+      } else {
+        lastTime = null;
+        animFrame = requestAnimationFrame(step);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
