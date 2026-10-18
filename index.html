@@ -63,6 +63,12 @@
     <div class="hero-pixel-planet" id="hero-pixel-planet" aria-hidden="true">
       <img src="./assets/pixel-planet.svg" alt="" class="hero-planet-img">
     </div>
+    <!-- Distant Small Pixel Satellite (Far away orbital drift background) -->
+    <div class="hero-pixel-satellite" id="hero-pixel-satellite" aria-hidden="true">
+      <div class="hero-satellite-drift-wrap">
+        <img src="./assets/pixel-satellite.png" alt="" class="hero-satellite-img">
+      </div>
+    </div>
     <div class="profile-inner">
       <div class="section__text">
         <p class="section__text_p1 reveal">Hey there, I'm</p>
@@ -630,6 +636,15 @@
 
   <!-- ═══════════════════════════ HACKATHONS ═════════════════════════════ -->
   <section id="hackathons" class="reveal-divider" aria-label="Hackathons">
+    <!-- Pixel Terminal Robot walking on Hackathons divider -->
+    <div class="pixel-mascot mascot-terminal-robot" id="mascot-terminal-robot" role="img" aria-label="Pixel terminal robot walking on divider" tabindex="0" data-state="walk">
+      <div class="terminal-robot-bubble" id="terminal-robot-bubble" aria-hidden="true">
+        <span class="bubble-prompt">&gt;</span> <span class="bubble-text">hello_world</span>
+      </div>
+      <div class="terminal-robot-body" id="terminal-robot-body">
+        <div class="terminal-robot-sprite" id="terminal-robot-sprite" aria-hidden="true"></div>
+        <div class="terminal-robot-fx" id="terminal-robot-fx" aria-hidden="true"></div>
+      </div>
     </div>
 
     <div class="section-header reveal">
@@ -971,6 +986,6 @@
   <!-- Roaming Pixel Space Rocket Companion Canvas -->
   <canvas id="space-rocket-canvas" aria-hidden="true"></canvas>
 
-  <script src="script.js?v=34"></script>
+  <script src="script.js?v=35"></script>
 </body>
 </html>
