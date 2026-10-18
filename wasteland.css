@@ -1,0 +1,308 @@
+/* ════════════════════════════════════════════════════════════════════
+   WASTELAND SUNSET FOOTER — All rules scoped to wasteland classes
+   Linked from index.html after style.css and mediaqueries.css
+   ════════════════════════════════════════════════════════════════════ */
+
+.footer-wasteland { margin-top: 30px; }
+
+/* Override the base footer-scenery-strip height and background */
+.footer-scenery-strip.wasteland-scenery {
+  height: 236px !important;
+  background: linear-gradient(
+    180deg,
+    #0F0F0E 0%,
+    #14252e 15%,
+    #2a4b5b 35%,
+    #b46a28 65%,
+    #df8d32 82%,
+    #cf5e22 100%
+  ) !important;
+}
+
+/* Distant Mountain Range — muted, far atmospheric */
+.wasteland-mountains {
+  position: absolute;
+  left: 0; right: 0; bottom: var(--ground-y);
+  width: 100%; height: 62px;
+  background-image: url('./assets/wasteland/distant-mountains.png');
+  background-repeat: repeat-x;
+  background-size: auto 62px;
+  background-position: center bottom;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  opacity: 0.42;
+  filter: brightness(0.65) saturate(0.5) hue-rotate(10deg);
+  z-index: 1;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   INTERACTIVE TOWERS & MULTI-PLANE DEPTH SYSTEM
+   ════════════════════════════════════════════════════════════════════ */
+
+.tower-interactive-wrap {
+  cursor: pointer;
+  pointer-events: auto !important;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: filter 0.22s ease, transform 0.22s ease;
+  outline: none;
+}
+.tower-interactive-wrap:focus-visible {
+  outline: 2px dashed #fbbf24;
+  outline-offset: 4px;
+}
+
+.tower-sprite-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
+/* Ground Contact Shadow (Ambient Occlusion) */
+.tower-ground-shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 5%;
+  width: 90%;
+  height: 8px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+/* Depth for Central Citadel Monolith (Midground Layer 2) */
+.prop-wasteland-citadel {
+  position: absolute;
+  left: 52%; transform: translateX(-50%);
+  bottom: var(--ground-y);
+  width: 120px; height: 195px;
+  z-index: 2;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 18px rgba(223, 141, 50, 0.25));
+}
+.prop-wasteland-citadel:hover {
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 24px rgba(251, 191, 36, 0.55)) brightness(1.12);
+}
+.prop-wasteland-citadel.is-pulsing {
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 36px #fbbf24) brightness(1.45) !important;
+}
+
+/* Citadel Radar Ping Ring Animation */
+.citadel-radar-ring {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fbbf24;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.prop-wasteland-citadel.is-pulsing .citadel-radar-ring {
+  animation: radarPing 1.1s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+}
+@keyframes radarPing {
+  0%   { transform: translate(-50%, -50%) scale(0.1); opacity: 0.95; border-color: #fbbf24; box-shadow: 0 0 10px #fbbf24; }
+  60%  { opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(4.2); opacity: 0; border-color: #22d3ee; }
+}
+
+/* Depth for Left Factory (Foreground Layer 5) */
+.prop-wasteland-factory-left {
+  position: absolute;
+  left: -8px; bottom: var(--ground-y);
+  width: 125px; height: 178px;
+  z-index: 4;
+  filter: drop-shadow(4px 8px 14px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 10px rgba(15, 23, 42, 0.45));
+}
+.prop-wasteland-factory-left:hover {
+  filter: drop-shadow(5px 10px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(34, 211, 238, 0.35)) brightness(1.1);
+}
+.prop-wasteland-factory-left.is-venting {
+  filter: drop-shadow(6px 12px 20px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 24px rgba(249, 115, 22, 0.7)) brightness(1.25) !important;
+}
+
+/* Depth for Right Refinery (Foreground Layer 6) */
+.prop-wasteland-refinery-right {
+  position: absolute;
+  right: -10px; bottom: var(--ground-y);
+  width: 205px; height: 152px;
+  z-index: 4;
+  filter: drop-shadow(-4px 8px 14px rgba(0, 0, 0, 0.82)) drop-shadow(0 0 12px rgba(15, 23, 42, 0.5));
+}
+.prop-wasteland-refinery-right:hover {
+  filter: drop-shadow(-5px 10px 16px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 18px rgba(251, 191, 36, 0.4)) brightness(1.1);
+}
+.prop-wasteland-refinery-right.is-cycling {
+  filter: drop-shadow(-6px 12px 22px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 28px #f59e0b) brightness(1.25) !important;
+}
+
+/* 16-Bit Retro HUD Tooltip Badges */
+.tower-hud-badge {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(13, 17, 23, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), inset 0 0 6px rgba(251, 191, 36, 0.15);
+  padding: 3px 8px;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 20;
+}
+.tower-hud-badge::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(251, 191, 36, 0.7);
+}
+.hud-tag {
+  font-family: 'Space Mono', monospace, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+  line-height: 1;
+}
+.hud-status {
+  font-family: 'Space Mono', monospace, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+.hud-hint {
+  font-family: 'Space Mono', monospace, monospace;
+  font-size: 7px;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.tower-interactive-wrap:hover .tower-hud-badge,
+.tower-interactive-wrap.show-hud .tower-hud-badge {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Utility Poles */
+.prop-wasteland-pole {
+  position: absolute;
+  bottom: var(--ground-y);
+  width: 20px; height: 72px;
+  z-index: 3;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+.pole-pos-left      { left: 14%; }
+.pole-pos-mid-left  { left: 27%; }
+.pole-pos-mid-right { left: 63%; }
+.pole-pos-right     { left: 79%; }
+
+/* Power Cables SVG */
+.wasteland-cables-svg {
+  position: absolute;
+  left: 0; right: 0; bottom: var(--ground-y);
+  width: 100%; height: 140px;
+  pointer-events: none; z-index: 3;
+}
+
+/* Derelict vehicles */
+.prop-wasteland-car {
+  position: absolute; left: 62%; bottom: var(--ground-y);
+  width: 48px; height: 21px; z-index: 5;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+.prop-wasteland-buggy {
+  position: absolute; left: 74%; bottom: var(--ground-y);
+  width: 34px; height: 19px; z-index: 5;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+
+/* Wasteland ground tile */
+.footer-ground-line.wasteland-ground {
+  background-image: url('./assets/wasteland/wasteland-ground-bed.png') !important;
+  z-index: 8;
+}
+
+/* Actors strip */
+.footer-props-strip.wasteland-actors { z-index: 6; }
+
+/* Cyborg canvas */
+.prop-cyborg {
+  position: absolute; left: 0; bottom: 0;
+  width: 100%; pointer-events: none;
+}
+.prop-cyborg canvas {
+  display: block; width: 100%; height: 96px;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+
+/* Factory smoke fumes */
+.smoke-puff {
+  position: absolute; width: 9px; height: 9px;
+  border-radius: 50%; background: rgba(110,100,88,0.55);
+  z-index: 5; animation: smokeRise 3.2s ease-out infinite;
+}
+.smoke-stack-1  { left: 12px; bottom: calc(var(--ground-y) + 168px); animation-delay: 0s; }
+.smoke-stack-2  { left: 38px; bottom: calc(var(--ground-y) + 165px); animation-delay: 1.4s; }
+.smoke-stack-1b { left: 14px; bottom: calc(var(--ground-y) + 170px); animation-delay: 1.6s; width: 6px; height: 6px; }
+.smoke-stack-2b { left: 40px; bottom: calc(var(--ground-y) + 167px); animation-delay: 3.0s; width: 6px; height: 6px; }
+
+@keyframes smokeRise {
+  0%   { transform: translateY(0)     scale(1);    opacity: 0.60; }
+  35%  { transform: translateY(-18px) scale(1.55); opacity: 0.38; }
+  70%  { transform: translateY(-40px) scale(2.30); opacity: 0.18; }
+  100% { transform: translateY(-62px) scale(3.10); opacity: 0;    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smoke-puff { animation: none; opacity: 0; }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .footer-scenery-strip.wasteland-scenery   { height: 190px !important; }
+  .prop-wasteland-citadel                   { width: 115px; height: 153px; }
+  .prop-wasteland-factory-left              { width: 105px; height: 150px; }
+  .prop-wasteland-refinery-right            { width: 175px; height: 130px; }
+  .pole-pos-mid-left                        { display: none; }
+  .prop-wasteland-buggy                     { display: none; }
+}
+@media (max-width: 768px) {
+  .footer-scenery-strip.wasteland-scenery   { height: 165px !important; }
+  .prop-wasteland-citadel                   { width: 95px; height: 126px; left: 55%; }
+  .prop-wasteland-factory-left              { width: 85px; height: 120px; }
+  .prop-wasteland-refinery-right            { width: 140px; height: 104px; }
+  .prop-wasteland-pole                      { display: none; }
+  .prop-wasteland-car                       { display: none; }
+  .wasteland-cables-svg                     { display: none; }
+}
+@media (max-width: 480px) {
+  .footer-scenery-strip.wasteland-scenery   { height: 145px !important; }
+  .prop-wasteland-factory-left              { display: none; }
+  .smoke-puff                               { display: none; }
+  .prop-wasteland-refinery-right            { width: 110px; height: 82px; right: -8px; }
+  .prop-wasteland-citadel                   { width: 80px; height: 106px; left: 62%; }
+}
