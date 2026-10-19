@@ -31,13 +31,6 @@
     margin: 0 auto;
   }
 
-  .hero-black-hole-container {
-    top: 35px;
-    right: -25px;
-    width: clamp(320px, 46vw, 390px);
-    opacity: 0.78;
-  }
-
   .hero-pixel-planet {
     top: 12%;
     left: 10%;
@@ -381,13 +374,6 @@
     width: clamp(140px, 48vw, 200px);
   }
 
-  .hero-black-hole-container {
-    top: 35px;
-    right: -15px;
-    width: clamp(230px, 64vw, 280px);
-    opacity: 0.72;
-  }
-
   .hero-pixel-planet {
     top: 10%;
     left: 8%;
@@ -406,12 +392,6 @@
     height: auto;
     aspect-ratio: 1205 / 641;
     z-index: 2;
-  }
-
-  .bh-part-stream-2,
-  .bh-part-farside,
-  .bh-part-plunge {
-    display: none;
   }
 
   .title {
