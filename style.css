@@ -198,6 +198,8 @@ section {
 }
 
 .section-header {
+  position: relative;
+  z-index: 5;
   margin-bottom: clamp(2.5rem, 4vw, 3.25rem);
   max-width: fit-content;
 }
@@ -307,14 +309,16 @@ section {
   z-index: 1;
 }
 
-/* Distant Small Pixel Planet (Far away in celestial background, not behind photo) */
+/* Distant Small Pixel Planet (Upper-left celestial background, balanced against black hole) */
 .hero-pixel-planet {
   position: absolute;
-  top: 12%;
-  right: 12%;
-  width: 52px;
-  height: 52px;
-  z-index: 1; /* Sits in background sky, far from profile photo */
+  top: 14%;
+  left: clamp(28px, 14vw, 220px);
+  right: auto;
+  bottom: auto;
+  width: 46px;
+  height: 46px;
+  z-index: 1; /* Sits in background sky behind foreground content */
   pointer-events: none;
   user-select: none;
   animation: hero-planet-drift 32s ease-in-out infinite alternate;
@@ -343,20 +347,23 @@ section {
   }
 }
 
-/* Distant Small Pixel Satellite (Far away in cosmic background, drifting slowly) */
+/* NASA Voyager 1 Spacecraft (Historical 16-bit pixel art in deep space) */
 .hero-pixel-satellite {
   position: absolute;
-  top: 14%;
-  left: clamp(28px, 14vw, 220px);
-  width: 38px;
-  height: 38px;
+  top: auto;
+  bottom: 10%;
+  right: clamp(30px, 6vw, 90px);
+  left: auto;
+  width: clamp(74px, 5.8vw, 86px);
+  height: auto;
+  aspect-ratio: 1205 / 641;
   z-index: 1; /* Sits in background sky behind foreground content */
   pointer-events: none;
   user-select: none;
   will-change: transform;
 }
 
-/* Scroll-driven parallax: satellite scrolls significantly slower than foreground to convey distance */
+/* Scroll-driven parallax: Voyager 1 drifts subtly with scroll */
 @supports (animation-timeline: scroll(root)) {
   .hero-pixel-satellite {
     animation: hero-satellite-parallax linear both;
@@ -370,7 +377,7 @@ section {
     transform: translateY(0);
   }
   to {
-    transform: translateY(140px);
+    transform: translateY(70px);
   }
 }
 
@@ -385,11 +392,12 @@ section {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: contain;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  opacity: 0.72;
-  filter: brightness(0.88) contrast(0.92) drop-shadow(0 0 6px rgba(100, 150, 240, 0.08));
+  opacity: 0.86;
+  filter: brightness(0.94) contrast(1.02);
 }
 
 @keyframes hero-satellite-drift {
@@ -416,6 +424,368 @@ section {
   .hero-pixel-planet,
   .hero-pixel-satellite,
   .hero-satellite-drift-wrap {
+    animation: none !important;
+  }
+}
+
+/* ── DISTANT ANIMATED PIXEL-ART BLACK HOLE WITH GRAVITATIONAL PHYSICS ── */
+.hero-black-hole-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1; /* Cosmic background layer behind foreground photo & text */
+}
+
+/* Celestial Anchor: positioned in upper-right sky with sweeping accretion tail */
+.hero-black-hole-container {
+  position: absolute;
+  top: clamp(45px, 8vh, 90px);
+  right: clamp(-50px, -3.5vw, -10px);
+  width: clamp(520px, 46vw, 680px);
+  aspect-ratio: 1262 / 528;
+  pointer-events: none;
+  will-change: transform;
+  animation: bhFrameDragging 48s ease-in-out infinite alternate;
+}
+
+@supports (animation-timeline: scroll(root)) {
+  .hero-black-hole-container {
+    animation: bh-scroll-parallax linear both, bhFrameDragging 48s ease-in-out infinite alternate;
+    animation-timeline: scroll(root), auto;
+    animation-range: 0px 800px, auto;
+  }
+}
+
+@keyframes bh-scroll-parallax {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(85px);
+  }
+}
+
+/* Black hole core sprite: authentic 16-bit chunky pixels with deep-space grading */
+.hero-black-hole-sprite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  opacity: 0.88;
+  filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 20px rgba(194, 84, 26, 0.14)) drop-shadow(0 0 45px rgba(0, 0, 0, 0.9));
+  animation: bhRelativisticThermal 15s ease-in-out infinite alternate;
+  will-change: filter, opacity;
+}
+
+/* Gravitational Accretion Stream & Physics Particles */
+.bh-gravity-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Gravitationally infalling matter particles */
+.bh-gravity-particle {
+  position: absolute;
+  image-rendering: pixelated;
+  pointer-events: none;
+  border-radius: 0; /* Pure 16-bit integer pixel edges */
+  opacity: 0;
+}
+
+/* Particle 1: Matter in the tail being accelerated into the disk */
+.bh-part-stream-1 {
+  width: 3px;
+  height: 3px;
+  background: #f59e0b;
+  box-shadow: 0 0 4px #d97706;
+  animation: bhTailInflow1 14s cubic-bezier(0.35, 0, 0.2, 1) infinite;
+}
+
+/* Particle 2: Secondary tail filament matter cluster */
+.bh-part-stream-2 {
+  width: 2px;
+  height: 2px;
+  background: #ea580c;
+  box-shadow: 0 0 3px #c2410c;
+  animation: bhTailInflow2 19s cubic-bezier(0.35, 0, 0.2, 1) infinite 4s;
+}
+
+/* Particle 3: Fast inner relativistic matter skimming the photon sphere with Doppler brightening */
+.bh-part-orbit {
+  width: 3px;
+  height: 2px;
+  background: #fef08a;
+  box-shadow: 0 0 5px #eab308;
+  animation: bhInnerOrbit 7.5s cubic-bezier(0.2, 0, 0.1, 1) infinite;
+}
+
+/* Particle 4: Far-side gravitational lensing arc sweep */
+.bh-part-farside {
+  width: 2px;
+  height: 2px;
+  background: #c2410c;
+  animation: bhFarSideSweep 12s ease-in-out infinite 2.5s;
+}
+
+/* Particle 5: Infalling matter plunging into the event horizon */
+.bh-part-plunge {
+  width: 2px;
+  height: 2px;
+  background: #fffbeb;
+  box-shadow: 0 0 4px #f59e0b;
+  animation: bhPlungeSingularity 10s cubic-bezier(0.4, 0, 0.1, 1) infinite 5s;
+}
+
+/* Gravitational Lensing Stars: spacetime curvature deflecting background starlight */
+.bh-lensed-photon {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #e2e8f0;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.bh-photon-1 {
+  top: 22%;
+  left: 77%;
+  animation: bhPhotonDeflection1 17s ease-in-out infinite alternate;
+}
+
+.bh-photon-2 {
+  bottom: 24%;
+  right: 17%;
+  animation: bhPhotonDeflection2 21s ease-in-out infinite alternate;
+}
+
+/* ── KEYFRAME ANIMATIONS: GRAVITATIONAL & RELATIVISTIC PHYSICS ── */
+
+/* 1. Lense-Thirring frame dragging / celestial precession */
+@keyframes bhFrameDragging {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate3d(-10px, 6px, 0) rotate(0.9deg);
+  }
+  65% {
+    transform: translate3d(-5px, -8px, 0) rotate(-0.7deg);
+  }
+  100% {
+    transform: translate3d(7px, -4px, 0) rotate(1.2deg);
+  }
+}
+
+/* 2. Relativistic thermal breathing of the accretion disk */
+@keyframes bhRelativisticThermal {
+  0%, 100% {
+    opacity: 0.85;
+    filter: brightness(0.90) contrast(0.96) drop-shadow(0 0 18px rgba(194, 84, 26, 0.10));
+  }
+  50% {
+    opacity: 0.94;
+    filter: brightness(1.02) contrast(1.04) drop-shadow(0 0 28px rgba(234, 88, 12, 0.18));
+  }
+}
+
+/* 3. Infalling matter flowing along the accretion tail into the gravity well */
+@keyframes bhTailInflow1 {
+  0% {
+    top: 74%;
+    left: 10%;
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  12% {
+    opacity: 0.85;
+    transform: scale(0.9);
+  }
+  45% {
+    top: 57%;
+    left: 36%;
+    opacity: 0.95;
+  }
+  72% {
+    top: 48%;
+    left: 64%;
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  90% {
+    top: 54%;
+    left: 79%;
+    opacity: 0.75;
+    transform: scale(0.7);
+  }
+  100% {
+    top: 49%;
+    left: 83%;
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+/* 4. Secondary tail filament matter cluster */
+@keyframes bhTailInflow2 {
+  0% {
+    top: 67%;
+    left: 16%;
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.75;
+  }
+  50% {
+    top: 52%;
+    left: 42%;
+    opacity: 0.9;
+  }
+  78% {
+    top: 44%;
+    left: 67%;
+    opacity: 0.95;
+  }
+  100% {
+    top: 47%;
+    left: 77%;
+    opacity: 0;
+  }
+}
+
+/* 5. Fast inner relativistic matter skimming the photon sphere (Doppler brightening on near side) */
+@keyframes bhInnerOrbit {
+  0% {
+    top: 64%;
+    left: 67%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  18% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  55% {
+    top: 57%;
+    left: 82%;
+    opacity: 1;
+    transform: scale(1.25); /* Doppler amplification */
+  }
+  82% {
+    top: 41%;
+    left: 90%;
+    opacity: 0.45;
+    transform: scale(0.7);
+  }
+  100% {
+    top: 35%;
+    left: 92%;
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+/* 6. Far-side gravitational lensing arc sweep */
+@keyframes bhFarSideSweep {
+  0% {
+    top: 36%;
+    left: 92%;
+    opacity: 0;
+  }
+  22% {
+    top: 23%;
+    left: 85%;
+    opacity: 0.7;
+  }
+  52% {
+    top: 17%;
+    left: 77%;
+    opacity: 0.8;
+  }
+  82% {
+    top: 24%;
+    left: 69%;
+    opacity: 0.35;
+  }
+  100% {
+    top: 34%;
+    left: 66%;
+    opacity: 0;
+  }
+}
+
+/* 7. Plunging matter falling through the event horizon into singularity */
+@keyframes bhPlungeSingularity {
+  0% {
+    top: 40%;
+    left: 72%;
+    opacity: 0;
+    transform: scale(1);
+  }
+  20% {
+    opacity: 1;
+  }
+  60% {
+    top: 46%;
+    left: 77%;
+    opacity: 0.9;
+    transform: scale(0.8);
+  }
+  90% {
+    top: 47%;
+    left: 79%;
+    opacity: 0.3;
+    transform: scale(0.4);
+  }
+  100% {
+    top: 47%;
+    left: 80%;
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* 8. Gravitational lensing deflection */
+@keyframes bhPhotonDeflection1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(4px, -2px, 0);
+    opacity: 0.85; /* Gravitational amplification */
+  }
+}
+
+@keyframes bhPhotonDeflection2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.40;
+  }
+  50% {
+    transform: translate3d(-3px, 3px, 0);
+    opacity: 0.75;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-black-hole-container,
+  .hero-black-hole-sprite,
+  .bh-gravity-particle,
+  .bh-lensed-photon {
     animation: none !important;
   }
 }
@@ -541,6 +911,8 @@ section {
 
 /* ── 8. ABOUT ──────────────────────────────────────────────────────────── */
 .about-grid {
+  position: relative;
+  z-index: 4;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2.5rem, 5vw, 4.5rem);
@@ -1467,8 +1839,7 @@ footer {
   background: transparent !important;
   position: relative;
   z-index: 2;
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: visible;
   --ground-y: 18px;
 }
 
@@ -1488,8 +1859,7 @@ footer {
   width: 100%;
   height: 100px;
   background: transparent !important;
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: visible;
   pointer-events: none;
 }
 
@@ -2649,23 +3019,6 @@ footer {
 }
 
 
-/* ── Roaming Pixel Space Rocket Companion in Hero / Profile Section ───── */
-#space-rocket-canvas,
-.hero-space-rocket-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1; /* Cosmic background layer: sits behind profile-inner (z-index 2) */
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  opacity: 0.82;
-  filter: brightness(0.85) contrast(0.92);
-}
-
 /* ═══════════════════════════════════════════════════════════════════════
    AI PIXEL MASCOTS — Asymmetric Placement, Movement & Interactivity
    1. ChatGPT: floating companion beside About bio with OpenAI logo bubble
@@ -3576,10 +3929,10 @@ footer {
 
 @media (max-width: 480px) {
   .space-nebula-wrap {
-    width: clamp(240px, 68vw, 280px);
-    top: -15px;
-    right: 8px;
-    opacity: 0.35;
+    width: clamp(310px, 86vw, 360px);
+    top: -10px;
+    right: -25px;
+    opacity: 0.52;
   }
   /* Position orbital station behind frosted project card on mobile */
   .projects-orbital-station {

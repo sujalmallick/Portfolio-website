@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=38">
-  <link rel="stylesheet" href="mediaqueries.css?v=33">
-  <link rel="stylesheet" href="wasteland.css?v=7">
+  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="mediaqueries.css?v=34">
+  <link rel="stylesheet" href="wasteland.css?v=9">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
 <body>
@@ -64,15 +64,29 @@
     <div class="hero-pixel-planet" id="hero-pixel-planet" aria-hidden="true">
       <img src="./assets/pixel-planet.svg" alt="" class="hero-planet-img">
     </div>
-    <!-- Distant Small Pixel Satellite (Far away orbital drift background) -->
-    <div class="hero-pixel-satellite" id="hero-pixel-satellite" aria-hidden="true">
+    <!-- NASA Voyager 1 Spacecraft (Historical 16-bit Pixel Art) in Hero Deep-Space Background -->
+    <div class="hero-pixel-satellite hero-pixel-voyager" id="hero-pixel-satellite" aria-label="NASA Voyager 1 spacecraft" aria-hidden="true">
       <div class="hero-satellite-drift-wrap">
-        <img src="./assets/pixel-satellite.png" alt="" class="hero-satellite-img">
+        <img src="./assets/sprites/voyager-1-isolated.png" alt="NASA Voyager 1" class="hero-satellite-img hero-voyager-img">
       </div>
     </div>
-    <!-- Pixel Space Rocket Companion Canvas -->
-    <canvas id="space-rocket-canvas" class="hero-space-rocket-canvas" aria-hidden="true"></canvas>
+
+    <!-- Distant Animated Pixel-Art Black Hole with Gravitational Physics & Accretion Tail -->
+    <div class="hero-black-hole-wrap" id="hero-black-hole-wrap" aria-hidden="true">
+      <div class="hero-black-hole-container">
+        <img src="./assets/sprites/pixel-black-hole.png" alt="" class="hero-black-hole-sprite" width="1262" height="528" draggable="false">
+        <div class="bh-gravity-field">
+          <span class="bh-gravity-particle bh-part-stream-1"></span>
+          <span class="bh-gravity-particle bh-part-stream-2"></span>
+          <span class="bh-gravity-particle bh-part-orbit"></span>
+          <span class="bh-gravity-particle bh-part-farside"></span>
+          <span class="bh-gravity-particle bh-part-plunge"></span>
+          <span class="bh-lensed-photon bh-photon-1"></span>
+          <span class="bh-lensed-photon bh-photon-2"></span>
+        </div>
+      </div>
     </div>
+
     <div class="profile-inner">
       <div class="section__text">
         <p class="section__text_p1 reveal">Hey there, I'm</p>
@@ -141,7 +155,7 @@
 
   <!-- ═══════════════════════════ ABOUT ═════════════════════════════════ -->
   <section id="about" class="reveal-divider" aria-label="About">
-    <!-- Distant Deep-Space Nebula Cloud (Atmospheric cosmic layer) -->
+    <!-- Distant Deep-Space Volumetric Nebula Cloud -->
     <div class="space-nebula-wrap" id="space-nebula-wrap" aria-hidden="true">
       <div class="space-nebula-drift">
         <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="" class="space-nebula-img" width="1376" height="768" draggable="false">
@@ -895,6 +909,13 @@
         <!-- Layer 1: Distant Jagged Mountains (Atmospheric Perspective) -->
         <div class="wasteland-mountains" aria-hidden="true"></div>
 
+        <!-- Layer 1b: Distant Orbital Satellite Above Wasteland Horizon (Far Left High Sky) -->
+        <div class="prop-wasteland-satellite" id="prop-wasteland-satellite" aria-hidden="true">
+          <div class="wasteland-satellite-drift">
+            <img src="./assets/pixel-satellite.png" alt="" class="wasteland-satellite-img" width="28" height="28" draggable="false">
+          </div>
+        </div>
+
         <!-- Layer 2: Central Industrial Citadel Monolith Tower (Interactive) -->
         <div class="tower-interactive-wrap prop-wasteland-citadel" id="tower-citadel" role="button" tabindex="0" aria-label="Central Citadel Monolith Tower">
           <div class="citadel-radar-ring" aria-hidden="true"></div>
@@ -1004,6 +1025,6 @@
   <!-- Retro Chunky Pixel-Art Asteroid Field -->
   <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
 
-  <script src="script.js?v=50"></script>
+  <script src="script.js?v=51"></script>
 </body>
 </html>

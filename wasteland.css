@@ -13,19 +13,18 @@
    through muted deep teal into smoky amber and warm sunset orange at the horizon */
 .footer-scenery-strip.wasteland-scenery {
   height: 236px !important;
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: visible;
   background: linear-gradient(
     180deg,
     rgba(15, 15, 14, 0) 0%,
-    rgba(15, 15, 14, 0.35) 10%,
-    rgba(16, 23, 25, 0.75) 22%,
-    #14252B 36%,
-    #1C3B46 50%,
-    #344047 64%,
-    #76503A 76%,
-    #B56A2F 88%,
-    #8A431C 95%,
+    rgba(15, 15, 14, 0.4) 12%,
+    #101719 24%,
+    #14252B 38%,
+    #1C3B46 52%,
+    #344047 66%,
+    #76503A 78%,
+    #B56A2F 89%,
+    #8A431C 96%,
     #5C2A12 100%
   ) !important;
 }
@@ -44,6 +43,52 @@
   opacity: 0.42;
   filter: brightness(0.65) saturate(0.5) hue-rotate(10deg);
   z-index: 1;
+}
+
+/* Distant Orbital Satellite Above Left Wasteland Horizon */
+.prop-wasteland-satellite {
+  position: absolute;
+  top: 2px;
+  left: 17%;
+  width: 26px;
+  height: 26px;
+  z-index: 1; /* Floating high in upper sky above mountains */
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.wasteland-satellite-drift {
+  width: 100%;
+  height: 100%;
+  animation: wastelandSatelliteDrift 54s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.wasteland-satellite-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  opacity: 0.85;
+  filter: brightness(0.88) contrast(0.95);
+}
+
+@keyframes wastelandSatelliteDrift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate3d(10px, -4px, 0) rotate(2deg);
+  }
+  70% {
+    transform: translate3d(18px, 4px, 0) rotate(-1.5deg);
+  }
+  100% {
+    transform: translate3d(6px, -2px, 0) rotate(1deg);
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -555,11 +600,15 @@
     animation: none !important;
     opacity: 0.85;
   }
+  .wasteland-satellite-drift {
+    animation: none !important;
+  }
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .footer-scenery-strip.wasteland-scenery   { height: 190px !important; }
+  .footer-scenery-strip.wasteland-scenery   { height: 220px !important; }
+  .prop-wasteland-satellite                 { left: 19%; top: 2px; width: 23px; height: 23px; }
   .prop-wasteland-citadel                   { width: 115px; height: 153px; left: 51%; }
   .prop-wasteland-beacon                    { width: 48px; height: 152px; left: 20%; }
   .prop-wasteland-factory-left              { width: 105px; height: 150px; }
@@ -570,7 +619,8 @@
   .prop-wasteland-buggy                     { display: none; }
 }
 @media (max-width: 768px) {
-  .footer-scenery-strip.wasteland-scenery   { height: 165px !important; }
+  .footer-scenery-strip.wasteland-scenery   { height: 200px !important; }
+  .prop-wasteland-satellite                 { left: 20%; top: 2px; width: 20px; height: 20px; }
   .prop-wasteland-citadel                   { width: 95px; height: 126px; left: 49%; }
   .prop-wasteland-beacon                    { width: 38px; height: 120px; left: 18%; }
   .beacon-amber-lamp,
@@ -586,7 +636,8 @@
   .wasteland-cables-svg                     { display: none; }
 }
 @media (max-width: 480px) {
-  .footer-scenery-strip.wasteland-scenery   { height: 145px !important; }
+  .footer-scenery-strip.wasteland-scenery   { height: 185px !important; }
+  .prop-wasteland-satellite                 { left: 17%; top: 2px; width: 17px; height: 17px; }
   .prop-wasteland-beacon                    { width: 28px; height: 90px; left: 14%; }
   .beacon-amber-lamp,
   .beacon-red-lamp                          { width: 2.5px; height: 2.5px; }
@@ -599,6 +650,8 @@
   .refinery-beacon                          { width: 2.5px; height: 2.5px; }
 }
 @media (max-width: 360px) {
+  .footer-scenery-strip.wasteland-scenery   { height: 175px !important; }
+  .prop-wasteland-satellite                 { left: 15%; top: 2px; width: 15px; height: 15px; }
   .prop-wasteland-beacon                    { width: 24px; height: 76px; left: 12%; }
   .prop-wasteland-refinery-right            { width: 95px; height: 70px; right: -4px; }
   .prop-wasteland-citadel                   { width: 68px; height: 90px; left: 44%; }
