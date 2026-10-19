@@ -2254,9 +2254,6 @@ document.addEventListener('keydown', function (e) {
         if (!ticking) {
           window.requestAnimationFrame(function () {
             var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            if (satellite && scrollY < 900) {
-              satellite.style.transform = 'translate3d(0, ' + (scrollY * 0.18) + 'px, 0)';
-            }
             if (station) {
               var stationSec = document.getElementById('projects');
               if (stationSec) {

@@ -48,14 +48,14 @@
   }
 
   .hero-pixel-satellite {
-    top: auto;
-    bottom: 12%;
-    right: 7%;
-    left: auto;
+    top: 8px;
+    bottom: auto;
+    left: calc(50% + 168px);
+    right: auto;
     width: 44px;
     height: auto;
     aspect-ratio: 1205 / 641;
-    z-index: 0;
+    z-index: 2;
   }
 
   /* About: single column */
@@ -398,14 +398,14 @@
   }
 
   .hero-pixel-satellite {
-    top: auto;
-    bottom: 8%;
-    right: 6%;
+    top: 102px;
+    bottom: auto;
     left: auto;
-    width: 34px;
+    right: 12px;
+    width: 32px;
     height: auto;
     aspect-ratio: 1205 / 641;
-    z-index: 0;
+    z-index: 2;
   }
 
   .bh-part-stream-2,
@@ -590,8 +590,10 @@
 
   /* Distant Voyager 1 — Ultra-narrow Mobile scaling */
   .hero-pixel-satellite {
-    bottom: 7%;
-    right: 5%;
+    top: 100px;
+    bottom: auto;
+    left: auto;
+    right: 8px;
     width: 28px;
   }
 
