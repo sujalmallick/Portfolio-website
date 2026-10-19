@@ -350,11 +350,15 @@ document.addEventListener('keydown', function (e) {
 
   function resize() {
     var rect = canvas.getBoundingClientRect();
-    width = Math.max(320, Math.floor(rect.width || window.innerWidth));
-    height = 96;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.imageSmoothingEnabled = false; // Nearest-neighbor crisp pixel edges
+    var nextW = Math.max(320, Math.floor(rect.width || window.innerWidth));
+    var nextH = 96;
+    if (canvas.width !== nextW || canvas.height !== nextH) {
+      canvas.width = nextW;
+      canvas.height = nextH;
+      ctx.imageSmoothingEnabled = false; // Nearest-neighbor crisp pixel edges
+    }
+    width = nextW;
+    height = nextH;
 
     currentScale = getSceneScale(width);
     ROBOT_DRAW_W = Math.round(75 * currentScale);
@@ -820,7 +824,11 @@ document.addEventListener('keydown', function (e) {
 
   function init() {
     resize();
-    window.addEventListener('resize', resize);
+    var footerResizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (footerResizeTimer) clearTimeout(footerResizeTimer);
+      footerResizeTimer = setTimeout(resize, 150);
+    }, { passive: true });
 
     if (prefersReducedMotion) {
       robotImg.onload = drawStaticFallback;
@@ -1206,12 +1214,16 @@ document.addEventListener('keydown', function (e) {
       }
     });
 
+    var patrolResizeTimer = null;
     window.addEventListener('resize', function () {
-      bounds = getBounds();
-      if (x < bounds.minX) x = bounds.minX;
-      if (x > bounds.maxX) x = bounds.maxX;
-      wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
-    });
+      if (patrolResizeTimer) clearTimeout(patrolResizeTimer);
+      patrolResizeTimer = setTimeout(function () {
+        bounds = getBounds();
+        if (x < bounds.minX) x = bounds.minX;
+        if (x > bounds.maxX) x = bounds.maxX;
+        wrap.style.transform = 'translate3d(' + Math.round(x) + 'px, 0, 0)';
+      }, 150);
+    }, { passive: true });
 
     var happyTimeout = null;
     function triggerHappyHop() {
@@ -1339,10 +1351,20 @@ document.addEventListener('keydown', function (e) {
     var width = window.innerWidth || 1200;
     var height = window.innerHeight || 800;
     var stars = [];
+    var lastAllocatedW = 0;
+    var lastAllocatedH = 0;
+    var resizeTimer = null;
 
-    function resize() {
-      width = window.innerWidth || 1200;
-      height = window.innerHeight || 800;
+    function applyResize() {
+      var nextW = window.innerWidth || 1200;
+      var nextH = window.innerHeight || 800;
+      if (Math.abs(nextW - lastAllocatedW) < 6 && Math.abs(nextH - lastAllocatedH) < 6) return;
+
+      lastAllocatedW = nextW;
+      lastAllocatedH = nextH;
+      width = nextW;
+      height = nextH;
+
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
@@ -1368,8 +1390,11 @@ document.addEventListener('keydown', function (e) {
       }
     }
 
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
+    applyResize();
+    window.addEventListener('resize', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applyResize, 150);
+    }, { passive: true });
 
     var frame = 0;
     function render() {
@@ -2177,9 +2202,11 @@ document.addEventListener('keydown', function (e) {
       }
     });
 
-    if (prefersReduced) return;
-
-    window.addEventListener('resize', snapToField, { passive: true });
+    var tuxResizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (tuxResizeTimer) clearTimeout(tuxResizeTimer);
+      tuxResizeTimer = setTimeout(snapToField, 150);
+    }, { passive: true });
 
     if ('IntersectionObserver' in window) {
       var obs = new IntersectionObserver(function (entries) {
@@ -2362,6 +2389,12 @@ document.addEventListener('keydown', function (e) {
       '#space-nebula-wrap',
       '.space-nebula-wrap',
       '.space-nebula-img',
+      '.nebula-core-glow',
+      '.nebula-protostars',
+      '.nebula-star',
+      '.nebula-lightning',
+      '.nebula-lightning-bolt',
+      '.plasma-arc',
       '.marquee',
       '.experience-layout',
       '.project-featured',

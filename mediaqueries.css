@@ -137,6 +137,22 @@
 
 /* ── 768px — Small Tablet / Single column grids ───────────────── */
 @media screen and (max-width: 768px) {
+  /* Mobile Zoom & GPU Stability Optimizations */
+  .pixel-asteroid {
+    will-change: auto; /* Avoid allocating 33 hardware-accelerated GPU backing stores on mobile */
+  }
+
+  .hero-black-hole-sprite {
+    /* Lightweight mobile glow instead of heavy dual 45px Gaussian blur passes */
+    filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 14px rgba(194, 84, 26, 0.22));
+  }
+
+  .bh-plasma-turbulence,
+  .hero-black-hole-flare-flow,
+  .hero-black-hole-container {
+    will-change: auto;
+  }
+
   .project-grid,
   .cert-grid {
     grid-template-columns: 1fr;
