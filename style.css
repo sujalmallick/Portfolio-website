@@ -867,81 +867,108 @@ section {
   margin-top: 1.75rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
+  z-index: 10;
 }
 
-/* Retro Pixel Spacesuit Programmer with Smooth GPU Pendulum Leg Swing */
+/* Retro Pixel Spacesuit Programmer — Autonomous Education Ledge Coder */
 .edu-divider-character {
   position: absolute;
-  top: -60px; /* Hip contact level at Y=67% aligned precisely with divider ledge */
+  top: -61px; /* Thigh contact line at Y=67.9% sits flush on the 1px divider border */
   right: 6%;
   width: 66px;
   height: 90px;
-  pointer-events: none;
-  z-index: 5;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 20;
+  user-select: none;
+  -webkit-user-select: none;
+  transform-origin: 100% 67%;
 }
 
-.edu-programmer-body {
+.edu-divider-character:hover .edu-programmer-sprite {
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
+}
+
+.edu-programmer-bubble {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('./assets/sprites/spacesuit-programmer-body.png');
-  background-size: 100% 100%;
+  bottom: calc(100% + 4px);
+  right: -6px;
+  background: rgba(10, 25, 40, 0.95);
+  border: 1px solid #38bdf8;
+  color: #7dd3fc;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 260px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(56, 189, 248, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 30;
+}
+
+@media (max-width: 560px) {
+  .edu-programmer-bubble {
+    font-size: 10px;
+    padding: 2px 6px;
+    max-width: 200px;
+    right: 0;
+  }
+}
+
+.edu-programmer-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 28px;
+  border-width: 4px 4px 0 4px;
+  border-style: solid;
+  border-color: #38bdf8 transparent transparent transparent;
+}
+
+.edu-programmer-bubble.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.edu-programmer-bubble .bubble-prompt {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.edu-programmer-bubble .bubble-text {
+  color: #bae6fd;
+  letter-spacing: 0.02em;
+}
+
+.edu-programmer-sprite {
+  width: 66px;
+  height: 90px;
+  background-image: url('./assets/sprites/modern-spacesuit-programmer-sheet.png');
+  background-size: 792px 90px;
   background-repeat: no-repeat;
-  image-rendering: pixelated;
+  background-position: 0px 0px;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-}
-
-.edu-programmer-leg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('./assets/sprites/spacesuit-programmer-leg.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
   image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  transform-origin: 49.29% 60.0%;
-  animation: eduLegPendulum 1.6s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes eduLegPendulum {
-  0% {
-    transform: rotate(-36deg);
-  }
-  100% {
-    transform: rotate(-4deg);
-  }
-}
-
-.edu-programmer-cursor {
-  position: absolute;
-  top: 52%;
-  left: 79%;
-  width: 2px;
-  height: 2px;
-  background: #38bdf8;
-  box-shadow: 0 0 4px #38bdf8;
-  animation: eduCursorBlink 0.9s steps(1) infinite;
-  pointer-events: none;
-}
-
-@keyframes eduCursorBlink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  transform-origin: 50% 68%;
+  will-change: background-position, transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .edu-programmer-leg,
-  .edu-programmer-cursor {
+  .edu-divider-character {
+    transition: none !important;
+  }
+  .edu-programmer-sprite {
     animation: none !important;
-    transform: rotate(-24deg) !important;
+    transform: none !important;
   }
 }
 

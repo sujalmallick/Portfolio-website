@@ -22,12 +22,13 @@ function toggleMenu() {
   icon.setAttribute('aria-expanded', isOpen.toString());
 }
 
-// Close mobile menu when clicking outside or pressing Escape
+// Close mobile menu when clicking outside, clicking a menu link, or pressing Escape
 document.addEventListener('click', function (e) {
   var menu = document.getElementById('mobile-menu');
   var icon = document.getElementById('hamburger-btn');
   if (!menu || !icon || !menu.classList.contains('open')) return;
-  if (!menu.contains(e.target) && !icon.contains(e.target)) {
+  var isLinkInside = e.target.closest && e.target.closest('#mobile-menu a');
+  if (isLinkInside || (!menu.contains(e.target) && !icon.contains(e.target))) {
     menu.classList.remove('open');
     icon.classList.remove('open');
     icon.setAttribute('aria-expanded', 'false');
@@ -101,11 +102,37 @@ document.addEventListener('keydown', function (e) {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    var name    = (document.getElementById('contact-name')?.value    || '').trim();
-    var email   = (document.getElementById('contact-email')?.value   || '').trim();
-    var message = (document.getElementById('contact-message')?.value || '').trim();
+    var nameEl    = document.getElementById('contact-name');
+    var emailEl   = document.getElementById('contact-email');
+    var messageEl = document.getElementById('contact-message');
+    var submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('.btn');
+
+    var name    = (nameEl ? nameEl.value : '').trim();
+    var email   = (emailEl ? emailEl.value : '').trim();
+    var message = (messageEl ? messageEl.value : '').trim();
 
     if (!name || !email || !message) return;
+
+    // Strict client-side email format validation
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      if (emailEl) {
+        emailEl.focus();
+        if (typeof emailEl.reportValidity === 'function') emailEl.reportValidity();
+      }
+      return;
+    }
+
+    // Interactive button feedback state
+    var originalBtnText = submitBtn ? submitBtn.innerText : 'Send Message';
+    if (submitBtn) {
+      submitBtn.innerText = 'Opening mail client...';
+      submitBtn.disabled = true;
+      setTimeout(function () {
+        submitBtn.innerText = originalBtnText;
+        submitBtn.disabled = false;
+      }, 3000);
+    }
 
     var subject = encodeURIComponent('Portfolio enquiry from ' + name);
     var body    = encodeURIComponent(
@@ -1561,58 +1588,6 @@ document.addEventListener('keydown', function (e) {
       }
     });
 
-    if (prefersReduced) return;
-
-    // Autonomous behavior:
-    // A. Alternating idle / flare every 2.5s - 3.5s
-    function cycleIdlePose() {
-      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
-        if (currentState === 'idle') {
-          setState('flare');
-        } else if (currentState === 'flare') {
-          setState('idle');
-        }
-      }
-      var delay = 2600 + Math.floor(Math.random() * 900);
-      idleTimer = setTimeout(cycleIdlePose, delay);
-    }
-
-    // B. Screen blink every 4-7s for 150ms
-    function runBlink() {
-      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
-        var prev = currentState;
-        setState('blink');
-        setTimeout(function () {
-          if (!isActing && currentState === 'blink') setState(prev);
-        }, 150);
-      }
-      var delay = 4000 + Math.floor(Math.random() * 3000);
-      blinkTimer = setTimeout(runBlink, delay);
-    }
-
-    // C. Occasional look or hop every 6-10s
-    function runHopGesture() {
-      if (!isActing && !document.hidden && !el.classList.contains('mascot-offscreen')) {
-        var r = Math.random();
-        if (r < 0.5) {
-          setState('tilt');
-          setTimeout(function () {
-            if (!isActing && currentState === 'tilt') setState('idle');
-          }, 1000);
-        } else {
-          setState('hop');
-          setTimeout(function () {
-            if (!isActing && currentState === 'hop') setState('idle');
-          }, 850);
-        }
-      }
-      var delay = 6000 + Math.floor(Math.random() * 4000);
-      hopTimer = setTimeout(runHopGesture, delay);
-    }
-
-    idleTimer = setTimeout(cycleIdlePose, 2000);
-    blinkTimer = setTimeout(runBlink, 3500);
-    hopTimer = setTimeout(runHopGesture, 6500);
   })();
 
   // 2. Claude Mascot Controller (Divider Line Walker)
@@ -2658,7 +2633,13 @@ document.addEventListener('keydown', function (e) {
       return document.getElementById(id);
     }
 
-    container.innerHTML = '';
+    if (typeof container.replaceChildren === 'function') {
+      container.replaceChildren();
+    } else {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+    }
     ASTEROID_CONFIGS.forEach(function (cfg) {
       var el = document.createElement('div');
       el.className = 'pixel-asteroid pixel-asteroid--tier-' + cfg.tier;
