@@ -410,6 +410,118 @@ section {
   }
 }
 
+/* ── DISTANT ANIMATED PIXEL-ART BLACK HOLE WITH ACCRETION TAIL (CLEAN SPRITE) ── */
+.hero-black-hole-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1; /* Cosmic background layer behind foreground photo & text */
+}
+
+/* Celestial Anchor: positioned in upper-right sky with sweeping accretion tail */
+.hero-black-hole-container {
+  position: absolute;
+  top: clamp(45px, 8vh, 90px);
+  right: clamp(-50px, -3.5vw, -10px);
+  width: clamp(520px, 46vw, 680px);
+  aspect-ratio: 1262 / 528;
+  pointer-events: none;
+  will-change: transform;
+  animation: bhFrameDragging 48s ease-in-out infinite alternate;
+}
+
+@supports (animation-timeline: scroll(root)) {
+  .hero-black-hole-container {
+    animation: bh-scroll-parallax linear both, bhFrameDragging 48s ease-in-out infinite alternate;
+    animation-timeline: scroll(root), auto;
+    animation-range: 0px 800px, auto;
+  }
+}
+
+@keyframes bh-scroll-parallax {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(85px);
+  }
+}
+
+/* Black hole core sprite: authentic 16-bit chunky pixels with deep-space grading */
+.hero-black-hole-flare-flow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: bhFlareTidalFlow 14s ease-in-out infinite alternate;
+  will-change: transform, filter;
+}
+
+.hero-black-hole-sprite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  opacity: 0.88;
+  filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 20px rgba(194, 84, 26, 0.14)) drop-shadow(0 0 45px rgba(0, 0, 0, 0.9));
+  pointer-events: none;
+}
+
+/* Accretion Flare: dynamic plasma breathing & relativistic tidal flow */
+@keyframes bhFlareTidalFlow {
+  0% {
+    filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 16px rgba(234, 88, 12, 0.16));
+    transform: translate3d(0, 0, 0) skew(0deg, 0deg);
+  }
+  30% {
+    filter: brightness(1.06) contrast(1.04) drop-shadow(0 0 26px rgba(245, 158, 11, 0.32));
+    transform: translate3d(-3px, 2px, 0) skew(-0.35deg, 0.2deg);
+  }
+  65% {
+    filter: brightness(0.96) contrast(1.02) drop-shadow(0 0 18px rgba(194, 65, 12, 0.20));
+    transform: translate3d(2px, -2px, 0) skew(0.3deg, -0.2deg);
+  }
+  100% {
+    filter: brightness(1.10) contrast(1.08) drop-shadow(0 0 32px rgba(251, 191, 36, 0.40));
+    transform: translate3d(-2px, -3px, 0) skew(-0.25deg, 0.25deg);
+  }
+}
+
+/* Celestial precession / frame dragging */
+@keyframes bhFrameDragging {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate3d(-10px, 6px, 0) rotate(0.9deg);
+  }
+  65% {
+    transform: translate3d(-5px, -8px, 0) rotate(-0.7deg);
+  }
+  100% {
+    transform: translate3d(7px, -4px, 0) rotate(1.2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-black-hole-container,
+  .hero-black-hole-flare-flow,
+  .hero-black-hole-sprite {
+    animation: none !important;
+    transform: none !important;
+  }
+}
 
 .profile-photo {
   width: 100%;

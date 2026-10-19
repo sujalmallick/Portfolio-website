@@ -31,6 +31,13 @@
     margin: 0 auto;
   }
 
+  .hero-black-hole-container {
+    top: 35px;
+    right: -25px;
+    width: clamp(320px, 46vw, 390px);
+    opacity: 0.78;
+  }
+
   .hero-pixel-planet {
     top: 12%;
     left: 10%;
@@ -372,6 +379,13 @@
 
   .section__pic-container {
     width: clamp(140px, 48vw, 200px);
+  }
+
+  .hero-black-hole-container {
+    top: 35px;
+    right: -15px;
+    width: clamp(230px, 64vw, 280px);
+    opacity: 0.72;
   }
 
   .hero-pixel-planet {
