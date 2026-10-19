@@ -2581,6 +2581,8 @@ document.addEventListener('keydown', function (e) {
       '.about-education',
       '#space-nebula-wrap',
       '.space-nebula-wrap',
+      '.space-nebula-drift',
+      '.space-nebula-anim',
       '.space-nebula-img',
       '.nebula-core-glow',
       '.nebula-protostars',

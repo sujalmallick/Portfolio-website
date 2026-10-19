@@ -208,10 +208,10 @@
 
   @keyframes geminiAutonomousOrbit {
     0% { transform: translate3d(0, 0, 0); }
-    22% { transform: translate3d(-35px, -25px, 0); }
-    44% { transform: translate3d(-95px, -18px, 0); }
-    62% { transform: translate3d(-110px, 6px, 0); }
-    82% { transform: translate3d(-40px, 10px, 0); }
+    25% { transform: translate3d(-24px, -16px, 0); }
+    50% { transform: translate3d(-60px, -10px, 0); }
+    72% { transform: translate3d(-70px, 4px, 0); }
+    88% { transform: translate3d(-28px, 6px, 0); }
     100% { transform: translate3d(0, 0, 0); }
   }
 }
@@ -388,9 +388,10 @@
 
   @keyframes geminiAutonomousOrbit {
     0% { transform: translate3d(0, 0, 0); }
-    25% { transform: translate3d(-24px, -16px, 0); }
-    50% { transform: translate3d(-52px, -10px, 0); }
-    75% { transform: translate3d(-26px, 4px, 0); }
+    25% { transform: translate3d(-15px, -10px, 0); }
+    50% { transform: translate3d(-34px, -6px, 0); }
+    72% { transform: translate3d(-40px, 3px, 0); }
+    88% { transform: translate3d(-18px, 4px, 0); }
     100% { transform: translate3d(0, 0, 0); }
   }
 

@@ -3631,7 +3631,7 @@ footer {
   position: absolute;
   top: -46px;
   right: -10px;
-  animation: geminiAutonomousOrbit 15s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  animation: geminiAutonomousOrbit 28s cubic-bezier(0.42, 0, 0.58, 1) infinite;
 }
 
 .mascot-gemini-wrap.mascot-gemini-badge:hover,
@@ -3644,7 +3644,7 @@ footer {
 .mascot-gemini-float {
   width: 54px;
   height: 51px;
-  animation: geminiCosmicTilt 15s ease-in-out infinite;
+  animation: geminiCosmicTilt 28s ease-in-out infinite;
 }
 
 .mascot-gemini-wrap:hover .mascot-gemini-float,
@@ -3661,48 +3661,47 @@ footer {
   image-rendering: pixelated;
   pointer-events: auto;
   cursor: pointer;
-  animation: geminiHarmonicArc 0.96s steps(1) infinite;
+  animation: geminiHarmonicArc 5.4s steps(1) infinite;
 }
 
-/* 6-step harmonic gesture arc (160ms/step): Rest -> Reach -> Raise -> Cheer -> Lower -> Shoulder -> Rest */
+/* Slow, graceful 5.4s harmonic gesture arc: Serene 2.4s float -> gentle deliberate star cheer -> calm return */
 @keyframes geminiHarmonicArc {
-  0%, 16.66%     { background-position: 0 0; }       /* F1: Rest at sides */
-  16.67%, 33.33% { background-position: -108px 0; }  /* F3: Reach forward with star */
-  33.34%, 50.0%  { background-position: -54px 0; }   /* F2: Raise star to sky */
-  50.01%, 66.66% { background-position: -162px 0; }  /* F4: Twin star victory cheer */
-  66.67%, 83.33% { background-position: -54px 0; }   /* F2: Lower arm gracefully */
-  83.34%, 100%   { background-position: -216px 0; }  /* F5: Star at shoulder level */
+  0%, 44%        { background-position: 0 0; }        /* F1: Rest at sides (2.38s serene drift) */
+  44.01%, 58%    { background-position: -108px 0; }   /* F3: Reach forward with star (0.75s) */
+  58.01%, 76%    { background-position: -162px 0; }   /* F4: Twin star victory cheer (0.97s) */
+  76.01%, 88%    { background-position: -216px 0; }   /* F5: Star at shoulder level (0.65s) */
+  88.01%, 100%   { background-position: -54px 0; }    /* F2: Graceful lower arm to rest (0.65s) */
 }
 
-/* Autonomous zero-g space orbit around Google Skills Profile badge */
+/* Autonomous zero-g space orbit around Google Skills Profile badge (slow 28s drift) */
 @keyframes geminiAutonomousOrbit {
   0% {
     transform: translate3d(0, 0, 0);
   }
-  22% {
-    transform: translate3d(-55px, -36px, 0);
+  25% {
+    transform: translate3d(-35px, -20px, 0);
   }
-  44% {
-    transform: translate3d(-145px, -28px, 0);
+  50% {
+    transform: translate3d(-85px, -12px, 0);
   }
-  62% {
-    transform: translate3d(-165px, 8px, 0);
+  72% {
+    transform: translate3d(-100px, 6px, 0);
   }
-  82% {
-    transform: translate3d(-60px, 14px, 0);
+  88% {
+    transform: translate3d(-40px, 8px, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);
   }
 }
 
-/* Zero-g cosmic tilt */
+/* Zero-g cosmic tilt (gentle slow micro-adjustments) */
 @keyframes geminiCosmicTilt {
-  0%, 8%    { transform: rotate(0deg); }
-  20%, 38%  { transform: rotate(-8deg); }
-  46%, 58%  { transform: rotate(6deg); }
-  65%, 80%  { transform: rotate(-5deg); }
-  88%, 100% { transform: rotate(0deg); }
+  0%, 12%   { transform: rotate(0deg); }
+  28%, 45%  { transform: rotate(-5deg); }
+  55%, 72%  { transform: rotate(4deg); }
+  82%, 92%  { transform: rotate(-3deg); }
+  100%      { transform: rotate(0deg); }
 }
 
 @media (max-width: 600px) {
@@ -3727,15 +3726,14 @@ footer {
     width: 58px;
     height: 55px;
     background-size: 290px 55px;
-    animation: geminiHarmonicArc 0.96s steps(1) infinite;
+    animation: geminiHarmonicArc 5.4s steps(1) infinite;
   }
   @keyframes geminiHarmonicArc {
-    0%, 16.66%     { background-position: 0 0; }
-    16.67%, 33.33% { background-position: -116px 0; }
-    33.34%, 50.0%  { background-position: -58px 0; }
-    50.01%, 66.66% { background-position: -174px 0; }
-    66.67%, 83.33% { background-position: -58px 0; }
-    83.34%, 100%   { background-position: -232px 0; }
+    0%, 44%        { background-position: 0 0; }
+    44.01%, 58%    { background-position: -116px 0; }
+    58.01%, 76%    { background-position: -174px 0; }
+    76.01%, 88%    { background-position: -232px 0; }
+    88.01%, 100%   { background-position: -58px 0; }
   }
 }
 
@@ -3908,15 +3906,42 @@ footer {
   will-change: transform;
 }
 
-.space-nebula-img {
+.space-nebula-anim {
   width: 100%;
-  height: auto;
-  display: block;
+  padding-top: 62.12%; /* 164 / 264 = 62.12% natural aspect ratio */
+  position: relative;
+  background-image: url('./assets/sprites/nebula-lightning-12frame-sheet.png');
+  background-repeat: no-repeat;
+  background-size: 1200% 100%;
+  background-position: 0% 0%;
   image-rendering: pixelated;
-  animation: nebulaIonPulse 24s ease-in-out infinite alternate;
-  will-change: opacity, filter;
-  pointer-events: none;
-  user-select: none;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  animation: cosmicNebulaLightning 8.8s steps(1) infinite;
+  will-change: background-position;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.space-nebula-anim:hover {
+  animation-duration: 2.2s; /* Fast interactive strike cycle on hover */
+}
+
+/* 12-Frame Sequential Cosmic Plasma Lightning Cycle (Authentic 16-Bit Handcrafted Motion) */
+@keyframes cosmicNebulaLightning {
+  0%, 75%       { background-position: 0% 0%; }          /* Frame 0: Serene dormant space cloud */
+  77%           { background-position: 9.09% 0%; }       /* Frame 1: Ion charging */
+  79%           { background-position: 18.18% 0%; }      /* Frame 2: Pre-discharge ionization spark */
+  81%           { background-position: 27.27% 0%; }      /* Frame 3: Leader arc branching */
+  83%           { background-position: 36.36% 0%; }      /* Frame 4: Return stroke surge */
+  85%           { background-position: 45.45% 0%; }      /* Frame 5: Core ignition */
+  87%, 89%      { background-position: 54.55% 0%; }      /* Frame 6: Peak fractal plasma lightning */
+  91%           { background-position: 63.64% 0%; }      /* Frame 7: Secondary plasma pulse */
+  93%           { background-position: 72.73% 0%; }      /* Frame 8: Electric filament expansion */
+  95%           { background-position: 81.82% 0%; }      /* Frame 9: Thermal ionization fade */
+  97%           { background-position: 90.91% 0%; }      /* Frame 10: Filament fade */
+  98.5%         { background-position: 100% 0%; }        /* Frame 11: Gentle afterglow */
+  100%          { background-position: 0% 0%; }          /* Frame 0: Return to dormant */
 }
 
 /* Fluid cosmic tidal drift: slow dual-sine displacement & micro-skew in vacuum */
@@ -4090,12 +4115,16 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .space-nebula-wrap,
   .space-nebula-drift,
+  .space-nebula-anim,
   .space-nebula-img,
   .projects-orbital-station,
   .orbital-station-drift-wrap {
     animation: none !important;
     transform: none !important;
     filter: none !important;
+  }
+  .space-nebula-anim {
+    background-position: 0% 0% !important;
   }
 }
 
