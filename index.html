@@ -65,11 +65,21 @@
       <img src="./assets/pixel-planet.svg" alt="" class="hero-planet-img">
     </div>
 
-    <!-- Distant Animated Pixel-Art Black Hole with Accretion Tail (Clean Sprite, No Orbital Clumps) -->
+    <!-- Distant Animated Pixel-Art Black Hole with Dynamic Accretion Flare Hydrodynamics -->
     <div class="hero-black-hole-wrap" id="hero-black-hole-wrap" aria-hidden="true">
       <div class="hero-black-hole-container">
         <div class="hero-black-hole-flare-flow">
           <img src="./assets/sprites/pixel-black-hole.png" alt="" class="hero-black-hole-sprite" width="1262" height="528" draggable="false">
+          <!-- Fluid Internal Plasma Turbulence Layer (Screened overlay of the tail) -->
+          <img src="./assets/sprites/pixel-black-hole.png" alt="" class="bh-plasma-turbulence" width="1262" height="528" draggable="false">
+          
+          <!-- Coronal Flare Embers Lifting Off the Tail -->
+          <div class="bh-flare-embers-wrap" aria-hidden="true">
+            <span class="bh-flare-ember ember-1"></span>
+            <span class="bh-flare-ember ember-2"></span>
+            <span class="bh-flare-ember ember-3"></span>
+            <span class="bh-flare-ember ember-4"></span>
+          </div>
         </div>
       </div>
     </div>
