@@ -687,20 +687,26 @@ section {
   width: 100%;
   height: 100%;
   background-image: url('./assets/sprites/modern-spacesuit-programmer-sheet.png');
-  background-size: 600% 100%; /* 6 frames */
+  background-size: 1200% 100%; /* 12 frames */
   background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  animation: edu-programmer-anim 3.6s steps(1) infinite;
+  animation: edu-programmer-anim 1.8s steps(1) infinite;
 }
 
 @keyframes edu-programmer-anim {
-  0%, 16.66%     { background-position: 0% 0; }
-  16.67%, 33.33% { background-position: 20% 0; }
-  33.34%, 50%    { background-position: 40% 0; }
-  50.01%, 66.66% { background-position: 60% 0; }
-  66.67%, 83.33% { background-position: 80% 0; }
-  83.34%, 100%   { background-position: 100% 0; }
+  0%, 8.33%      { background-position: 0% 0; }
+  8.34%, 16.66%  { background-position: 9.0909% 0; }
+  16.67%, 25.0%  { background-position: 18.1818% 0; }
+  25.01%, 33.33% { background-position: 27.2727% 0; }
+  33.34%, 41.66% { background-position: 36.3636% 0; }
+  41.67%, 50.0%  { background-position: 45.4545% 0; }
+  50.01%, 58.33% { background-position: 54.5455% 0; }
+  58.34%, 66.66% { background-position: 63.6364% 0; }
+  66.67%, 75.0%  { background-position: 72.7273% 0; }
+  75.01%, 83.33% { background-position: 81.8182% 0; }
+  83.34%, 91.66% { background-position: 90.9091% 0; }
+  91.67%, 100%   { background-position: 100% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
