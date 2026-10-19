@@ -2304,7 +2304,7 @@ document.addEventListener('keydown', function (e) {
       { id: 4, sectionId: 'profile', relX: 0.955, relY: 0.88, tier: 2, sprite: 2, size: 19, orbitRx: 20, orbitRy: 14, orbitSpeed: 0.00038, wobbleSpeed: 0.0008, wobbleAmp: 4.5, rotSpeed: 0.030, phase: 5.6, inclination: -20 },
 
       // About Section (4 asteroids: 2 distant, 1 mid, 1 distant cluster)
-      { id: 5, sectionId: 'about', relX: 0.945, relY: 0.14, tier: 3, sprite: 1, size: 30, orbitRx: 30, orbitRy: 20, orbitSpeed: 0.00052, wobbleSpeed: 0.00095, wobbleAmp: 6, rotSpeed: 0.052, phase: 0.9, inclination: -30 },
+      { id: 5, sectionId: 'about', relX: 0.965, relY: 0.04, tier: 2, sprite: 2, size: 16, orbitRx: 14, orbitRy: 10, orbitSpeed: 0.00030, wobbleSpeed: 0.0006, wobbleAmp: 3, rotSpeed: 0.025, phase: 0.9, inclination: -15 },
       { id: 6, sectionId: 'about', relX: 0.035, relY: 0.32, tier: 1, sprite: 3, size: 8, orbitRx: 10, orbitRy: 7, orbitSpeed: 0.00019, wobbleSpeed: 0.00045, wobbleAmp: 2, rotSpeed: -0.015, phase: 2.3, inclination: 20 },
       { id: 7, sectionId: 'about', relX: 0.045, relY: 0.62, tier: 2, sprite: 2, size: 18, orbitRx: 19, orbitRy: 14, orbitSpeed: 0.00036, wobbleSpeed: 0.00075, wobbleAmp: 4, rotSpeed: 0.032, phase: 5.1, inclination: -45 },
       { id: 8, sectionId: 'about', relX: 0.935, relY: 0.82, tier: 1, sprite: 3, size: 8, orbitRx: 9, orbitRy: 6, orbitSpeed: 0.00017, wobbleSpeed: 0.0004, wobbleAmp: 1.8, rotSpeed: -0.012, phase: 3.8, inclination: 15 },
@@ -2358,6 +2358,9 @@ document.addEventListener('keydown', function (e) {
       '.section-header .section-label',
       '.about-grid',
       '.about-education',
+      '#space-nebula-wrap',
+      '.space-nebula-wrap',
+      '.space-nebula-img',
       '.marquee',
       '.experience-layout',
       '.project-featured',
@@ -2378,6 +2381,8 @@ document.addEventListener('keydown', function (e) {
       '#footer-droid-wrap',
       '.prop-droid',
       '#pixel-starfighter-wrap',
+      '#hackathons-starfighter',
+      '.pixel-starfighter-flight-wrap',
       '#space-helmet-wrap',
       '#tiny-probe-wrap',
       '.tiny-space-probe-drift-wrap',
