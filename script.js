@@ -2582,7 +2582,7 @@ document.addEventListener('keydown', function (e) {
       '#space-nebula-wrap',
       '.space-nebula-wrap',
       '.space-nebula-drift',
-      '.space-nebula-anim',
+      '.space-nebula-canvas',
       '.space-nebula-img',
       '.nebula-core-glow',
       '.nebula-protostars',
@@ -3107,4 +3107,132 @@ document.addEventListener('keydown', function (e) {
     setup();
   }
 })();
+
+/* ════════════════════════════════════════════════════════════════════
+   DEEP-SPACE NEBULA 60 FPS CONTINUOUS PLASMA LIGHTNING CROSS-FADER
+   ════════════════════════════════════════════════════════════════════ */
+(function initNebulaLightningCrossfade() {
+  function start() {
+    var canvas = document.getElementById('space-nebula-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.imageSmoothingEnabled = false;
+
+    var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var prefersReduced = motionQuery.matches;
+
+    var FRAME_W = 264;
+    var FRAME_H = 164;
+    var TOTAL_FRAMES = 12;
+    var CYCLE_DURATION = 18000; // 18s calm cosmic cycle
+    var DORMANT_PORTION = 0.58; // 58% dormant serene drift (~10.4s), 42% continuous fluid discharge (~7.6s)
+
+    var sheet = new Image();
+    sheet.src = './assets/sprites/nebula-lightning-12frame-sheet.png';
+
+    var isVisible = true;
+    var startTime = null;
+    var rafId = null;
+
+    function getBlendState(tNorm) {
+      if (tNorm < DORMANT_PORTION) {
+        return { fA: 0, fB: 0, blend: 0 };
+      }
+      var activeProgress = (tNorm - DORMANT_PORTION) / (1.0 - DORMANT_PORTION);
+      var totalSteps = 12;
+      var stepPos = activeProgress * totalSteps;
+      var stepIdx = Math.floor(stepPos);
+      var rawBlend = stepPos - stepIdx;
+
+      // Smooth cosine easing on blend to eliminate any micro-inflection
+      var smoothBlend = 0.5 - 0.5 * Math.cos(rawBlend * Math.PI);
+
+      var fA = stepIdx % TOTAL_FRAMES;
+      var fB = (stepIdx + 1) % TOTAL_FRAMES;
+      return { fA: fA, fB: fB, blend: smoothBlend };
+    }
+
+    function drawFrame(fA, fB, blend) {
+      ctx.clearRect(0, 0, FRAME_W, FRAME_H);
+      ctx.globalAlpha = 1.0 - blend;
+      ctx.drawImage(sheet, fA * FRAME_W, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+
+      if (blend > 0.001) {
+        ctx.globalAlpha = blend;
+        ctx.drawImage(sheet, fB * FRAME_W, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+      }
+      ctx.globalAlpha = 1.0;
+    }
+
+    function render(now) {
+      if (document.hidden || !isVisible) {
+        rafId = null;
+        return;
+      }
+
+      if (prefersReduced) {
+        drawFrame(0, 0, 0);
+        rafId = null;
+        return;
+      }
+
+      if (!startTime) startTime = now;
+      var elapsed = (now - startTime) % CYCLE_DURATION;
+      var tNorm = elapsed / CYCLE_DURATION;
+
+      var state = getBlendState(tNorm);
+      drawFrame(state.fA, state.fB, state.blend);
+
+      rafId = requestAnimationFrame(render);
+    }
+
+    sheet.onload = function () {
+      if (prefersReduced) {
+        drawFrame(0, 0, 0);
+        return;
+      }
+      rafId = requestAnimationFrame(render);
+    };
+
+    if (sheet.complete && sheet.naturalWidth > 0) {
+      if (prefersReduced) {
+        drawFrame(0, 0, 0);
+      } else {
+        rafId = requestAnimationFrame(render);
+      }
+    }
+
+    motionQuery.addEventListener('change', function (e) {
+      prefersReduced = e.matches;
+      if (prefersReduced) {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        drawFrame(0, 0, 0);
+      } else if (isVisible && !rafId) {
+        startTime = null;
+        rafId = requestAnimationFrame(render);
+      }
+    });
+
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !rafId && !prefersReduced && sheet.complete) {
+            rafId = requestAnimationFrame(render);
+          }
+        });
+      }, { threshold: 0.05, rootMargin: '120px 0px 120px 0px' });
+      obs.observe(canvas);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+
 
