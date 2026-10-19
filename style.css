@@ -351,10 +351,10 @@ section {
 .hero-pixel-satellite {
   position: absolute;
   top: auto;
-  bottom: 10%;
-  right: clamp(30px, 6vw, 90px);
+  bottom: clamp(18%, 21vh, 23%);
+  right: clamp(38px, 6vw, 95px);
   left: auto;
-  width: clamp(74px, 5.8vw, 86px);
+  width: clamp(52px, 4.2vw, 64px);
   height: auto;
   aspect-ratio: 1205 / 641;
   z-index: 1; /* Sits in background sky behind foreground content */
@@ -384,7 +384,7 @@ section {
 .hero-satellite-drift-wrap {
   width: 100%;
   height: 100%;
-  animation: hero-satellite-drift 52s ease-in-out infinite alternate;
+  animation: hero-satellite-drift 64s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -396,8 +396,8 @@ section {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  opacity: 0.86;
-  filter: brightness(0.94) contrast(1.02);
+  opacity: 0.74;
+  filter: brightness(0.88) contrast(0.96);
 }
 
 @keyframes hero-satellite-drift {
@@ -405,13 +405,13 @@ section {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
   28% {
-    transform: translate3d(14px, -10px, 0) rotate(2deg);
+    transform: translate3d(10px, -7px, 0) rotate(1.5deg);
   }
   68% {
-    transform: translate3d(26px, 5px, 0) rotate(-1.5deg);
+    transform: translate3d(18px, 4px, 0) rotate(-1deg);
   }
   100% {
-    transform: translate3d(10px, -4px, 0) rotate(2.5deg);
+    transform: translate3d(8px, -3px, 0) rotate(1.8deg);
   }
 }
 
@@ -3096,8 +3096,8 @@ footer {
   position: absolute;
   top: 56px;
   right: clamp(2.5rem, 16vw, 17rem);
-  width: 104px;
-  height: 60px;
+  width: 160px;
+  height: 92px;
   pointer-events: none;
   z-index: 3;
   opacity: 0.94; /* Distant atmospheric integration */
@@ -3112,11 +3112,13 @@ footer {
 }
 
 .pixel-starfighter-img {
-  width: 104px;
-  height: 60px;
+  width: 160px;
+  height: 92px;
   display: block;
-  /* Restore original visual clarity: avoid nearest-neighbor downsample destruction */
-  image-rendering: auto !important;
+  /* Authentic crisp 16-bit retro pixel-art rendering */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
@@ -3137,15 +3139,15 @@ footer {
 }
 
 .starfighter-thruster.plume-upper {
-  top: 10%;
-  left: 37%;
+  top: 6%;
+  left: 44.2%;
   margin-left: -12px;
   margin-top: -2px;
 }
 
 .starfighter-thruster.plume-lower {
   top: 39%;
-  left: 6%;
+  left: 8%;
   margin-left: -12px;
   margin-top: -2px;
 }
@@ -3204,12 +3206,12 @@ footer {
   .pixel-starfighter-flight-wrap {
     top: 44px;
     right: 6%;
-    width: 80px;
-    height: 46px;
+    width: 120px;
+    height: 69px;
   }
   .pixel-starfighter-img {
-    width: 80px;
-    height: 46px;
+    width: 120px;
+    height: 69px;
   }
   .starfighter-thruster {
     width: 9px;
@@ -3217,9 +3219,11 @@ footer {
   }
   .starfighter-thruster.plume-upper {
     margin-left: -9px;
+    margin-top: -1.5px;
   }
   .starfighter-thruster.plume-lower {
     margin-left: -9px;
+    margin-top: -1.5px;
   }
 }
 
@@ -3227,23 +3231,25 @@ footer {
   .pixel-starfighter-flight-wrap {
     top: 24px;
     right: 4%;
-    width: 64px;
-    height: 37px;
+    width: 90px;
+    height: 52px;
     opacity: 0.9;
   }
   .pixel-starfighter-img {
-    width: 64px;
-    height: 37px;
+    width: 90px;
+    height: 52px;
   }
   .starfighter-thruster {
     width: 7px;
-    height: 3px;
+    height: 2.5px;
   }
   .starfighter-thruster.plume-upper {
     margin-left: -7px;
+    margin-top: -1px;
   }
   .starfighter-thruster.plume-lower {
     margin-left: -7px;
+    margin-top: -1px;
   }
 }
 
@@ -3775,14 +3781,15 @@ footer {
 /* ── 1. Distant Deep-Space Nebula Cloud (Atmospheric Layer in About) ───── */
 .space-nebula-wrap {
   position: absolute;
-  top: -45px;
-  right: clamp(15px, 2.5vw, 45px);
-  width: clamp(500px, 44vw, 630px);
+  top: clamp(25px, 4.5vw, 65px);
+  right: clamp(65px, 8vw, 130px);
+  width: clamp(420px, 36vw, 520px);
   height: auto;
   pointer-events: none;
   user-select: none;
   z-index: 1; /* Sits in distant cosmic background behind all section content (z-index 2) */
-  opacity: 0.58;
+  opacity: 0.48;
+  filter: brightness(0.92) contrast(1.05);
   will-change: transform;
 }
 
@@ -3790,7 +3797,7 @@ footer {
   width: 100%;
   height: auto;
   position: relative;
-  animation: nebulaSlowDrift 58s ease-in-out infinite alternate;
+  animation: nebulaTidalDrift 76s ease-in-out infinite alternate;
   will-change: transform;
 }
 
@@ -3799,32 +3806,44 @@ footer {
   height: auto;
   display: block;
   image-rendering: pixelated;
-  animation: nebulaPurplePulse 20s ease-in-out infinite alternate;
+  animation: nebulaIonPulse 24s ease-in-out infinite alternate;
   will-change: opacity, filter;
   pointer-events: none;
   user-select: none;
 }
 
-@keyframes nebulaSlowDrift {
+/* Fluid cosmic tidal drift: slow dual-sine displacement & micro-skew in vacuum */
+@keyframes nebulaTidalDrift {
   0% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) skew(0deg, 0deg);
+  }
+  25% {
+    transform: translate3d(-7px, 5px, 0) skew(-0.35deg, 0.25deg);
   }
   50% {
-    transform: translate3d(-10px, 7px, 0);
+    transform: translate3d(4px, -4px, 0) skew(0.3deg, -0.2deg);
+  }
+  75% {
+    transform: translate3d(-4px, -6px, 0) skew(-0.2deg, 0.35deg);
   }
   100% {
-    transform: translate3d(8px, -5px, 0);
+    transform: translate3d(6px, 4px, 0) skew(0.35deg, -0.15deg);
   }
 }
 
-@keyframes nebulaPurplePulse {
+/* Ionization breathing: cyclic radiation pressure & ultraviolet flux from core */
+@keyframes nebulaIonPulse {
   0%, 100% {
-    opacity: 0.94;
-    filter: brightness(0.98);
+    opacity: 0.92;
+    filter: brightness(0.92) saturate(1.02);
   }
-  50% {
-    opacity: 1.0;
-    filter: brightness(1.04);
+  35% {
+    opacity: 0.98;
+    filter: brightness(1.02) saturate(1.14);
+  }
+  70% {
+    opacity: 0.94;
+    filter: brightness(0.95) saturate(1.06);
   }
 }
 
@@ -3836,9 +3855,10 @@ footer {
   }
 }
 
+/* Micro-parallax for distant cosmic formations (minimal relative movement) */
 @keyframes nebulaScrollParallax {
-  from { transform: translate3d(0, 22px, 0); }
-  to   { transform: translate3d(0, -26px, 0); }
+  from { transform: translate3d(0, 10px, 0); }
+  to   { transform: translate3d(0, -12px, 0); }
 }
 
 /* ── 2. Distant Abandoned Orbital Research Station in Projects Section ── */
@@ -3897,10 +3917,10 @@ footer {
 /* ── Responsive Refinements ─────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .space-nebula-wrap {
-    width: clamp(420px, 50vw, 560px);
-    top: -35px;
-    right: 15px;
-    opacity: 0.50;
+    width: clamp(360px, 44vw, 440px);
+    top: clamp(20px, 3.5vw, 45px);
+    right: clamp(40px, 6vw, 75px);
+    opacity: 0.46;
   }
   .projects-orbital-station {
     width: clamp(130px, 15vw, 175px);
@@ -3912,9 +3932,9 @@ footer {
 
 @media (max-width: 768px) {
   .space-nebula-wrap {
-    width: clamp(380px, 56vw, 460px);
-    top: -25px;
-    right: 12px;
+    width: clamp(320px, 50vw, 400px);
+    top: 20px;
+    right: clamp(20px, 4vw, 45px);
     opacity: 0.44;
   }
   .projects-orbital-station {
@@ -3929,10 +3949,10 @@ footer {
 
 @media (max-width: 480px) {
   .space-nebula-wrap {
-    width: clamp(310px, 86vw, 360px);
-    top: -10px;
-    right: -25px;
-    opacity: 0.52;
+    width: clamp(270px, 76vw, 320px);
+    top: 15px;
+    right: 5px;
+    opacity: 0.45;
   }
   /* Position orbital station behind frosted project card on mobile */
   .projects-orbital-station {
