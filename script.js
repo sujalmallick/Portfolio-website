@@ -1749,6 +1749,224 @@ document.addEventListener('keydown', function (e) {
     });
   })();
 
+  // 4. Retro Pixel Spacesuit Programmer (Education Divider Ledge Controller)
+  (function initEduProgrammer() {
+    var container = document.getElementById('edu-divider-character');
+    var sprite = document.getElementById('edu-programmer-sprite');
+    var bubble = document.getElementById('edu-programmer-bubble');
+    if (!container || !sprite) return;
+
+    var bubbleText = bubble ? bubble.querySelector('.bubble-text') : null;
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 12 Frames: Frame 0..11, each frame width is 66px
+    var FRAME_W = 66;
+    function setFrame(idx) {
+      sprite.style.backgroundPosition = (-idx * FRAME_W) + 'px 0px';
+    }
+
+    var STATUS_MESSAGES = [
+      'git commit -m "feat: ai-pipeline"',
+      'CUDA kernel deployed ⚡',
+      'TIET / Computer Eng \'27',
+      'npm run dev -- --host',
+      '0 errors, 0 warnings ✓',
+      'training transformer model...',
+      'multi-agent graph online 🚀',
+      'all tests passing ✓',
+      'inference latency 3.8ms'
+    ];
+
+    var bubbleTimer = null;
+    function showStatusBubble(customMsg, durationMs) {
+      if (!bubble) return;
+      var msg = customMsg || STATUS_MESSAGES[Math.floor(Math.random() * STATUS_MESSAGES.length)];
+      if (bubbleText) bubbleText.textContent = msg;
+      bubble.classList.add('is-visible');
+      if (bubbleTimer) clearTimeout(bubbleTimer);
+      bubbleTimer = setTimeout(function () {
+        bubble.classList.remove('is-visible');
+      }, durationMs || 2600);
+    }
+
+    // States: 'CODE' | 'PONDER' | 'SCOOT' | 'BURST'
+    var state = 'CODE';
+    var stateTimer = 5000 + Math.random() * 3000;
+    var animTimer = 0;
+    var animStep = 0;
+
+    // Coding frame cadence: typing and natural leg sway
+    var CODE_FRAMES = [0, 1, 2, 3, 2, 1, 0, 8, 9, 10, 11, 10, 9, 8];
+    // Pondering: looks up, leans back, cosmic stargazing, glances back down
+    var PONDER_FRAMES = [4, 5, 6, 6, 6, 5, 4, 7];
+
+    // Scoot / Ledge Position
+    var currentRightPct = 6.0;
+    var targetRightPct = 6.0;
+    var scootStartTime = 0;
+    var scootDuration = 1400;
+    var scootStartPct = 6.0;
+    var lastScootTime = performance.now();
+
+    function pickNextRightPct() {
+      var w = window.innerWidth;
+      var minPct = w > 900 ? 5.0 : (w > 560 ? 3.0 : 2.0);
+      var maxPct = w > 900 ? 22.0 : (w > 560 ? 12.0 : 6.0);
+      var next = minPct + Math.random() * (maxPct - minPct);
+      if (Math.abs(next - currentRightPct) < 3.0) {
+        next = currentRightPct > (minPct + maxPct) / 2 ? minPct + 1 : maxPct - 1;
+      }
+      return Math.round(next * 10) / 10;
+    }
+
+    function triggerBurst() {
+      state = 'BURST';
+      stateTimer = 2200;
+      animTimer = 0;
+      animStep = 0;
+      showStatusBubble(null, 2600);
+    }
+
+    container.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerBurst();
+    });
+
+    var lastTap = 0;
+    container.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      if (now - lastTap < 350) {
+        e.preventDefault();
+        triggerBurst();
+        lastTap = 0;
+      } else {
+        lastTap = now;
+      }
+    }, { passive: false });
+
+    container.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerBurst();
+      }
+    });
+
+    container.addEventListener('mouseenter', function () {
+      if (state === 'CODE') {
+        setFrame(4);
+      }
+    });
+
+    var lastLoopTime = performance.now();
+    function programmerLoop(now) {
+      requestAnimationFrame(programmerLoop);
+
+      if (document.hidden || container.classList.contains('mascot-offscreen')) {
+        lastLoopTime = now;
+        return;
+      }
+
+      var dt = Math.min(80, now - lastLoopTime);
+      lastLoopTime = now;
+
+      if (prefersReduced) {
+        setFrame(0);
+        return;
+      }
+
+      animTimer += dt;
+
+      if (state === 'CODE') {
+        stateTimer -= dt;
+        if (animTimer >= 170) {
+          animTimer = 0;
+          animStep = (animStep + 1) % CODE_FRAMES.length;
+          setFrame(CODE_FRAMES[animStep]);
+        }
+
+        if (stateTimer <= 0) {
+          var timeSinceScoot = now - lastScootTime;
+          if (timeSinceScoot > 18000 && Math.random() < 0.65) {
+            state = 'SCOOT';
+            scootStartPct = currentRightPct;
+            targetRightPct = pickNextRightPct();
+            scootStartTime = now;
+            scootDuration = 1200 + Math.random() * 400;
+            lastScootTime = now;
+            animStep = 0;
+          } else {
+            state = 'PONDER';
+            stateTimer = 3200 + Math.random() * 2400;
+            animStep = 0;
+            animTimer = 0;
+          }
+        }
+      } else if (state === 'PONDER') {
+        stateTimer -= dt;
+        if (animStep < 3 && animTimer >= 280) {
+          animTimer = 0;
+          animStep++;
+          setFrame(PONDER_FRAMES[animStep]);
+        } else if (stateTimer <= 400 && animStep < PONDER_FRAMES.length - 1 && animTimer >= 200) {
+          animTimer = 0;
+          animStep++;
+          setFrame(PONDER_FRAMES[animStep]);
+        }
+
+        if (stateTimer <= 0) {
+          state = 'CODE';
+          stateTimer = 5000 + Math.random() * 3500;
+          animTimer = 0;
+          animStep = 0;
+        }
+      } else if (state === 'SCOOT') {
+        var elapsed = now - scootStartTime;
+        var progress = Math.min(1.0, elapsed / scootDuration);
+        var ease = progress < 0.5
+          ? 2 * progress * progress
+          : -1 + (4 - 2 * progress) * progress;
+
+        currentRightPct = scootStartPct + (targetRightPct - scootStartPct) * ease;
+        container.style.right = currentRightPct.toFixed(2) + '%';
+
+        var hop = Math.sin(progress * Math.PI) * -3;
+        sprite.style.transform = 'translateY(' + hop.toFixed(1) + 'px)';
+
+        if (animTimer >= 140) {
+          animTimer = 0;
+          var scootFrames = [1, 2, 3, 2];
+          animStep = (animStep + 1) % scootFrames.length;
+          setFrame(scootFrames[animStep]);
+        }
+
+        if (progress >= 1.0) {
+          sprite.style.transform = 'translateY(0px)';
+          container.style.right = targetRightPct + '%';
+          state = 'CODE';
+          stateTimer = 4000 + Math.random() * 3000;
+          animTimer = 0;
+          animStep = 0;
+        }
+      } else if (state === 'BURST') {
+        stateTimer -= dt;
+        if (animTimer >= 80) {
+          animTimer = 0;
+          animStep = (animStep + 1) % CODE_FRAMES.length;
+          setFrame(CODE_FRAMES[animStep]);
+        }
+
+        if (stateTimer <= 0) {
+          state = 'CODE';
+          stateTimer = 4500 + Math.random() * 2500;
+          animTimer = 0;
+          animStep = 0;
+        }
+      }
+    }
+
+    requestAnimationFrame(programmerLoop);
+  })();
+
   // IntersectionObserver: pause animations when scrolled out of view to preserve CPU/battery
   if ('IntersectionObserver' in window) {
     var mascotObserver = new IntersectionObserver(function (entries) {
@@ -1761,7 +1979,7 @@ document.addEventListener('keydown', function (e) {
       });
     }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
 
-    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini'].forEach(function (id) {
+    ['mascot-chatgpt', 'mascot-claude', 'mascot-gemini', 'edu-divider-character'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) mascotObserver.observe(el);
     });

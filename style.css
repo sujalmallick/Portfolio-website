@@ -3471,13 +3471,12 @@ footer {
   margin-top: -18px;
   margin-bottom: -10px;
   margin-right: 4px;
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: none;
   z-index: 5;
   image-rendering: pixelated;
 }
 
-/* ChatGPT beside Projects See More button & About Heading */
+/* ChatGPT beside Projects See More button: Autonomous Roaming Drone Flight */
 .mascot-chatgpt-wrap.mascot-chatgpt-projects,
 .mascot-chatgpt-wrap.mascot-chatgpt-heading {
   position: relative;
@@ -3485,12 +3484,25 @@ footer {
   right: auto;
   margin: 0;
   flex-shrink: 0;
+  animation: chatgptAutonomousFlight 16s cubic-bezier(0.42, 0.05, 0.58, 0.95) infinite;
+}
+
+.mascot-chatgpt-wrap.mascot-chatgpt-projects:hover,
+.mascot-chatgpt-wrap.mascot-chatgpt-projects:focus-visible,
+.mascot-chatgpt-wrap:hover,
+.mascot-chatgpt-wrap:focus-visible {
+  animation-play-state: paused;
 }
 
 .mascot-chatgpt-float {
   width: 60px;
   height: 72px;
-  animation: chatgptFloat 5.2s ease-in-out infinite alternate; /* Slower floating cycle */
+  animation: chatgptAutonomousBank 16s ease-in-out infinite;
+}
+
+.mascot-chatgpt-wrap:hover .mascot-chatgpt-float,
+.mascot-chatgpt-wrap:focus-visible .mascot-chatgpt-float {
+  animation-play-state: paused;
 }
 
 .mascot-chatgpt-sprite {
@@ -3500,16 +3512,55 @@ footer {
   background-size: 360px 72px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  animation: chatgptBob 2.4s steps(6) infinite; /* Slower spritesheet bob cycle */
+  pointer-events: auto;
+  cursor: pointer;
+  animation: chatgptHarmonicLoop 1.12s steps(1) infinite;
 }
 
-@keyframes chatgptBob {
-  to { background-position-x: -360px; }
+/* 8-step harmonic thruster & core energy cycle (140ms/step) */
+@keyframes chatgptHarmonicLoop {
+  0%, 12.5%     { background-position: 0 0; }        /* F1: Center idle hover */
+  12.51%, 25.0% { background-position: -240px 0; }   /* F5: Core spark pulse */
+  25.01%, 37.5% { background-position: -120px 0; }   /* F3: Bank Right 30deg */
+  37.51%, 50.0% { background-position: -300px 0; }   /* F6: Core power glow */
+  50.01%, 62.5% { background-position: -60px 0; }    /* F2: Thruster flare tilt */
+  62.51%, 75.0% { background-position: -180px 0; }   /* F4: Bank Left 30deg */
+  75.01%, 87.5% { background-position: -240px 0; }   /* F5: Core spark pulse */
+  87.51%, 100%  { background-position: 0 0; }        /* F1: Center idle hover */
 }
 
-@keyframes chatgptFloat {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-6px); }
+/* Autonomous flight trajectory across Projects boundary */
+@keyframes chatgptAutonomousFlight {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  16% {
+    transform: translate3d(-70px, -24px, 0);
+  }
+  34% {
+    transform: translate3d(-240px, -30px, 0);
+  }
+  46% {
+    transform: translate3d(-255px, -14px, 0);
+  }
+  62% {
+    transform: translate3d(-130px, -34px, 0);
+  }
+  82% {
+    transform: translate3d(25px, -18px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Directional banking in flight */
+@keyframes chatgptAutonomousBank {
+  0%, 8%    { transform: rotate(0deg) scale(1); }
+  16%, 32%  { transform: rotate(-8deg) scale(1.02); } /* Banks left while flying left */
+  42%, 52%  { transform: rotate(1deg) scale(1); }     /* Level scan on left */
+  60%, 80%  { transform: rotate(8deg) scale(1.02); }  /* Banks right while returning right */
+  88%, 100% { transform: rotate(0deg) scale(1); }
 }
 
 @media (max-width: 600px) {
@@ -3525,10 +3576,17 @@ footer {
     width: 50px;
     height: 60px;
     background-size: 300px 60px;
-    animation: chatgptBob 2.4s steps(6) infinite;
+    animation: chatgptHarmonicLoop 1.12s steps(1) infinite;
   }
-  @keyframes chatgptBob {
-    to { background-position-x: -300px; }
+  @keyframes chatgptHarmonicLoop {
+    0%, 12.5%     { background-position: 0 0; }
+    12.51%, 25.0% { background-position: -200px 0; }
+    25.01%, 37.5% { background-position: -100px 0; }
+    37.51%, 50.0% { background-position: -250px 0; }
+    50.01%, 62.5% { background-position: -50px 0; }
+    62.51%, 75.0% { background-position: -150px 0; }
+    75.01%, 87.5% { background-position: -200px 0; }
+    87.51%, 100%  { background-position: 0 0; }
   }
 }
 
@@ -3538,21 +3596,33 @@ footer {
   width: 54px;
   height: 51px;
   z-index: 5;
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: none;
 }
 
-/* Positioned above the Google Skills Profile badge button */
+/* Positioned above the Google Skills Profile badge button: Autonomous Zero-G Orbit */
 .mascot-gemini-wrap.mascot-gemini-badge {
   position: absolute;
   top: -46px;
   right: -10px;
+  animation: geminiAutonomousOrbit 15s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+.mascot-gemini-wrap.mascot-gemini-badge:hover,
+.mascot-gemini-wrap.mascot-gemini-badge:focus-visible,
+.mascot-gemini-wrap:hover,
+.mascot-gemini-wrap:focus-visible {
+  animation-play-state: paused;
 }
 
 .mascot-gemini-float {
   width: 54px;
   height: 51px;
-  animation: geminiFloatHover 6.8s ease-in-out infinite alternate; /* Slower floating drift */
+  animation: geminiCosmicTilt 15s ease-in-out infinite;
+}
+
+.mascot-gemini-wrap:hover .mascot-gemini-float,
+.mascot-gemini-wrap:focus-visible .mascot-gemini-float {
+  animation-play-state: paused;
 }
 
 .mascot-gemini-sprite {
@@ -3561,17 +3631,51 @@ footer {
   background-image: url('./assets/mascot-gemini-sheet.png');
   background-size: 270px 51px;
   background-repeat: no-repeat;
-  animation: geminiFloat 2.2s steps(5) infinite; /* Slower gestures cycle */
+  image-rendering: pixelated;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: geminiHarmonicArc 0.96s steps(1) infinite;
 }
 
-@keyframes geminiFloat {
-  to { background-position-x: -270px; }
+/* 6-step harmonic gesture arc (160ms/step): Rest -> Reach -> Raise -> Cheer -> Lower -> Shoulder -> Rest */
+@keyframes geminiHarmonicArc {
+  0%, 16.66%     { background-position: 0 0; }       /* F1: Rest at sides */
+  16.67%, 33.33% { background-position: -108px 0; }  /* F3: Reach forward with star */
+  33.34%, 50.0%  { background-position: -54px 0; }   /* F2: Raise star to sky */
+  50.01%, 66.66% { background-position: -162px 0; }  /* F4: Twin star victory cheer */
+  66.67%, 83.33% { background-position: -54px 0; }   /* F2: Lower arm gracefully */
+  83.34%, 100%   { background-position: -216px 0; }  /* F5: Star at shoulder level */
 }
 
-@keyframes geminiFloatHover {
-  0%   { transform: translateY(0) rotate(0deg); }
-  50%  { transform: translateY(-6px) rotate(2deg); }
-  100% { transform: translateY(-2px) rotate(-1.5deg); }
+/* Autonomous zero-g space orbit around Google Skills Profile badge */
+@keyframes geminiAutonomousOrbit {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  22% {
+    transform: translate3d(-55px, -36px, 0);
+  }
+  44% {
+    transform: translate3d(-145px, -28px, 0);
+  }
+  62% {
+    transform: translate3d(-165px, 8px, 0);
+  }
+  82% {
+    transform: translate3d(-60px, 14px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Zero-g cosmic tilt */
+@keyframes geminiCosmicTilt {
+  0%, 8%    { transform: rotate(0deg); }
+  20%, 38%  { transform: rotate(-8deg); }
+  46%, 58%  { transform: rotate(6deg); }
+  65%, 80%  { transform: rotate(-5deg); }
+  88%, 100% { transform: rotate(0deg); }
 }
 
 @media (max-width: 600px) {
@@ -3596,10 +3700,15 @@ footer {
     width: 58px;
     height: 55px;
     background-size: 290px 55px;
-    animation: geminiFloat 2.2s steps(5) infinite;
+    animation: geminiHarmonicArc 0.96s steps(1) infinite;
   }
-  @keyframes geminiFloat {
-    to { background-position-x: -290px; }
+  @keyframes geminiHarmonicArc {
+    0%, 16.66%     { background-position: 0 0; }
+    16.67%, 33.33% { background-position: -116px 0; }
+    33.34%, 50.0%  { background-position: -58px 0; }
+    50.01%, 66.66% { background-position: -174px 0; }
+    66.67%, 83.33% { background-position: -58px 0; }
+    83.34%, 100%   { background-position: -232px 0; }
   }
 }
 
@@ -3660,7 +3769,9 @@ footer {
   .probe-antenna-beacon,
   .mascot-claude-patrol-wrap,
   .mascot-claude-flip-wrap,
+  .mascot-chatgpt-wrap,
   .mascot-chatgpt-float,
+  .mascot-gemini-wrap,
   .mascot-gemini-float {
     animation: none !important;
     transform: none !important;
