@@ -86,7 +86,7 @@
   .edu-divider-character {
     right: 4%;
     transform: scale(0.9);
-    transform-origin: top right;
+    transform-origin: 100% 67%;
   }
 
   .contact-tux-sprite {
@@ -344,7 +344,7 @@
   .edu-divider-character {
     right: 3%;
     transform: scale(0.85);
-    transform-origin: top right;
+    transform-origin: 100% 67%;
   }
 
   .contact-tux-sprite {
@@ -476,7 +476,7 @@
   .edu-divider-character {
     right: 2%;
     transform: scale(0.8);
-    transform-origin: top right;
+    transform-origin: 100% 67%;
   }
 
 }
@@ -576,7 +576,7 @@
   .edu-divider-character {
     right: 1%;
     transform: scale(0.74);
-    transform-origin: top right;
+    transform-origin: 100% 67%;
   }
 
   /* Distant Pixel Moon — Ultra-narrow Mobile scaling */

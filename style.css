@@ -453,6 +453,16 @@ section {
 }
 
 /* Black hole core sprite: authentic 16-bit chunky pixels with deep-space grading */
+.hero-black-hole-flare-flow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: bhFlareTidalFlow 14s ease-in-out infinite alternate;
+  will-change: transform, filter;
+}
+
 .hero-black-hole-sprite {
   position: absolute;
   top: 0;
@@ -465,11 +475,162 @@ section {
   image-rendering: crisp-edges;
   opacity: 0.88;
   filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 20px rgba(194, 84, 26, 0.14)) drop-shadow(0 0 45px rgba(0, 0, 0, 0.9));
-  animation: bhRelativisticThermal 15s ease-in-out infinite alternate;
-  will-change: filter, opacity;
+  pointer-events: none;
 }
 
-/* Gravitational Accretion Stream & Physics Particles */
+/* ── 3D INCLINED RELATIVISTIC ACCRETION VORTEX (Matter Swirling Around Singularity) ── */
+.bh-accretion-vortex {
+  position: absolute;
+  left: 76%;
+  top: 47.5%;
+  width: 44%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  perspective: 600px;
+  transform-style: preserve-3d;
+  z-index: 2;
+}
+
+.bh-vortex-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Inner Ring (Fastest Keplerian orbit closest to the photon sphere / ISCO) */
+.bh-orbit-inner {
+  width: 62%;
+  height: 62%;
+  margin-left: -31%;
+  margin-top: -31%;
+  transform: rotateX(65deg) rotateY(26deg);
+  animation: spinInnerAccretion 4.2s linear infinite;
+  will-change: transform;
+}
+
+/* Mid Ring (Main swirling plasma torus) */
+.bh-orbit-mid {
+  width: 82%;
+  height: 82%;
+  margin-left: -41%;
+  margin-top: -41%;
+  transform: rotateX(65deg) rotateY(26deg);
+  animation: spinMidAccretion 7.6s linear infinite;
+  will-change: transform;
+}
+
+/* Outer Ring (Where flare matter enters the disk) */
+.bh-orbit-outer {
+  width: 98%;
+  height: 98%;
+  margin-left: -49%;
+  margin-top: -49%;
+  transform: rotateX(65deg) rotateY(26deg);
+  animation: spinOuterAccretion 12.8s linear infinite;
+  will-change: transform;
+}
+
+@keyframes spinInnerAccretion {
+  0%   { transform: rotateX(65deg) rotateY(26deg) rotateZ(0deg); }
+  100% { transform: rotateX(65deg) rotateY(26deg) rotateZ(360deg); }
+}
+
+@keyframes spinMidAccretion {
+  0%   { transform: rotateX(65deg) rotateY(26deg) rotateZ(0deg); }
+  100% { transform: rotateX(65deg) rotateY(26deg) rotateZ(360deg); }
+}
+
+@keyframes spinOuterAccretion {
+  0%   { transform: rotateX(65deg) rotateY(26deg) rotateZ(0deg); }
+  100% { transform: rotateX(65deg) rotateY(26deg) rotateZ(360deg); }
+}
+
+/* Chunky 16-bit plasma clumps on orbiting rings */
+.bh-plasma-clump {
+  position: absolute;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border-radius: 0;
+  pointer-events: none;
+}
+
+/* Hot white-yellow relativistic clumps (inner ring) */
+.bh-clump-hot-1 {
+  top: 0; left: 50%;
+  width: 5px; height: 3px;
+  background: #ffffff;
+  box-shadow: 0 0 6px #fde047, 0 0 12px #f59e0b;
+}
+.bh-clump-hot-2 {
+  bottom: 8px; right: 22%;
+  width: 4px; height: 3px;
+  background: #fffbeb;
+  box-shadow: 0 0 5px #eab308;
+}
+.bh-clump-hot-3 {
+  top: 48%; left: 3px;
+  width: 4px; height: 4px;
+  background: #fef08a;
+  box-shadow: 0 0 7px #f59e0b;
+}
+.bh-clump-hot-4 {
+  top: 52%; right: 4px;
+  width: 3px; height: 3px;
+  background: #fde047;
+  box-shadow: 0 0 4px #d97706;
+}
+
+/* Radiant amber clumps (mid ring) */
+.bh-clump-amber-1 {
+  top: 14%; right: 12%;
+  width: 6px; height: 4px;
+  background: #f59e0b;
+  box-shadow: 0 0 6px #d97706;
+}
+.bh-clump-amber-2 {
+  bottom: 14%; left: 14%;
+  width: 5px; height: 3px;
+  background: #ea580c;
+  box-shadow: 0 0 6px #c2410c;
+}
+.bh-clump-amber-3 {
+  top: 58%; right: 6px;
+  width: 4px; height: 3px;
+  background: #f59e0b;
+  box-shadow: 0 0 4px #b45309;
+}
+.bh-clump-amber-4 {
+  top: 36%; left: 8px;
+  width: 4px; height: 4px;
+  background: #fbbf24;
+  box-shadow: 0 0 5px #d97706;
+}
+
+/* Crimson & cosmic orange clumps (outer ring) */
+.bh-clump-crimson-1 {
+  top: 24%; left: 9%;
+  width: 6px; height: 4px;
+  background: #f59e0b;
+  box-shadow: 0 0 6px #b45309;
+}
+.bh-clump-crimson-2 {
+  bottom: 18%; right: 14%;
+  width: 5px; height: 3px;
+  background: #c2410c;
+}
+.bh-clump-crimson-3 {
+  top: 68%; left: 16%;
+  width: 5px; height: 3px;
+  background: #ea580c;
+}
+
+/* ── GRAVITATIONAL ACCRETION STREAM & PHYSICS PARTICLES ── */
 .bh-gravity-field {
   position: absolute;
   top: 0;
@@ -477,62 +638,50 @@ section {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 3;
 }
 
-/* Gravitationally infalling matter particles */
 .bh-gravity-particle {
   position: absolute;
   image-rendering: pixelated;
   pointer-events: none;
-  border-radius: 0; /* Pure 16-bit integer pixel edges */
+  border-radius: 0;
   opacity: 0;
 }
 
-/* Particle 1: Matter in the tail being accelerated into the disk */
+/* Infalling matter streams from the flare tail into the disk */
 .bh-part-stream-1 {
+  width: 4px;
+  height: 3px;
+  background: #fde047;
+  box-shadow: 0 0 5px #f59e0b;
+  animation: bhTailInflow1 10s cubic-bezier(0.35, 0, 0.2, 1) infinite;
+}
+
+.bh-part-stream-2 {
   width: 3px;
   height: 3px;
-  background: #f59e0b;
-  box-shadow: 0 0 4px #d97706;
-  animation: bhTailInflow1 14s cubic-bezier(0.35, 0, 0.2, 1) infinite;
-}
-
-/* Particle 2: Secondary tail filament matter cluster */
-.bh-part-stream-2 {
-  width: 2px;
-  height: 2px;
   background: #ea580c;
-  box-shadow: 0 0 3px #c2410c;
-  animation: bhTailInflow2 19s cubic-bezier(0.35, 0, 0.2, 1) infinite 4s;
+  box-shadow: 0 0 4px #c2410c;
+  animation: bhTailInflow2 14s cubic-bezier(0.35, 0, 0.2, 1) infinite 3.5s;
 }
 
-/* Particle 3: Fast inner relativistic matter skimming the photon sphere with Doppler brightening */
-.bh-part-orbit {
+.bh-part-stream-3 {
+  width: 4px;
+  height: 3px;
+  background: #f59e0b;
+  box-shadow: 0 0 5px #d97706;
+  animation: bhTailInflow3 12s cubic-bezier(0.35, 0, 0.2, 1) infinite 6.5s;
+}
+
+.bh-part-plunge {
   width: 3px;
   height: 2px;
-  background: #fef08a;
-  box-shadow: 0 0 5px #eab308;
-  animation: bhInnerOrbit 7.5s cubic-bezier(0.2, 0, 0.1, 1) infinite;
+  background: #ffffff;
+  box-shadow: 0 0 5px #fef08a;
+  animation: bhPlungeSingularity 8.5s cubic-bezier(0.4, 0, 0.1, 1) infinite 4s;
 }
 
-/* Particle 4: Far-side gravitational lensing arc sweep */
-.bh-part-farside {
-  width: 2px;
-  height: 2px;
-  background: #c2410c;
-  animation: bhFarSideSweep 12s ease-in-out infinite 2.5s;
-}
-
-/* Particle 5: Infalling matter plunging into the event horizon */
-.bh-part-plunge {
-  width: 2px;
-  height: 2px;
-  background: #fffbeb;
-  box-shadow: 0 0 4px #f59e0b;
-  animation: bhPlungeSingularity 10s cubic-bezier(0.4, 0, 0.1, 1) infinite 5s;
-}
-
-/* Gravitational Lensing Stars: spacetime curvature deflecting background starlight */
 .bh-lensed-photon {
   position: absolute;
   width: 2px;
@@ -556,7 +705,27 @@ section {
 
 /* ── KEYFRAME ANIMATIONS: GRAVITATIONAL & RELATIVISTIC PHYSICS ── */
 
-/* 1. Lense-Thirring frame dragging / celestial precession */
+/* 1. Accretion Flare: dynamic plasma breathing & relativistic tidal flow */
+@keyframes bhFlareTidalFlow {
+  0% {
+    filter: brightness(0.92) contrast(0.98) drop-shadow(0 0 16px rgba(234, 88, 12, 0.16));
+    transform: translate3d(0, 0, 0) skew(0deg, 0deg);
+  }
+  30% {
+    filter: brightness(1.06) contrast(1.04) drop-shadow(0 0 26px rgba(245, 158, 11, 0.32));
+    transform: translate3d(-3px, 2px, 0) skew(-0.35deg, 0.2deg);
+  }
+  65% {
+    filter: brightness(0.96) contrast(1.02) drop-shadow(0 0 18px rgba(194, 65, 12, 0.20));
+    transform: translate3d(2px, -2px, 0) skew(0.3deg, -0.2deg);
+  }
+  100% {
+    filter: brightness(1.10) contrast(1.08) drop-shadow(0 0 32px rgba(251, 191, 36, 0.40));
+    transform: translate3d(-2px, -3px, 0) skew(-0.25deg, 0.25deg);
+  }
+}
+
+/* 2. Lense-Thirring frame dragging / celestial precession */
 @keyframes bhFrameDragging {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
@@ -572,50 +741,32 @@ section {
   }
 }
 
-/* 2. Relativistic thermal breathing of the accretion disk */
-@keyframes bhRelativisticThermal {
-  0%, 100% {
-    opacity: 0.85;
-    filter: brightness(0.90) contrast(0.96) drop-shadow(0 0 18px rgba(194, 84, 26, 0.10));
-  }
-  50% {
-    opacity: 0.94;
-    filter: brightness(1.02) contrast(1.04) drop-shadow(0 0 28px rgba(234, 88, 12, 0.18));
-  }
-}
-
 /* 3. Infalling matter flowing along the accretion tail into the gravity well */
 @keyframes bhTailInflow1 {
   0% {
-    top: 74%;
-    left: 10%;
+    top: 76%;
+    left: 8%;
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.6);
   }
-  12% {
-    opacity: 0.85;
-    transform: scale(0.9);
+  15% {
+    opacity: 0.9;
+    transform: scale(1);
   }
-  45% {
-    top: 57%;
-    left: 36%;
-    opacity: 0.95;
-  }
-  72% {
-    top: 48%;
-    left: 64%;
+  48% {
+    top: 58%;
+    left: 42%;
     opacity: 1;
-    transform: scale(1.15);
   }
-  90% {
-    top: 54%;
-    left: 79%;
-    opacity: 0.75;
-    transform: scale(0.7);
+  78% {
+    top: 48%;
+    left: 68%;
+    opacity: 0.95;
+    transform: scale(1.2);
   }
   100% {
-    top: 49%;
-    left: 83%;
+    top: 47.5%;
+    left: 76%;
     opacity: 0;
     transform: scale(0.2);
   }
@@ -624,96 +775,70 @@ section {
 /* 4. Secondary tail filament matter cluster */
 @keyframes bhTailInflow2 {
   0% {
-    top: 67%;
+    top: 80%;
     left: 16%;
     opacity: 0;
+    transform: scale(0.5);
   }
-  18% {
-    opacity: 0.75;
+  20% {
+    opacity: 0.85;
+    transform: scale(0.9);
   }
-  50% {
-    top: 52%;
-    left: 42%;
-    opacity: 0.9;
-  }
-  78% {
-    top: 44%;
-    left: 67%;
+  52% {
+    top: 62%;
+    left: 46%;
     opacity: 0.95;
   }
-  100% {
-    top: 47%;
-    left: 77%;
-    opacity: 0;
-  }
-}
-
-/* 5. Fast inner relativistic matter skimming the photon sphere (Doppler brightening on near side) */
-@keyframes bhInnerOrbit {
-  0% {
-    top: 64%;
-    left: 67%;
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  18% {
-    opacity: 0.95;
-    transform: scale(1);
-  }
-  55% {
-    top: 57%;
-    left: 82%;
+  80% {
+    top: 50%;
+    left: 70%;
     opacity: 1;
-    transform: scale(1.25); /* Doppler amplification */
-  }
-  82% {
-    top: 41%;
-    left: 90%;
-    opacity: 0.45;
-    transform: scale(0.7);
+    transform: scale(1.1);
   }
   100% {
-    top: 35%;
-    left: 92%;
+    top: 47.5%;
+    left: 76%;
     opacity: 0;
     transform: scale(0.2);
   }
 }
 
-/* 6. Far-side gravitational lensing arc sweep */
-@keyframes bhFarSideSweep {
+/* 5. Tertiary tail filament matter cluster */
+@keyframes bhTailInflow3 {
   0% {
-    top: 36%;
-    left: 92%;
+    top: 68%;
+    left: 24%;
     opacity: 0;
+    transform: scale(0.6);
   }
-  22% {
-    top: 23%;
-    left: 85%;
-    opacity: 0.7;
+  20% {
+    opacity: 0.85;
+    transform: scale(1);
   }
-  52% {
-    top: 17%;
-    left: 77%;
-    opacity: 0.8;
+  58% {
+    top: 55%;
+    left: 54%;
+    opacity: 0.95;
   }
   82% {
-    top: 24%;
-    left: 69%;
-    opacity: 0.35;
+    top: 48%;
+    left: 72%;
+    opacity: 1;
+    transform: scale(1.15);
   }
   100% {
-    top: 34%;
-    left: 66%;
+    top: 47.5%;
+    left: 76%;
     opacity: 0;
+    transform: scale(0.2);
   }
 }
 
-/* 7. Plunging matter falling through the event horizon into singularity */
+/* 6. Plunging matter falling through the event horizon into singularity */
 @keyframes bhPlungeSingularity {
   0% {
-    top: 40%;
-    left: 72%;
+    top: 44%;
+    left: 71%;
     opacity: 0;
     transform: scale(1);
   }
@@ -721,20 +846,20 @@ section {
     opacity: 1;
   }
   60% {
-    top: 46%;
-    left: 77%;
+    top: 47%;
+    left: 75%;
     opacity: 0.9;
     transform: scale(0.8);
   }
   90% {
-    top: 47%;
-    left: 79%;
-    opacity: 0.3;
-    transform: scale(0.4);
+    top: 47.5%;
+    left: 76%;
+    opacity: 0.6;
+    transform: scale(0.35);
   }
   100% {
-    top: 47%;
-    left: 80%;
+    top: 47.5%;
+    left: 76%;
     opacity: 0;
     transform: scale(0);
   }
@@ -765,10 +890,14 @@ section {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-black-hole-container,
+  .hero-black-hole-flare-flow,
   .hero-black-hole-sprite,
+  .bh-vortex-orbit,
+  .bh-plasma-clump,
   .bh-gravity-particle,
   .bh-lensed-photon {
     animation: none !important;
+    transform: none !important;
   }
 }
 
@@ -924,10 +1053,10 @@ section {
 /* Retro Pixel Programmer Sitting on Education Divider */
 .edu-divider-character {
   position: absolute;
-  top: -39px; /* Ground contact aligned precisely with top divider line */
+  top: -60px; /* Hip contact level at Y=67% aligned precisely with divider ledge */
   right: 6%;
-  width: 51px;
-  height: 68px;
+  width: 66px;
+  height: 90px;
   pointer-events: none;
   z-index: 5;
 }
@@ -935,12 +1064,12 @@ section {
 .edu-programmer-sprite {
   width: 100%;
   height: 100%;
-  background-image: url('./assets/pixel-programmer-sheet.png');
+  background-image: url('./assets/sprites/modern-spacesuit-programmer-sheet.png');
   background-size: 600% 100%; /* 6 frames */
   background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  animation: edu-programmer-anim 2.4s steps(1) infinite;
+  animation: edu-programmer-anim 3.6s steps(1) infinite;
 }
 
 @keyframes edu-programmer-anim {

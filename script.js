@@ -2296,7 +2296,7 @@ document.addEventListener('keydown', function (e) {
       // Hero / Profile Section (5 asteroids: 2 distant specks, 2 mid rocks, 1 distant cluster)
       { id: 0, sectionId: 'profile', relX: 0.04, relY: 0.08, tier: 1, sprite: 3, size: 8, orbitRx: 9, orbitRy: 7, orbitSpeed: 0.00018, wobbleSpeed: 0.00045, wobbleAmp: 2, rotSpeed: 0.012, phase: 0.4, inclination: -25 },
       { id: 1, sectionId: 'profile', relX: 0.03, relY: 0.52, tier: 3, sprite: 1, size: 32, orbitRx: 32, orbitRy: 22, orbitSpeed: 0.00055, wobbleSpeed: 0.0010, wobbleAmp: 6, rotSpeed: 0.060, phase: 3.2, inclination: 35 },
-      { id: 2, sectionId: 'profile', relX: 0.94, relY: 0.09, tier: 2, sprite: 2, size: 18, orbitRx: 18, orbitRy: 12, orbitSpeed: 0.00036, wobbleSpeed: 0.00075, wobbleAmp: 4, rotSpeed: -0.032, phase: 1.8, inclination: -15 },
+      { id: 2, sectionId: 'profile', relX: 0.94, relY: 0.55, tier: 2, sprite: 2, size: 16, orbitRx: 16, orbitRy: 11, orbitSpeed: 0.00032, wobbleSpeed: 0.0007, wobbleAmp: 3.5, rotSpeed: -0.028, phase: 1.8, inclination: -15 },
       { id: 3, sectionId: 'profile', relX: 0.92, relY: 0.68, tier: 1, sprite: 3, size: 7, orbitRx: 8, orbitRy: 6, orbitSpeed: 0.00016, wobbleSpeed: 0.0004, wobbleAmp: 1.5, rotSpeed: -0.014, phase: 4.5, inclination: 40 },
       { id: 4, sectionId: 'profile', relX: 0.955, relY: 0.88, tier: 2, sprite: 2, size: 19, orbitRx: 20, orbitRy: 14, orbitSpeed: 0.00038, wobbleSpeed: 0.0008, wobbleAmp: 4.5, rotSpeed: 0.030, phase: 5.6, inclination: -20 },
 
@@ -2350,6 +2350,10 @@ document.addEventListener('keydown', function (e) {
       '#profile #socials-container',
       '#hero-pixel-satellite',
       '#hero-pixel-planet',
+      '#hero-black-hole-wrap',
+      '.hero-black-hole-wrap',
+      '.hero-black-hole-container',
+      '.hero-black-hole-sprite',
       '#projects-pixel-planet',
       '.section-header h2',
       '.section-header .section-label',
