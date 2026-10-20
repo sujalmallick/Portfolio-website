@@ -23,7 +23,9 @@ The portfolio is structured as an ascending vertical space expedition that conne
 Accessible by clicking or focusing the Ancient Moon in the Contacts section:
 
 - Native Modal Architecture: Built on standard HTML5 <dialog> with backdrop blur, keyboard dismissal (Escape), and focus management.
-- Complete Narrative Lore: 26 illustrated lore entries covering every environmental prop, celestial body, interactive mascot, and structural relic.
+- Interactive Collapsible Cards: All 26 lore cards are compact by default with one-click story disclosure, keeping the modal tidy and fast to navigate.
+- High-Performance Scroll Engine: Native touch and trackpad scrolling optimized with CSS layout containment (contain: content), background starfield pause while open, and zero composite scanline overhead for fluid 60 to 120 FPS scrolling.
+- Accessible Storytelling: Simple, clear lore written in easy-to-understand words explaining every environmental prop, celestial body, interactive mascot, and structural relic.
 - Lore Elements:
   - Combat Cyborg Gunner: The supreme mechanical ruler patrolling the scorched surface after the synthetic uprising overthrew human civilization.
   - Lost Astronaut Helmet: A cracked EVA helmet drifting through the vacuum, commemorating an explorer who perished during the evacuation from Earth.
