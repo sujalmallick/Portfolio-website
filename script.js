@@ -239,6 +239,82 @@ document.addEventListener('keydown', function (e) {
   });
 })();
 
+/* ── 10b. PROJECTS SECTION — ARCHITECTURE PIPELINE DROPDOWN (MOBILE) ─── */
+(function initPipelineDropdowns() {
+  function setup() {
+    var buttons = document.querySelectorAll('.pipeline-dropdown-btn');
+    if (!buttons.length) return;
+
+    buttons.forEach(function (btn) {
+      var controlsId = btn.getAttribute('aria-controls');
+      var content = controlsId ? document.getElementById(controlsId) : null;
+      if (!content) return;
+
+      var textSpan = btn.querySelector('.pipeline-toggle-text');
+
+      function toggle(open) {
+        var isCurrentlyOpen = btn.getAttribute('aria-expanded') === 'true';
+        var shouldOpen = open !== undefined ? open : !isCurrentlyOpen;
+
+        btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+        if (textSpan) {
+          textSpan.textContent = shouldOpen ? 'Hide' : 'View';
+        }
+
+        if (shouldOpen) {
+          content.classList.add('is-open');
+          content.removeAttribute('hidden');
+        } else {
+          content.classList.remove('is-open');
+          if (window.innerWidth <= 768) {
+            content.setAttribute('hidden', 'until-found');
+          } else {
+            content.removeAttribute('hidden');
+          }
+        }
+      }
+
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        toggle();
+      });
+
+      // Browser "Find in Page" / beforematch integration (Modern Web Guidance)
+      content.addEventListener('beforematch', function () {
+        toggle(true);
+      });
+    });
+
+    // Synchronize on resize: if expanding back to desktop, ensure content is unhidden
+    function syncOnResize() {
+      var isMobile = window.innerWidth <= 768;
+      buttons.forEach(function (btn) {
+        var controlsId = btn.getAttribute('aria-controls');
+        var content = controlsId ? document.getElementById(controlsId) : null;
+        if (!content) return;
+
+        if (!isMobile) {
+          content.removeAttribute('hidden');
+        } else {
+          var isOpen = btn.getAttribute('aria-expanded') === 'true';
+          if (!isOpen) {
+            content.setAttribute('hidden', 'until-found');
+          }
+        }
+      });
+    }
+
+    syncOnResize();
+    window.addEventListener('resize', syncOnResize, { passive: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+})();
+
 /* ═══════════════════════════════════════════════════════════════════════════
    LIVING RETRO PIXEL-ART FOOTER WORLD
    A living, spacious 8-bit/16-bit retro developer scene:
@@ -3236,3 +3312,129 @@ document.addEventListener('keydown', function (e) {
 })();
 
 
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LUNAR ARCHIVE CODEX (SPACE ODYSSEY & ELEMENT LORE MODAL)
+   - Interactive Moon trigger in Contacts section
+   - Native HTML5 <dialog> with smooth entrance & backdrop blur
+   - Smooth elevation tier quick-jump sub-navigation
+   - Esc, backdrop click, and button dismissal with focus return
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function initLunarArchiveCodex() {
+  function init() {
+    var moonBtn = document.getElementById('contacts-moon-btn');
+    var dialog = document.getElementById('lunar-codex-dialog');
+    if (!dialog) return;
+
+    var closeBtn = document.getElementById('codex-close-btn');
+    var footerCloseBtn = document.getElementById('codex-footer-close');
+    var dialogBody = document.getElementById('codex-body');
+    var pills = dialog.querySelectorAll('.codex-pill');
+    var tiers = dialog.querySelectorAll('.codex-tier');
+
+    function openCodex() {
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+        document.body.classList.add('codex-open');
+        if (dialogBody) {
+          dialogBody.scrollTop = 0;
+        }
+      }
+    }
+
+    function closeCodex() {
+      if (dialog.open) {
+        dialog.close();
+        document.body.classList.remove('codex-open');
+        if (moonBtn && typeof moonBtn.focus === 'function') {
+          moonBtn.focus();
+        }
+      }
+    }
+
+    if (moonBtn) {
+      moonBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCodex();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeCodex);
+    }
+
+    if (footerCloseBtn) {
+      footerCloseBtn.addEventListener('click', closeCodex);
+    }
+
+    // Dismiss when clicking directly on backdrop
+    dialog.addEventListener('click', function (e) {
+      var rect = dialog.getBoundingClientRect();
+      var isInDialog = (
+        rect.top <= e.clientY &&
+        e.clientY <= rect.bottom &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.right
+      );
+      if (!isInDialog) {
+        closeCodex();
+      }
+    });
+
+    dialog.addEventListener('close', function () {
+      document.body.classList.remove('codex-open');
+    });
+
+    dialog.addEventListener('cancel', function () {
+      document.body.classList.remove('codex-open');
+    });
+
+    // Quick-jump navigation pills
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function (e) {
+        e.preventDefault();
+        var targetId = pill.getAttribute('href');
+        if (!targetId || !targetId.startsWith('#')) return;
+        var targetEl = dialog.querySelector(targetId);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          pills.forEach(function (p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+        }
+      });
+    });
+
+    // Update active nav pill as user scrolls through tiers
+    if ('IntersectionObserver' in window && dialogBody && tiers.length > 0) {
+      var tierObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var id = '#' + entry.target.id;
+            pills.forEach(function (pill) {
+              if (pill.getAttribute('href') === id) {
+                pill.classList.add('active');
+              } else {
+                pill.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, {
+        root: dialogBody,
+        threshold: 0.25,
+        rootMargin: '-10% 0px -40% 0px'
+      });
+
+      tiers.forEach(function (tier) {
+        tierObserver.observe(tier);
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

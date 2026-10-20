@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=43">
-  <link rel="stylesheet" href="mediaqueries.css?v=34">
+  <link rel="stylesheet" href="style.css?v=44">
+  <link rel="stylesheet" href="mediaqueries.css?v=35">
   <link rel="stylesheet" href="wasteland.css?v=9">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
 </head>
@@ -423,19 +423,33 @@
         </div>
         <div class="project-featured-aside">
           <div class="architecture-callout">
-            <span class="arch-label">Pipeline Architecture &middot; 8 LLM Agents</span>
-            <div class="arch-flow">
-              <span class="arch-node">module_agent</span>
-              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-              <span class="arch-node">checklist_agent</span>
-              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-              <span class="arch-node">test_case_agent</span>
-              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-              <span class="arch-node">e2e_agent</span>
-              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-              <span class="arch-node">coverage_loop</span>
+            <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-1">
+              <span class="pipeline-btn-left">
+                <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
+                <span class="pipeline-btn-title">8 LLM Agents Architecture</span>
+              </span>
+              <span class="pipeline-btn-toggle">
+                <span class="pipeline-toggle-text">View</span>
+                <svg class="pipeline-toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="pipeline-collapse-content" id="pipeline-flow-1">
+              <span class="arch-label">Pipeline Architecture &middot; 8 LLM Agents</span>
+              <div class="arch-flow">
+                <span class="arch-node">module_agent</span>
+                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+                <span class="arch-node">checklist_agent</span>
+                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+                <span class="arch-node">test_case_agent</span>
+                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+                <span class="arch-node">e2e_agent</span>
+                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+                <span class="arch-node">coverage_loop</span>
+              </div>
+              <span class="arch-sub">LangGraph orchestration &middot; Azure (App Service, Container Apps) &middot; PostgreSQL &middot; LiteLLM (BYOK) &middot; GitHub Actions CI/CD</span>
             </div>
-            <span class="arch-sub">LangGraph orchestration &middot; Azure (App Service, Container Apps) &middot; PostgreSQL &middot; LiteLLM (BYOK) &middot; GitHub Actions CI/CD</span>
           </div>
         </div>
       </div>
@@ -461,19 +475,33 @@
         </div>
         <p class="project-description">Cloud-deployed AI accident-detection platform. Real-time video ingestion with YOLO vehicle detection and a secondary CNN collision classifier &mdash; served via a Dockerized FastAPI backend on AWS EC2, with a React / TypeScript frontend distributed through AWS S3 and CloudFront CDN.</p>
         <div class="architecture-callout">
-          <span class="arch-label">Inference &amp; Cloud Pipeline</span>
-          <div class="arch-flow">
-            <span class="arch-node">video_stream</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">yolo_detector</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">cnn_classifier</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">fastapi_ec2</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">s3_cloudfront</span>
+          <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-2">
+            <span class="pipeline-btn-left">
+              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
+              <span class="pipeline-btn-title">Inference &amp; Cloud Pipeline</span>
+            </span>
+            <span class="pipeline-btn-toggle">
+              <span class="pipeline-toggle-text">View</span>
+              <svg class="pipeline-toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <div class="pipeline-collapse-content" id="pipeline-flow-2">
+            <span class="arch-label">Inference &amp; Cloud Pipeline</span>
+            <div class="arch-flow">
+              <span class="arch-node">video_stream</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">yolo_detector</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">cnn_classifier</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">fastapi_ec2</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">s3_cloudfront</span>
+            </div>
+            <span class="arch-sub">Real-time inference &middot; Dockerized FastAPI on AWS EC2 &middot; S3 &amp; CloudFront edge delivery</span>
           </div>
-          <span class="arch-sub">Real-time inference &middot; Dockerized FastAPI on AWS EC2 &middot; S3 &amp; CloudFront edge delivery</span>
         </div>
         <div class="project-stack">
           <span class="stack-item">React / Vite</span>
@@ -503,17 +531,31 @@
         </div>
         <p class="project-description">Extended a GPU-accelerated open-source CUDA boids simulator. Added spatial-hash neighbour searching to eliminate \(O(N^2)\) particle checks, zero-copy CUDA&ndash;OpenGL interop for direct frame-buffer rendering, and an interactive Dear ImGui control panel &mdash; scaling to 100k+ boids at 60 FPS.</p>
         <div class="architecture-callout">
-          <span class="arch-label">GPU Acceleration Pipeline &middot; 100k+ Agents</span>
-          <div class="arch-flow">
-            <span class="arch-node">agent_state_vbo</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">spatial_hash_sort</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">cuda_steering</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">opengl_interop</span>
+          <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-3">
+            <span class="pipeline-btn-left">
+              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
+              <span class="pipeline-btn-title">GPU Acceleration &middot; 100k+ Agents</span>
+            </span>
+            <span class="pipeline-btn-toggle">
+              <span class="pipeline-toggle-text">View</span>
+              <svg class="pipeline-toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <div class="pipeline-collapse-content" id="pipeline-flow-3">
+            <span class="arch-label">GPU Acceleration Pipeline &middot; 100k+ Agents</span>
+            <div class="arch-flow">
+              <span class="arch-node">agent_state_vbo</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">spatial_hash_sort</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">cuda_steering</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">opengl_interop</span>
+            </div>
+            <span class="arch-sub">Zero-copy CUDA&ndash;OpenGL interop &middot; Spatial-hash grid acceleration &middot; Dear ImGui telemetry</span>
           </div>
-          <span class="arch-sub">Zero-copy CUDA&ndash;OpenGL interop &middot; Spatial-hash grid acceleration &middot; Dear ImGui telemetry</span>
         </div>
         <div class="project-stack">
           <span class="stack-item">CUDA / C++</span>
@@ -543,19 +585,33 @@
         </div>
         <p class="project-description">&ldquo;Evidence before payment&rdquo;: an AI agent team that investigates invoice anomalies, with an explainable code-based risk score and human approval before anything is paid. Built for small businesses, India first.</p>
         <div class="architecture-callout">
-          <span class="arch-label">Multi-Agent Verification Pipeline</span>
-          <div class="arch-flow">
-            <span class="arch-node">invoice_ingest</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">ocr_extractor</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">anomaly_agent</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">risk_scorer</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">human_approval</span>
+          <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-4">
+            <span class="pipeline-btn-left">
+              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
+              <span class="pipeline-btn-title">Multi-Agent Verification Pipeline</span>
+            </span>
+            <span class="pipeline-btn-toggle">
+              <span class="pipeline-toggle-text">View</span>
+              <svg class="pipeline-toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <div class="pipeline-collapse-content" id="pipeline-flow-4">
+            <span class="arch-label">Multi-Agent Verification Pipeline</span>
+            <div class="arch-flow">
+              <span class="arch-node">invoice_ingest</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">ocr_extractor</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">anomaly_agent</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">risk_scorer</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">human_approval</span>
+            </div>
+            <span class="arch-sub">LangGraph workflow &middot; Deterministic risk scoring &middot; SQLAlchemy audit trail &middot; Human-in-the-loop gate</span>
           </div>
-          <span class="arch-sub">LangGraph workflow &middot; Deterministic risk scoring &middot; SQLAlchemy audit trail &middot; Human-in-the-loop gate</span>
         </div>
         <div class="project-stack">
           <span class="stack-item">FastAPI / SQLAlchemy</span>
@@ -594,17 +650,31 @@
         </div>
         <p class="project-description">A cozy Kotlin Multiplatform cross-platform app creating intimate ambient spaces, interactive real-time visual touch scenes, and relationship-focused interactions in a lightweight, battery-efficient mobile canvas. Live at <a href="https://www.tinyus.online/" target="_blank" rel="noopener noreferrer" class="company-link">tinyus.online &nearr;</a></p>
         <div class="architecture-callout">
-          <span class="arch-label">Cross-Platform Reactive Engine</span>
-          <div class="arch-flow">
-            <span class="arch-node">touch_gestures</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">spring_physics</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">websocket_sync</span>
-            <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-            <span class="arch-node">ambient_canvas</span>
+          <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-5">
+            <span class="pipeline-btn-left">
+              <span class="pipeline-btn-badge" aria-hidden="true">ENGINE</span>
+              <span class="pipeline-btn-title">Cross-Platform Reactive Engine</span>
+            </span>
+            <span class="pipeline-btn-toggle">
+              <span class="pipeline-toggle-text">View</span>
+              <svg class="pipeline-toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <div class="pipeline-collapse-content" id="pipeline-flow-5">
+            <span class="arch-label">Cross-Platform Reactive Engine</span>
+            <div class="arch-flow">
+              <span class="arch-node">touch_gestures</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">spring_physics</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">websocket_sync</span>
+              <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+              <span class="arch-node">ambient_canvas</span>
+            </div>
+            <span class="arch-sub">Kotlin Multiplatform &middot; Compose Multiplatform &middot; Reactive state synchronization &middot; Spring physics</span>
           </div>
-          <span class="arch-sub">Kotlin Multiplatform &middot; Compose Multiplatform &middot; Reactive state synchronization &middot; Spring physics</span>
         </div>
         <div class="project-stack">
           <span class="stack-item">Kotlin</span>
@@ -853,8 +923,11 @@
   <!-- ═══════════════════════════ CONTACTS ══════════════════════════════ -->
   <section id="contacts" class="reveal-divider" aria-label="Contact">
     <!-- Distant Large Pixel-Art Moon (Partially Cropped at Right Viewport Edge) -->
-    <div class="contacts-moon-wrap" id="contacts-moon-wrap" aria-hidden="true">
-      <img src="./assets/pixel-moon.png" alt="" class="contacts-pixel-moon" width="180" height="180">
+    <div class="contacts-moon-wrap" id="contacts-moon-wrap">
+      <button type="button" class="contacts-moon-btn" id="contacts-moon-btn" aria-haspopup="dialog" aria-controls="lunar-codex-dialog" aria-label="Open Space Odyssey and Element Lore Codex" title="Click moon to open Codex">
+        <span class="moon-scanner-reticle" aria-hidden="true"></span>
+        <img src="./assets/pixel-moon.png" alt="Ancient Pixel Moon" class="contacts-pixel-moon" width="180" height="180">
+      </button>
     </div>
 
     <div class="section-header reveal">
@@ -1025,12 +1098,605 @@
     </div>
   </footer>
 
-  <!-- Pixelated Cosmic Starfield Background Canvas -->
+    <!-- ═══════════════════════════ LUNAR ARCHIVE CODEX MODAL ══════════════════════════════ -->
+  <dialog id="lunar-codex-dialog" class="lunar-codex-dialog" aria-labelledby="codex-title" aria-describedby="codex-desc">
+    <div class="codex-scanlines" aria-hidden="true"></div>
+
+    <!-- Dialog Header -->
+    <header class="codex-header">
+      <div class="codex-header-meta">
+        <div class="codex-terminal-pill">
+          <span class="codex-pulse-dot" aria-hidden="true"></span>
+          <span class="codex-terminal-tag">[ ARCHIVE PROTOCOL // ELEVATION CODEX ]</span>
+        </div>
+        <h2 id="codex-title" class="codex-title">SPACE ODYSSEY &amp; ELEMENT LORE</h2>
+        <p id="codex-desc" class="codex-desc">A vertical sci-fi odyssey spanning Earth's post-apocalyptic surface to the cosmic singularity.</p>
+      </div>
+      <button type="button" class="codex-close-btn" id="codex-close-btn" aria-label="Close Archive Codex" title="Close (Esc)">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </header>
+
+    <!-- Quick Jump Sub-Navigation -->
+    <nav class="codex-nav" aria-label="Codex Elevation Tiers">
+      <span class="codex-nav-label">QUICK JUMP:</span>
+      <div class="codex-nav-pills">
+        <a href="#codex-tier-1" class="codex-pill">01 Surface</a>
+        <a href="#codex-tier-2" class="codex-pill">02 Gate</a>
+        <a href="#codex-tier-3" class="codex-pill">03 Low Orbit</a>
+        <a href="#codex-tier-4" class="codex-pill">04 Mid Orbit</a>
+        <a href="#codex-tier-5" class="codex-pill">05 High Orbit</a>
+        <a href="#codex-tier-6" class="codex-pill">06 Singularity</a>
+      </div>
+    </nav>
+
+    <!-- Scrollable Dialog Body -->
+    <div class="codex-body" id="codex-body">
+      <!-- Prologue Briefing -->
+      <section class="codex-prologue">
+        <div class="codex-prologue-badge">// MISSION ARCHITECTURE &amp; VERTICAL NARRATIVE</div>
+        <p>
+          This portfolio is engineered as an ascending vertical space expedition. Rather than a flat document, each section corresponds to an atmospheric or orbital tier: beginning at <strong>Earth's machine-dominated wasteland</strong> at the base, passing through the <strong>orbital lunar gate</strong>, ascending past <strong>autonomous orbital stations and AI sentinels</strong>, navigating through <strong>deep cosmic nebulae</strong>, and ultimately reaching the <strong>gravitational singularity of the black hole</strong> at the apex.
+        </p>
+      </section>
+
+      <!-- Tier 1: Earth's Surface -->
+      <section class="codex-tier" id="codex-tier-1">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 01</span>
+            <span class="codex-tier-loc">FOOTER // ELEVATION: 0 KM &mdash; SURFACE</span>
+          </div>
+          <h3 class="codex-tier-title">Earth's Surface: The AI &amp; Terminator Wasteland</h3>
+          <p class="codex-tier-lore">
+            The foundation of the site rests on a dystopian cyber-industrial wasteland where autonomous machines, industrial towers, and combat cyborgs patrol a desolate planetary terrain.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 1 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/cyborg-shooter-0.png" alt="Combat Cyborg Gunner" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Combat Cyborg Gunner / Terminator</h4>
+                <span class="codex-selector">#prop-cyborg</span>
+              </div>
+              <p class="codex-card-desc">A heavy combat cyborg patrolling the wasteland perimeter with an assault rifle, cybernetic plating, and glowing red optic visor.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">SYSTEM</span>
+                <span>12-frame animated ground guard running real-time patrol kinematics, boundary turns, and cyclic combat readiness.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 2 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-service-droid.png" alt="Autonomous Ground Patrol Droid" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Autonomous Ground Patrol Droid</h4>
+                <span class="codex-selector">#footer-droid-wrap</span>
+              </div>
+              <p class="codex-card-desc">A retro dieselpunk scout droid patrolling the terrain, turning and flipping at boundaries.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">PHYSICS</span>
+                <span>Autonomous ground rover featuring dynamic collision boundary reflection, flip-turn CSS physics, and continuous terrain scanning.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 3 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/citadel-tower.png" alt="Central Citadel Monolith Tower" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Central Citadel Monolith Tower</h4>
+                <span class="codex-selector">#tower-citadel</span>
+              </div>
+              <p class="codex-card-desc">The towering command fortress of the AI regime (<code>TOWER 01: &Omega;N CORE ACTIVE</code>) emitting interactive sonar/radar rings into the atmospheric haze upon click.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">TELEMETRY</span>
+                <span>The gravitational anchor of the wasteland base with interactive acoustic radar wave propagation.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 4 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/factory-left.png" alt="Left Industrial Factory & Smelter" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Left Industrial Factory &amp; Smelter</h4>
+                <span class="codex-selector">#tower-factory</span>
+              </div>
+              <p class="codex-card-desc">An active industrial complex with twin smokestacks and animated billowing toxic smoke plumes (<code>FACILITY A: SMELTER RUNNING</code>).</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">ATMOSPHERE</span>
+                <span>Heavy industrial forge showcasing multi-layered CSS keyframe smoke particle drift and industrial atmosphere.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 5 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/refinery-right.png" alt="Right Cargo Refinery Overhang Platform" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Right Cargo Refinery Overhang Platform</h4>
+                <span class="codex-selector">#tower-refinery</span>
+              </div>
+              <p class="codex-card-desc">A heavy refinery deck with docked cargo modules and pulsing amber hazard beacons (<code>TERMINAL 03: CARGO DOCKED</code>).</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">LOGISTICS</span>
+                <span>High-altitude logistics terminal outfitted with synchronized pulsing hazard warning beacons.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 6 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/industrial-navigation-beacon.png" alt="Industrial Navigation & Warning Beacon" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Industrial Navigation &amp; Warning Beacon</h4>
+                <span class="codex-selector">#prop-wasteland-beacon</span>
+              </div>
+              <p class="codex-card-desc">A tall high-voltage warning spire pulsing concentrated red warning flashes.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">AVIONICS</span>
+                <span>Vertical aviation clearance tower broadcasting high-frequency red strobe pulses across low-hanging dust clouds.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 7 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/abandoned-droid-head.png" alt="Abandoned Droid Head" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Abandoned Droid Head</h4>
+                <span class="codex-selector">#prop-droid-head</span>
+              </div>
+              <p class="codex-card-desc">A half-buried cybernetic skull in the sand dunes with a blinking optic sensor eye that reacts when clicked.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">RELIC</span>
+                <span>Relic of fallen autonomous sentinels with interactive sensor eye discharge upon interaction.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 8 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/derelict-car.png" alt="Derelict Wasteland Vehicles" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Derelict Wasteland Vehicles</h4>
+                <span class="codex-selector">.prop-car</span>
+              </div>
+              <p class="codex-card-desc">Abandoned buggies and rust-decayed cars scattered in the dust.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">NARRATIVE</span>
+                <span>Environmental storytelling props anchoring the post-apocalyptic machine graveyard.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 9 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/wasteland/utility-pole.png" alt="Weathered Utility Grid" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Weathered Utility Grid</h4>
+                <span class="codex-selector">.prop-pole</span>
+              </div>
+              <p class="codex-card-desc">Wooden utility poles strung with sagging high-voltage power cables across a jagged mountain horizon.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">INFRA</span>
+                <span>Ground-level electrical infrastructure connecting the wasteland facilities across the terrain.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tier 2: Lower Atmosphere & Orbital Gate -->
+      <section class="codex-tier" id="codex-tier-2">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 02</span>
+            <span class="codex-tier-loc">CONTACT SECTION // ELEVATION: 100 KM &mdash; ORBITAL GATE</span>
+          </div>
+          <h3 class="codex-tier-title">Leaving the Surface: Lower Atmosphere &amp; Orbital Gate</h3>
+          <p class="codex-tier-lore">
+            The boundary where terrestrial atmosphere gives way to near-Earth orbit. Open-source pioneers and ancient celestial sentinels mark the passage between earth and stars.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 10 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-moon.png" alt="The Ancient Lunar Rock" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">The Ancient Lunar Rock</h4>
+                <span class="codex-selector">#contacts-moon-wrap</span>
+              </div>
+              <p class="codex-card-desc">A massive, desolate 16-bit pixel moon with hand-shaded craters looming at the edge of the screen, marking Earth's orbital boundary.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">CODEX GATE</span>
+                <span>The cosmic gateway and interactive archive trigger for this codex, bridging terrestrial wasteland and orbital vacuum.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 11 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-tux-idle.png" alt="Roaming Linux Tux Penguin" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Roaming Linux Tux Penguin</h4>
+                <span class="codex-selector">#contact-tux-track</span>
+              </div>
+              <p class="codex-card-desc">Tux the penguin casually patrolling the contact form divider, representing the hacker and open-source rebellion.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">KINETICS</span>
+                <span>Autonomous mascot walking along the contact rail with physics-based flipping, symbolizing Linux and open-source ethos.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tier 3: Low Orbit -->
+      <section class="codex-tier" id="codex-tier-3">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 03</span>
+            <span class="codex-tier-loc">CERTIFICATES &amp; HACKATHONS // ELEVATION: 400 KM</span>
+          </div>
+          <h3 class="codex-tier-title">Low Orbit: Autonomous Companions &amp; Combat Sprints</h3>
+          <p class="codex-tier-lore">
+            In low-Earth orbit, high-velocity interceptors cruise past competitive hackathon arenas while AI companions orbit cloud certifications.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 12 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/mascot-gemini.png" alt="Gemini Cosmic Companion" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Gemini Cosmic Companion</h4>
+                <span class="codex-selector">#mascot-gemini</span>
+              </div>
+              <p class="codex-card-desc">An autonomous zero-g cosmonaut floating peacefully in a 28s orbit above the Google Cloud Skills Boost badge, waving a sparkling rainbow star wand.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">AI AGENT</span>
+                <span>AI companion representing generative multimodal intelligence and cloud architecture mastery.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 13 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-starfighter.png" alt="Deep-Space Pixel Starfighter" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Deep-Space Pixel Starfighter</h4>
+                <span class="codex-selector">#hackathons-starfighter</span>
+              </div>
+              <p class="codex-card-desc">An armed strike craft cruising past hackathon sprints with dual animated cyan plasma thruster plumes.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">SPRINT</span>
+                <span>Represents rapid prototyping, competitive engineering sprints, and supersonic problem-solving.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 14 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/badge-react.png" alt="Reverse Tech Domain Marquee" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Reverse Tech Domain Marquee</h4>
+                <span class="codex-selector">.skills-marquee</span>
+              </div>
+              <p class="codex-card-desc">Infinite orbital telemetry strip broadcasting skills in distributed systems, AI agents, cloud, and QA automation.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">TELEMETRY</span>
+                <span>Continuous bidirectional telemetry feed showcasing full-stack engineering proficiency and core toolchains.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tier 4: Mid Orbit -->
+      <section class="codex-tier" id="codex-tier-4">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 04</span>
+            <span class="codex-tier-loc">PROJECTS SECTION // ELEVATION: 2,000 KM</span>
+          </div>
+          <h3 class="codex-tier-title">Mid Orbit: Orbital Relics &amp; Automated Sentinels</h3>
+          <p class="codex-tier-lore">
+            Mid-altitude orbit hosts engineering laboratories, autonomous observation drones, lost astronaut equipment, and micro-probes transmitting repository data.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 15 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/abandoned-orbital-station.png" alt="Abandoned Orbital Research Station" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Abandoned Orbital Research Station</h4>
+                <span class="codex-selector">#projects-orbital-station</span>
+              </div>
+              <p class="codex-card-desc">A massive multi-module space habitat with solar arrays, docking bays, and communication dishes drifting silently in orbit.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">STATION</span>
+                <span>Modular orbital laboratory representing complex software architecture and scalable cloud microservices.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 16 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/mascot-chatgpt.png" alt="ChatGPT Autonomous Flying Drone" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">ChatGPT Autonomous Flying Drone</h4>
+                <span class="codex-selector">#mascot-chatgpt</span>
+              </div>
+              <p class="codex-card-desc">A hovering cyber-drone with an active cyan reactor core, banking left and right as it patrols the projects boundary.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">AI AGENT</span>
+                <span>Autonomous AI sentinel monitoring engineering projects, featuring kinetic hover physics and tilt banking.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 17 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-space-helmet.png" alt="Lost Astronaut Helmet" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Lost Astronaut Helmet</h4>
+                <span class="codex-selector">#space-helmet-wrap</span>
+              </div>
+              <p class="codex-card-desc">A cracked vintage EVA helmet tumbling weightlessly through the orbital vacuum.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">RELIC</span>
+                <span>Drifting orbital relic symbolizing the peril and bravery of deep-space technological exploration.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 18 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/tiny-space-probe.png" alt="Tiny Recon Probe" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Tiny Recon Probe</h4>
+                <span class="codex-selector">#tiny-probe-wrap</span>
+              </div>
+              <p class="codex-card-desc">A micro-satellite transmitting telemetry with an active blinking antenna beacon.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">TELEMETRY</span>
+                <span>Lightweight orbital scout tracking real-time telemetry across project repositories.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tier 5: High Orbit & Celestial Expanse -->
+      <section class="codex-tier" id="codex-tier-5">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 05</span>
+            <span class="codex-tier-loc">EXPERIENCE &amp; ABOUT // ELEVATION: 36,000 KM</span>
+          </div>
+          <h3 class="codex-tier-title">High Orbit &amp; Celestial Expanse</h3>
+          <p class="codex-tier-lore">
+            Geostationary space and cosmic nebulae. Software engineers work weightlessly on orbital cyberdecks while cosmic clouds discharge plasma lightning.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 19 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/mascot-claude.png" alt="Claude Divider Line Walker" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Claude Divider Line Walker</h4>
+                <span class="codex-selector">#mascot-claude</span>
+              </div>
+              <p class="codex-card-desc">The Anthropic bot pacing along the section divider rule, pacing back and forth with flip-turn mechanics.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">AI AGENT</span>
+                <span>AI companion representing precision, rigorous reasoning, and code quality pacing the career experience timeline.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 20 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-ringed-planet.png" alt="Distant Ringed Planet" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Distant Ringed Planet</h4>
+                <span class="codex-selector">#projects-pixel-planet</span>
+              </div>
+              <p class="codex-card-desc">A solitary gas giant with ring lensing floating far in the background.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">ASTRONOMY</span>
+                <span>Distant celestial landmark accentuating spatial parallax and deep-space scale.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 21 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/spacesuit-programmer-body.png" alt="Spacesuit Astronaut Programmer" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Spacesuit Astronaut Programmer</h4>
+                <span class="codex-selector">#edu-divider-character</span>
+              </div>
+              <p class="codex-card-desc">An astronaut engineer seated on the education ledge in a sleek spacesuit with a transparent glass helmet, over-ear headphones, legs swinging in zero-g, typing away on a glowing cyberdeck with real-time terminal status bubbles (<code>&gt; compiling...</code>, <code>&gt; push origin main</code>).</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">ENGINEER</span>
+                <span>The developer avatar in space &mdash; continuous learning, engineering discipline, and focused coding in the celestial void.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 22 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="Volumetric Cosmic Emission Nebula" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Volumetric Cosmic Emission Nebula</h4>
+                <span class="codex-selector">#space-nebula-wrap</span>
+              </div>
+              <p class="codex-card-desc">A deep purple and cyan cosmic gas cloud generating periodic fractal plasma lightning discharges across deep space.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">COSMOLOGY</span>
+                <span>Dynamic volumetric atmospheric backdrop with 60 FPS continuous cross-fade and real-time ionized lightning strikes.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tier 6: The Cosmic Singularity / Interstellar Void -->
+      <section class="codex-tier" id="codex-tier-6">
+        <div class="codex-tier-header">
+          <div class="codex-tier-meta">
+            <span class="codex-tier-num">TIER 06</span>
+            <span class="codex-tier-loc">HERO SECTION // ELEVATION: &infin; &mdash; INTERSTELLAR</span>
+          </div>
+          <h3 class="codex-tier-title">The Cosmic Singularity / Interstellar Void</h3>
+          <p class="codex-tier-lore">
+            The climax of the vertical journey. Beyond the known universe, humanity's historic emissary drifts beside a spinning supermassive black hole.
+          </p>
+        </div>
+        <div class="codex-grid">
+          <!-- Card 23 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/pixel-black-hole.png" alt="The Gravitational Black Hole" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">The Gravitational Black Hole</h4>
+                <span class="codex-selector">#hero-black-hole-wrap</span>
+              </div>
+              <p class="codex-card-desc">A massive pixel-art black hole with an asymmetrical accretion disk, fluid internal plasma turbulence, and coronal embers lifting off the tail.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">SINGULARITY</span>
+                <span>The central singularity of the entire portfolio &mdash; pure gravity, infinite density, and high-performance engineering.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 24 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/sprites/voyager-1-isolated.png" alt="Historical NASA Voyager 1 Probe" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Historical NASA Voyager 1 Probe</h4>
+                <span class="codex-selector">#hero-pixel-satellite</span>
+              </div>
+              <p class="codex-card-desc">Humanity's farthest interstellar emissary carrying the Golden Record, drifting with its parabolic high-gain dish beside the Contact CTA.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">VOYAGER</span>
+                <span>Symbolizes relentless curiosity, enduring longevity, and sending digital messages across the cosmic void.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 25 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/pixel-planet.svg" alt="Distant Beacon Planet" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Distant Beacon Planet</h4>
+                <span class="codex-selector">#hero-pixel-planet</span>
+              </div>
+              <p class="codex-card-desc">A solitary celestial body floating at the threshold of the known universe.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">BEACON</span>
+                <span>Distant orbital reference point guiding the voyage toward the singularity.</span>
+              </div>
+            </div>
+          </article>
+          <!-- Card 26 -->
+          <article class="codex-card">
+            <div class="codex-card-thumb">
+              <img src="./assets/asteroid-1.png" alt="Global Parallax Starfield & Asteroid Field" loading="eager">
+            </div>
+            <div class="codex-card-content">
+              <div class="codex-card-head">
+                <h4 class="codex-card-name">Global Parallax Starfield &amp; Asteroid Field</h4>
+                <span class="codex-selector">#pixel-stars-canvas</span> <span class="codex-selector">#asteroid-field</span>
+              </div>
+              <p class="codex-card-desc">A real-time glittering starfield and tumbling procedural asteroid belt framing the entire site.</p>
+              <div class="codex-card-meta">
+                <span class="codex-meta-badge">CANVAS &amp; 3D</span>
+                <span>Procedural multi-layer canvas rendering and CSS 3D physics providing unbroken cosmic continuity from surface to singularity.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- Dialog Footer -->
+    <footer class="codex-footer">
+      <div class="codex-footer-status">
+        <span class="codex-status-dot"></span>
+        <span class="codex-status-text">STATUS: 26 LORE ENTRIES TRANSMITTED // ELEVATION: 0 KM &rarr; &infin;</span>
+      </div>
+      <button type="button" class="codex-footer-close" id="codex-footer-close">
+        [ ESC // CLOSE ARCHIVE ]
+      </button>
+    </footer>
+  </dialog>
+
+<!-- Pixelated Cosmic Starfield Background Canvas -->
   <canvas id="pixel-stars-canvas" aria-hidden="true"></canvas>
 
   <!-- Retro Chunky Pixel-Art Asteroid Field -->
   <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
 
-  <script src="script.js?v=52"></script>
+  <script src="script.js?v=53"></script>
 </body>
 </html>
