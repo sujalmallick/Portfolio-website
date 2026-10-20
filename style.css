@@ -882,7 +882,8 @@ section {
   z-index: 20;
   user-select: none;
   -webkit-user-select: none;
-  transform-origin: 100% 67%;
+  transform: scale(0.85);
+  transform-origin: 100% 67.8%;
 }
 
 .edu-divider-character:hover .edu-programmer-sprite {
@@ -4211,11 +4212,10 @@ footer {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LUNAR ARCHIVE CODEX MODAL - CLEAN MINIMALIST EDITORIAL THEME
+   LUNAR ARCHIVE CODEX MODAL - COMPACT EDITORIAL THEME (NO #TAGS, TIGHT GAPS)
    Warm charcoal surfaces (#141412, #1A1A18), warm cream text (#EDECE5),
    terracotta accents (#B85C38 / #D9774E).
-   Zero cluttered rectangle boxes, zero harsh inner borders, calm regular typography.
-   Optimized for 60-120 FPS scrolling with contain: content.
+   Zero cluttered #tags, zero rigid boxes, tight comfortable spacing throughout.
    ═══════════════════════════════════════════════════════════════════════════ */
 body.codex-open {
   overflow: hidden !important;
@@ -4265,15 +4265,15 @@ body.codex-open {
   }
 }
 
-/* Header (Clean, minimal, no status pill) */
+/* Header - Tightened, no oversized gap */
 .codex-header {
   position: relative;
   z-index: 6;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1.25rem;
-  padding: 1.25rem 1.65rem 1.15rem;
+  gap: 1rem;
+  padding: 1.1rem 1.4rem 0.95rem;
   background: rgba(15, 15, 14, 0.98);
   border-bottom: 1px solid rgba(237, 236, 229, 0.08);
 }
@@ -4281,12 +4281,12 @@ body.codex-open {
 .codex-header-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .codex-title {
   font-family: var(--font-serif);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--text);
@@ -4295,11 +4295,11 @@ body.codex-open {
 }
 
 .codex-desc {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 400;
   color: var(--text-muted);
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .codex-close-btn {
@@ -4308,8 +4308,8 @@ body.codex-open {
   color: var(--text-muted);
   font-size: 1.35rem;
   line-height: 1;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -4326,14 +4326,14 @@ body.codex-open {
   background: rgba(184, 92, 56, 0.15);
 }
 
-/* Quick-Jump Tabs (Clean text links, NO rigid rectangle pill boxes) */
+/* Quick-Jump Tabs - Compact */
 .codex-nav {
   position: relative;
   z-index: 6;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.65rem 1.65rem;
+  gap: 0.75rem;
+  padding: 0.45rem 1.4rem;
   background: rgba(14, 14, 13, 0.98);
   border-bottom: 1px solid rgba(237, 236, 229, 0.06);
   overflow-x: auto;
@@ -4346,7 +4346,7 @@ body.codex-open {
 
 .codex-nav-label {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   color: var(--text-muted);
@@ -4357,15 +4357,15 @@ body.codex-open {
 .codex-nav-tabs {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
   flex-wrap: nowrap;
 }
 
 .codex-tab {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 400;
-  padding: 0.25rem 0.6rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 4px;
   background: transparent;
   border: none;
@@ -4383,14 +4383,14 @@ body.codex-open {
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Dialog Body - High FPS Native Scrolling (No lag) */
+/* Dialog Body - Compact, fluid scroll */
 .codex-body {
   position: relative;
   z-index: 4;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 1.6rem 1.65rem;
+  padding: 1.15rem 1.4rem 1.4rem;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   will-change: scroll-position;
@@ -4415,56 +4415,55 @@ body.codex-open {
   background: var(--accent);
 }
 
-/* Mission Briefing (Open editorial text, NO heavy rectangle box, NO bold letters) */
+/* Mission Briefing - Tightened bottom gap (was 52px, now 20px) */
 .codex-prologue {
   background: transparent;
   border: none;
-  padding: 0 0 1.5rem 0;
-  margin-bottom: 1.75rem;
-  border-bottom: 1px solid rgba(237, 236, 229, 0.08);
+  padding: 0 0 0.75rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(237, 236, 229, 0.07);
 }
 
 .codex-prologue-kicker {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   color: var(--accent);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
 }
 
 .codex-prologue-text {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.55;
   color: #C5C4BE;
   margin: 0;
 }
 
-/* Tier Sections */
+/* Tier Sections - Tightened gap between tiers (was 36px, now 20px) */
 .codex-tier {
-  margin-bottom: 2.25rem;
-  scroll-margin-top: 1rem;
+  margin-bottom: 1.35rem;
+  scroll-margin-top: 0.8rem;
 }
 
 .codex-tier-header {
-  margin-bottom: 1rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid rgba(237, 236, 229, 0.08);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(237, 236, 229, 0.07);
 }
 
 .codex-tier-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 0.45rem;
+  margin-bottom: 0.15rem;
   flex-wrap: wrap;
 }
 
-/* Tier number: clean text, NO rectangle box! */
 .codex-tier-num {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 500;
   color: var(--accent);
   letter-spacing: 0.08em;
@@ -4474,14 +4473,14 @@ body.codex-open {
 }
 
 .codex-tier-dot {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .codex-tier-loc {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 400;
   color: var(--text-muted);
   letter-spacing: 0.04em;
@@ -4489,36 +4488,36 @@ body.codex-open {
 
 .codex-tier-title {
   font-family: var(--font-serif);
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 400;
   color: var(--text);
-  margin: 0 0 0.3rem 0;
+  margin: 0 0 0.2rem 0;
   line-height: 1.25;
 }
 
 .codex-tier-lore {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   font-weight: 400;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.45;
   margin: 0;
 }
 
-/* Cards Grid */
+/* Cards Grid - Compact gap (0.55rem) */
 .codex-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 0.75rem;
+  gap: 0.55rem;
 }
 
-/* Clean Cards (Soft backdrop, NO inner rectangle boxes, NO harsh shadows) */
+/* Clean Compact Cards (Zero #tags, zero clunky borders, tight ~60px collapsed height) */
 .codex-card {
   display: flex;
   flex-direction: column;
   background: rgba(22, 22, 20, 0.55);
   border: 1px solid rgba(237, 236, 229, 0.07);
   border-radius: 6px;
-  padding: 0.7rem 0.85rem;
+  padding: 0.55rem 0.75rem;
   transition: background 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
   user-select: none;
@@ -4539,22 +4538,22 @@ body.codex-open {
 .codex-card-main {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   min-width: 0;
 }
 
-/* Thumbnail: clean frameless dark square */
+/* Thumbnail - Compact 44px */
 .codex-card-thumb {
-  width: 48px;
-  min-width: 48px;
-  height: 48px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   border-radius: 4px;
   background: rgba(14, 14, 12, 0.75);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3px;
+  padding: 2px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -4573,50 +4572,29 @@ body.codex-open {
 .codex-card-info {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
   flex: 1;
   min-width: 0;
 }
 
 .codex-card-head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-/* Card Name: regular/medium font-weight 500, not bold 700 */
-.codex-card-name {
-  font-family: var(--font-sans);
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--text);
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Selector: Plain subtle monospace text, NO rectangle box! */
-.codex-selector {
-  font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.65rem;
-  font-weight: 400;
-  color: var(--accent);
-  background: none;
-  border: none;
-  padding: 0;
-  white-space: nowrap;
-  opacity: 0.85;
-}
-
-.codex-card-sub {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-/* Role text: Clean subtitle, NO rectangle box! */
+/* Card Name */
+.codex-card-name {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.25;
+}
+
+/* Role text: Clean subtitle */
 .codex-role-text {
   font-family: var(--font-mono, 'Space Mono', monospace);
   font-size: 0.65rem;
@@ -4634,16 +4612,17 @@ body.codex-open {
   align-items: center;
   gap: 0.25rem;
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 400;
   color: var(--accent);
   letter-spacing: 0.02em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .codex-hint-arrow {
   display: inline-block;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   line-height: 1;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -4651,9 +4630,9 @@ body.codex-open {
 /* Collapsed by default: story is hidden */
 .codex-card-story {
   display: none;
-  margin-top: 0.65rem;
-  padding-top: 0.65rem;
-  border-top: 1px solid rgba(237, 236, 229, 0.08);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(237, 236, 229, 0.07);
   animation: codexStoryReveal 0.18s ease-out forwards;
 }
 
@@ -4684,27 +4663,27 @@ body.codex-open {
 
 .codex-story-text {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 400;
   color: #D2D1CB;
-  line-height: 1.55;
-  margin: 0 0 0.45rem 0;
+  line-height: 1.5;
+  margin: 0 0 0.35rem 0;
 }
 
 .codex-card-meta {
   display: flex;
   align-items: baseline;
   gap: 0.35rem;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 400;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
-/* Meta label: Clean text, NO rectangle box! */
+/* Meta label */
 .codex-meta-label {
   font-family: var(--font-mono, 'Space Mono', monospace);
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   font-weight: 500;
   color: var(--accent);
   background: none;
@@ -4720,37 +4699,37 @@ body.codex-open {
     border-radius: 10px;
   }
   .codex-header {
-    padding: 1rem 1.15rem;
+    padding: 0.9rem 1.1rem;
   }
   .codex-title {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
   }
   .codex-nav {
-    padding: 0.55rem 1rem;
+    padding: 0.4rem 0.9rem;
   }
   .codex-body {
-    padding: 1rem 0.85rem;
+    padding: 0.9rem 0.9rem 1.2rem;
   }
   .codex-grid {
     grid-template-columns: 1fr;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
   .codex-card {
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.65rem;
   }
   .codex-card-thumb {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
     padding: 2px;
   }
   .codex-card-name {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
   }
   .codex-story-text {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
   }
   .codex-card-meta {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
   }
 }
