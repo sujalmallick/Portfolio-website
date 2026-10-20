@@ -107,7 +107,7 @@
     padding-bottom: 7.5rem;
   }
   .project-featured-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
   }
   .project-featured, .project-entry { padding: 1.85rem; }
@@ -157,7 +157,7 @@
 
   .project-grid,
   .cert-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
   }
 
@@ -382,6 +382,10 @@
   /* Featured & entry project cards: compact padding */
   .project-featured, .project-entry {
     padding: 1.35rem 1.15rem;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .project-featured-header, .project-entry-header {
@@ -668,6 +672,9 @@
 
 /* ── 380px — Ultra-Narrow Mobile (iPhone SE, Galaxy Fold) ───── */
 @media screen and (max-width: 380px) {
+  .project-featured, .project-entry {
+    padding: 1.2rem 0.9rem;
+  }
   :root {
     --section-px: 0.85rem;
     --section-py: 3rem;
