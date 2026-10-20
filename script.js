@@ -3328,7 +3328,6 @@ document.addEventListener('keydown', function (e) {
     if (!dialog) return;
 
     var closeBtn = document.getElementById('codex-close-btn');
-    var footerCloseBtn = document.getElementById('codex-footer-close');
     var dialogBody = document.getElementById('codex-body');
     var pills = dialog.querySelectorAll('.codex-pill');
     var tiers = dialog.querySelectorAll('.codex-tier');
@@ -3362,10 +3361,6 @@ document.addEventListener('keydown', function (e) {
 
     if (closeBtn) {
       closeBtn.addEventListener('click', closeCodex);
-    }
-
-    if (footerCloseBtn) {
-      footerCloseBtn.addEventListener('click', closeCodex);
     }
 
     // Dismiss when clicking directly on backdrop
