@@ -178,23 +178,22 @@
     justify-content: space-between;
     gap: 0.65rem;
     width: 100%;
-    min-height: 44px;
-    padding: 0.55rem 0.75rem;
-    background: rgba(18, 24, 38, 0.65);
-    border: 1px solid rgba(56, 189, 248, 0.22);
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
+    background: rgba(18, 20, 26, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
     color: var(--text);
     font-family: inherit;
     cursor: pointer;
     text-align: left;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .pipeline-dropdown-btn:hover {
-    background: rgba(24, 34, 52, 0.85);
-    border-color: rgba(56, 189, 248, 0.5);
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+    background: rgba(28, 32, 42, 0.7);
+    border-color: rgba(255, 255, 255, 0.16);
   }
 
   .pipeline-dropdown-btn:focus-visible {
@@ -211,26 +210,17 @@
   }
 
   .pipeline-btn-badge {
-    font-family: var(--font-mono, 'Courier New', monospace);
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    padding: 1px 5px;
-    border-radius: 2px;
-    flex-shrink: 0;
-    text-transform: uppercase;
+    display: none;
   }
 
   .pipeline-btn-title {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #e0f2fe;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.01em;
   }
 
   .pipeline-btn-toggle {
@@ -239,10 +229,15 @@
     gap: 0.35rem;
     font-family: var(--font-mono, 'Courier New', monospace);
     font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--accent);
+    font-weight: 400;
+    color: var(--text-muted);
     flex-shrink: 0;
     letter-spacing: 0.04em;
+    transition: color 0.2s ease;
+  }
+
+  .pipeline-dropdown-btn:hover .pipeline-btn-toggle {
+    color: var(--accent);
   }
 
   .pipeline-toggle-arrow {
@@ -258,7 +253,7 @@
     display: none;
     margin-top: 0.85rem;
     padding-top: 0.65rem;
-    border-top: 1px dashed rgba(56, 189, 248, 0.2);
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
   }
 
   .pipeline-collapse-content.is-open {
@@ -565,12 +560,12 @@
   }
 
   .pipeline-btn-title {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
+    font-weight: 500;
   }
 
   .pipeline-btn-badge {
-    font-size: 0.52rem;
-    padding: 1px 4px;
+    display: none;
   }
 
   .section__pic-container {

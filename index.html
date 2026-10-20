@@ -427,8 +427,7 @@
           <div class="architecture-callout">
             <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-1">
               <span class="pipeline-btn-left">
-                <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
-                <span class="pipeline-btn-title">8 LLM Agents Architecture</span>
+                <span class="pipeline-btn-title">Pipeline Architecture</span>
               </span>
               <span class="pipeline-btn-toggle">
                 <span class="pipeline-toggle-text">View</span>
@@ -438,17 +437,17 @@
               </span>
             </button>
             <div class="pipeline-collapse-content" id="pipeline-flow-1">
-              <span class="arch-label">Pipeline Architecture &middot; 8 LLM Agents</span>
+              <span class="arch-label">Pipeline Architecture &middot; 5 Specialized Agents</span>
               <div class="arch-flow">
                 <span class="arch-node">module_agent</span>
                 <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
                 <span class="arch-node">checklist_agent</span>
                 <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
+                <span class="arch-node">planning_agent</span>
+                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
                 <span class="arch-node">test_case_agent</span>
                 <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-                <span class="arch-node">e2e_agent</span>
-                <span class="arch-arrow" aria-hidden="true">&#x2192;</span>
-                <span class="arch-node">coverage_loop</span>
+                <span class="arch-node">issue_agent</span>
               </div>
               <span class="arch-sub">LangGraph orchestration &middot; Azure (App Service, Container Apps) &middot; PostgreSQL &middot; LiteLLM (BYOK) &middot; GitHub Actions CI/CD</span>
             </div>
@@ -479,7 +478,6 @@
         <div class="architecture-callout">
           <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-2">
             <span class="pipeline-btn-left">
-              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
               <span class="pipeline-btn-title">Inference &amp; Cloud Pipeline</span>
             </span>
             <span class="pipeline-btn-toggle">
@@ -535,8 +533,7 @@
         <div class="architecture-callout">
           <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-3">
             <span class="pipeline-btn-left">
-              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
-              <span class="pipeline-btn-title">GPU Acceleration &middot; 100k+ Agents</span>
+              <span class="pipeline-btn-title">GPU Acceleration Pipeline &middot; 100k+ Agents</span>
             </span>
             <span class="pipeline-btn-toggle">
               <span class="pipeline-toggle-text">View</span>
@@ -589,7 +586,6 @@
         <div class="architecture-callout">
           <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-4">
             <span class="pipeline-btn-left">
-              <span class="pipeline-btn-badge" aria-hidden="true">PIPELINE</span>
               <span class="pipeline-btn-title">Multi-Agent Verification Pipeline</span>
             </span>
             <span class="pipeline-btn-toggle">
@@ -654,7 +650,6 @@
         <div class="architecture-callout">
           <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-5">
             <span class="pipeline-btn-left">
-              <span class="pipeline-btn-badge" aria-hidden="true">ENGINE</span>
               <span class="pipeline-btn-title">Cross-Platform Reactive Engine</span>
             </span>
             <span class="pipeline-btn-toggle">
