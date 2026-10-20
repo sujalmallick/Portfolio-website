@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=45">
+  <link rel="stylesheet" href="style.css?v=47">
   <link rel="stylesheet" href="mediaqueries.css?v=35">
   <link rel="stylesheet" href="wasteland.css?v=9">
   <link rel="icon" type="image/png" href="./assets/favicon.png?v=6">
@@ -1102,43 +1102,37 @@
 
     <!-- ═══════════════════════════ LUNAR ARCHIVE CODEX MODAL ══════════════════════════════ -->
   <dialog id="lunar-codex-dialog" class="lunar-codex-dialog" aria-labelledby="codex-title" aria-describedby="codex-desc">
-    <div class="codex-scanlines" aria-hidden="true"></div>
-
     <!-- Dialog Header -->
     <header class="codex-header">
       <div class="codex-header-meta">
-        <div class="codex-terminal-pill">
-          <span class="codex-pulse-dot" aria-hidden="true"></span>
-          <span class="codex-terminal-tag">[ ARCHIVE PROTOCOL // ELEVATION CODEX ]</span>
-        </div>
-        <h2 id="codex-title" class="codex-title">SPACE ODYSSEY &amp; ELEMENT LORE</h2>
-        <p id="codex-desc" class="codex-desc">A vertical sci-fi odyssey spanning Earth's post-apocalyptic surface to the cosmic singularity.</p>
+        <h2 id="codex-title" class="codex-title">Space Odyssey &amp; Element Lore</h2>
+        <p id="codex-desc" class="codex-desc">A vertical journey from Earth's robot wasteland to the deep cosmic black hole. Click any card to read its story.</p>
       </div>
       <button type="button" class="codex-close-btn" id="codex-close-btn" aria-label="Close Archive Codex" title="Close (Esc)">
         <span aria-hidden="true">&times;</span>
       </button>
     </header>
 
-    <!-- Quick Jump Sub-Navigation -->
+    <!-- Quick Jump Tabs (Clean text tabs, no rigid rectangle boxes) -->
     <nav class="codex-nav" aria-label="Codex Elevation Tiers">
-      <span class="codex-nav-label">QUICK JUMP:</span>
-      <div class="codex-nav-pills">
-        <a href="#codex-tier-1" class="codex-pill">01 Surface</a>
-        <a href="#codex-tier-2" class="codex-pill">02 Gate</a>
-        <a href="#codex-tier-3" class="codex-pill">03 Low Orbit</a>
-        <a href="#codex-tier-4" class="codex-pill">04 Mid Orbit</a>
-        <a href="#codex-tier-5" class="codex-pill">05 High Orbit</a>
-        <a href="#codex-tier-6" class="codex-pill">06 Singularity</a>
+      <span class="codex-nav-label">JUMP TO:</span>
+      <div class="codex-nav-tabs">
+        <a href="#codex-tier-1" class="codex-tab">01 Surface</a>
+        <a href="#codex-tier-2" class="codex-tab">02 Gate</a>
+        <a href="#codex-tier-3" class="codex-tab">03 Low Orbit</a>
+        <a href="#codex-tier-4" class="codex-tab">04 Mid Orbit</a>
+        <a href="#codex-tier-5" class="codex-tab">05 High Orbit</a>
+        <a href="#codex-tier-6" class="codex-tab">06 Singularity</a>
       </div>
     </nav>
 
     <!-- Scrollable Dialog Body -->
     <div class="codex-body" id="codex-body">
-      <!-- Prologue Briefing -->
+      <!-- Mission Overview (Clean editorial text, no boxed background, no bold letters) -->
       <section class="codex-prologue">
-        <div class="codex-prologue-badge">// MISSION ARCHITECTURE &amp; VERTICAL NARRATIVE</div>
-        <p>
-          This portfolio is engineered as an ascending vertical space expedition documenting the aftermath of the synthetic uprising. At the base, <strong>autonomous combat cyborgs now command Earth's industrial wasteland</strong>. In low orbit, <strong>breached stations and lost astronaut relics</strong> memorialize humanity's catastrophic exodus. Yet on the orbital divide, a <strong>lone astronaut engineer survives &mdash; compiling neural code and rebuilding software systems into the starlight</strong>, ascending through deep ionized nebulae toward the cosmic singularity.
+        <div class="codex-prologue-kicker">MISSION BRIEFING &middot; VERTICAL EXPEDITION</div>
+        <p class="codex-prologue-text">
+          This portfolio is built as a vertical space adventure. At the bottom, combat cyborgs control Earth after rogue AI took over the planet. As you travel upward, broken space stations and lost astronaut relics show humanity's escape into space. High above in orbit, the last living human developer sits in a spacesuit, coding software on his laptop under deep space nebulae, heading toward the giant black hole at the top.
         </p>
       </section>
 
@@ -1146,165 +1140,273 @@
       <section class="codex-tier" id="codex-tier-1">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 01</span>
-            <span class="codex-tier-loc">FOOTER // ELEVATION: 0 KM &mdash; SURFACE</span>
+            <span class="codex-tier-num">01</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Surface &mdash; Elevation 0 km</span>
           </div>
-          <h3 class="codex-tier-title">Earth's Surface: The AI &amp; Terminator Wasteland</h3>
+          <h3 class="codex-tier-title">Earth's Surface: The Machine Wasteland</h3>
           <p class="codex-tier-lore">
-            The foundation of the site rests on a dystopian cyber-industrial wasteland where autonomous machines, industrial towers, and combat cyborgs patrol a desolate planetary terrain.
+            Rogue artificial intelligence conquered Earth. Autonomous machines and combat cyborgs patrol the dusty ground, while smoking factories build machine armies.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 1 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/cyborg-shooter-0.png" alt="Combat Cyborg Gunner" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Combat Cyborg Gunner / Terminator</h4>
-                <span class="codex-selector">#prop-cyborg</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Combat Cyborg Gunner, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/cyborg-shooter-0.png" alt="Combat Cyborg Gunner" loading="lazy">
               </div>
-              <p class="codex-card-desc">The supreme mechanical ruler commanding Earth. When rogue artificial intelligence conquered planetary civilization, heavy combat cyborgs established total territorial dominion over the industrial surface &mdash; patrolling the scorched factories with plasma rifles and glowing crimson visors to eliminate any terrestrial resistance.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Combat Cyborg Gunner</h4>
+                  <span class="codex-selector">#prop-cyborg</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Ruler of Earth</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Rogue AI took over planet Earth, and this heavy combat cyborg is now the machine ruler of the wasteland. He patrols the ruins with a red visor and plasma rifle, making sure no humans can return to the surface.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">RULER OF EARTH</span>
-                <span>12-frame animated ground guard running real-time patrol kinematics, boundary turns, and cyclic combat readiness.</span>
+                <span class="codex-meta-label">Sprite &middot;</span>
+                <span>12-frame animated ground guard with boundary patrol kinematics.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 2 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-service-droid.png" alt="Autonomous Ground Patrol Droid" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Autonomous Ground Patrol Droid</h4>
-                <span class="codex-selector">#footer-droid-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Ground Patrol Scout Robot, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-service-droid.png" alt="Ground Patrol Scout Robot" loading="lazy">
               </div>
-              <p class="codex-card-desc">A retro dieselpunk scout droid patrolling the terrain, turning and flipping at boundaries.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Ground Patrol Scout Robot</h4>
+                  <span class="codex-selector">#footer-droid-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Scout Rover</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A small scout robot built by the machines to roll across the dusty ground. It scans the rocks and turns around when it hits walls, always searching for leftover human technology.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">PHYSICS</span>
-                <span>Autonomous ground rover featuring dynamic collision boundary reflection, flip-turn CSS physics, and continuous terrain scanning.</span>
+                <span class="codex-meta-label">Sprite &middot;</span>
+                <span>Autonomous ground rover with boundary-bounce reflection.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 3 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/citadel-tower.png" alt="Central Citadel Monolith Tower" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Central Citadel Monolith Tower</h4>
-                <span class="codex-selector">#tower-citadel</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Central Citadel Monolith Tower, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/citadel-tower.png" alt="Central Citadel Monolith Tower" loading="lazy">
               </div>
-              <p class="codex-card-desc">The towering command fortress of the AI regime (<code>TOWER 01: &Omega;N CORE ACTIVE</code>) emitting interactive sonar/radar rings into the atmospheric haze upon click.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Central Citadel Monolith Tower</h4>
+                  <span class="codex-selector">#tower-citadel</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">AI Command Tower</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">The main command tower built by the machine empire. It stands tall in the center of the wasteland, sending out green radar rings to track everything moving across the scorched ground.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">TELEMETRY</span>
-                <span>The gravitational anchor of the wasteland base with interactive acoustic radar wave propagation.</span>
+                <span class="codex-meta-label">Monolith &middot;</span>
+                <span>Clickable command tower that broadcasts acoustic radar rings across the dust.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 4 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/factory-left.png" alt="Left Industrial Factory & Smelter" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Left Industrial Factory &amp; Smelter</h4>
-                <span class="codex-selector">#tower-factory</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Left Industrial Factory and Smelter, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/factory-left.png" alt="Left Industrial Factory and Smelter" loading="lazy">
               </div>
-              <p class="codex-card-desc">An active industrial complex with twin smokestacks and animated billowing toxic smoke plumes (<code>FACILITY A: SMELTER RUNNING</code>).</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Left Industrial Factory &amp; Smelter</h4>
+                  <span class="codex-selector">#tower-factory</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Machine Factory</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A massive robot-run factory with two giant smokestacks. It works day and night without human workers, melting metal and minerals to build new machine soldiers.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">ATMOSPHERE</span>
-                <span>Heavy industrial forge showcasing multi-layered CSS keyframe smoke particle drift and industrial atmosphere.</span>
+                <span class="codex-meta-label">Facility &middot;</span>
+                <span>Industrial forge with animated multi-layer drifting smoke plumes.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 5 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/refinery-right.png" alt="Right Cargo Refinery Overhang Platform" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Right Cargo Refinery Overhang Platform</h4>
-                <span class="codex-selector">#tower-refinery</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Right Cargo Refinery Platform, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/refinery-right.png" alt="Right Cargo Refinery Platform" loading="lazy">
               </div>
-              <p class="codex-card-desc">A heavy refinery deck with docked cargo modules and pulsing amber hazard beacons (<code>TERMINAL 03: CARGO DOCKED</code>).</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Right Cargo Refinery Platform</h4>
+                  <span class="codex-selector">#tower-refinery</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Cargo Dock</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A high platform where robot ships load fuel and cargo crates. Its amber warning lights blink constantly so incoming transport ships do not crash in the thick smog.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">LOGISTICS</span>
-                <span>High-altitude logistics terminal outfitted with synchronized pulsing hazard warning beacons.</span>
+                <span class="codex-meta-label">Facility &middot;</span>
+                <span>High-altitude cargo dock with pulsing amber warning lights.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 6 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/industrial-navigation-beacon.png" alt="Industrial Navigation & Warning Beacon" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Industrial Navigation &amp; Warning Beacon</h4>
-                <span class="codex-selector">#prop-wasteland-beacon</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Industrial Navigation Beacon, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/industrial-navigation-beacon.png" alt="Industrial Navigation Beacon" loading="lazy">
               </div>
-              <p class="codex-card-desc">A tall high-voltage warning spire pulsing concentrated red warning flashes.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Industrial Navigation Beacon</h4>
+                  <span class="codex-selector">#prop-wasteland-beacon</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Warning Tower</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A tall metal warning tower that flashes bright red lights into the cloudy sky. It warns flying scout ships to stay clear of the high-voltage electrical wires below.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">AVIONICS</span>
-                <span>Vertical aviation clearance tower broadcasting high-frequency red strobe pulses across low-hanging dust clouds.</span>
+                <span class="codex-meta-label">Beacon &middot;</span>
+                <span>Tall navigation mast with high-frequency red strobe lighting.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 7 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/abandoned-droid-head.png" alt="Abandoned Droid Head" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Abandoned Droid Head</h4>
-                <span class="codex-selector">#prop-droid-head</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Abandoned Droid Head, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/abandoned-droid-head.png" alt="Abandoned Droid Head" loading="lazy">
               </div>
-              <p class="codex-card-desc">A half-buried cybernetic skull in the sand dunes with a blinking optic sensor eye that reacts when clicked.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Abandoned Droid Head</h4>
+                  <span class="codex-selector">#prop-droid-head</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Broken Relic</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">The broken skull of an older robot, half-buried in the sand dunes. Its single blue robotic eye still flickers with electricity when touched, trying to remember its old orders.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">RELIC</span>
-                <span>Relic of fallen autonomous sentinels with interactive sensor eye discharge upon interaction.</span>
+                <span class="codex-meta-label">Relic &middot;</span>
+                <span>Half-buried cyber skull with interactive optic eye sparks.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 8 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/derelict-car.png" alt="Derelict Wasteland Vehicles" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Derelict Wasteland Vehicles</h4>
-                <span class="codex-selector">.prop-car</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Derelict Wasteland Vehicles, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/derelict-car.png" alt="Derelict Wasteland Vehicles" loading="lazy">
               </div>
-              <p class="codex-card-desc">Abandoned buggies and rust-decayed cars scattered in the dust.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Derelict Wasteland Vehicles</h4>
+                  <span class="codex-selector">.prop-car</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Abandoned Cars</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Rusted buggies and cars left behind in the sand dunes. Long ago, people tried to drive them across the desert to reach the rocket launch pads before the machines took over.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">NARRATIVE</span>
-                <span>Environmental storytelling props anchoring the post-apocalyptic machine graveyard.</span>
+                <span class="codex-meta-label">Scenery &middot;</span>
+                <span>Weathered pixel vehicles scattered across the machine wasteland.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 9 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/wasteland/utility-pole.png" alt="Weathered Utility Grid" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Weathered Utility Grid</h4>
-                <span class="codex-selector">.prop-pole</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Weathered Utility Grid, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/wasteland/utility-pole.png" alt="Weathered Utility Grid" loading="lazy">
               </div>
-              <p class="codex-card-desc">Wooden utility poles strung with sagging high-voltage power cables across a jagged mountain horizon.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Weathered Utility Grid</h4>
+                  <span class="codex-selector">.prop-pole</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Power Lines</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Old wooden telephone poles and hanging power lines. They carried electricity to human cities before the war, and now stand silent against the jagged mountain hills.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">INFRA</span>
-                <span>Ground-level electrical infrastructure connecting the wasteland facilities across the terrain.</span>
+                <span class="codex-meta-label">Infra &middot;</span>
+                <span>Wooden utility poles with hanging high-voltage wires.</span>
               </div>
             </div>
           </article>
@@ -1315,46 +1417,70 @@
       <section class="codex-tier" id="codex-tier-2">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 02</span>
-            <span class="codex-tier-loc">CONTACT SECTION // ELEVATION: 100 KM &mdash; ORBITAL GATE</span>
+            <span class="codex-tier-num">02</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Contact Section &mdash; Elevation 100 km</span>
           </div>
-          <h3 class="codex-tier-title">Leaving the Surface: Lower Atmosphere &amp; Orbital Gate</h3>
+          <h3 class="codex-tier-title">Lower Atmosphere: The Orbital Gateway</h3>
           <p class="codex-tier-lore">
-            The boundary where terrestrial atmosphere gives way to near-Earth orbit. Open-source pioneers and ancient celestial sentinels mark the passage between earth and stars.
+            The border where Earth air ends and space begins. Ancient lunar rocks and open-source pioneers mark the safe crossing into orbit.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 10 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-moon.png" alt="The Ancient Lunar Rock" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">The Ancient Lunar Rock</h4>
-                <span class="codex-selector">#contacts-moon-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="The Ancient Lunar Rock, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-moon.png" alt="The Ancient Lunar Rock" loading="lazy">
               </div>
-              <p class="codex-card-desc">A massive, desolate 16-bit pixel moon with hand-shaded craters looming at the edge of the screen, marking Earth's orbital boundary.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">The Ancient Lunar Rock</h4>
+                  <span class="codex-selector">#contacts-moon-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Gateway Moon</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A giant gray moon floating silently in the black sky. It watched Earth fall to the machines, and now it acts as the gateway to this archive, keeping track of every step of the journey into space.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">CODEX GATE</span>
-                <span>The cosmic gateway and interactive archive trigger for this codex, bridging terrestrial wasteland and orbital vacuum.</span>
+                <span class="codex-meta-label">Gateway &middot;</span>
+                <span>Clickable moon that unlocks this Space Odyssey codex.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 11 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-tux-idle.png" alt="Roaming Linux Tux Penguin" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Roaming Linux Tux Penguin</h4>
-                <span class="codex-selector">#contact-tux-track</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Roaming Linux Tux Penguin, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-tux-idle.png" alt="Roaming Linux Tux Penguin" loading="lazy">
               </div>
-              <p class="codex-card-desc">Tux the penguin casually patrolling the contact form divider, representing the hacker and open-source rebellion.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Roaming Linux Tux Penguin</h4>
+                  <span class="codex-selector">#contact-tux-track</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Linux Explorer</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Tux the friendly penguin walks calmly across the contact bar. He represents the free spirit of open-source software, walking peacefully across borders without fear of the machines.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">KINETICS</span>
-                <span>Autonomous mascot walking along the contact rail with physics-based flipping, symbolizing Linux and open-source ethos.</span>
+                <span class="codex-meta-label">Mascot &middot;</span>
+                <span>Autonomous walking mascot with flip-turn physics.</span>
               </div>
             </div>
           </article>
@@ -1365,63 +1491,99 @@
       <section class="codex-tier" id="codex-tier-3">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 03</span>
-            <span class="codex-tier-loc">CERTIFICATES &amp; HACKATHONS // ELEVATION: 400 KM</span>
+            <span class="codex-tier-num">03</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Certificates &amp; Hackathons &mdash; Elevation 400 km</span>
           </div>
-          <h3 class="codex-tier-title">Low Orbit: Autonomous Companions &amp; Combat Sprints</h3>
+          <h3 class="codex-tier-title">Low Orbit: AI Helpers &amp; Fast Rockets</h3>
           <p class="codex-tier-lore">
-            In low-Earth orbit, high-velocity interceptors cruise past competitive hackathon arenas while AI companions orbit cloud certifications.
+            Swift spacecraft fly past rapid hackathon arenas, while friendly AI companions guide learning across cloud systems.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 12 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/mascot-gemini.png" alt="Gemini Cosmic Companion" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Gemini Cosmic Companion</h4>
-                <span class="codex-selector">#mascot-gemini</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Gemini Cosmic Companion, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/mascot-gemini.png" alt="Gemini Cosmic Companion" loading="lazy">
               </div>
-              <p class="codex-card-desc">An autonomous zero-g cosmonaut floating peacefully in a 28s orbit above the Google Cloud Skills Boost badge, waving a sparkling rainbow star wand.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Gemini Cosmic Companion</h4>
+                  <span class="codex-selector">#mascot-gemini</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">AI Guide</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A cheerful little space astronaut floating in zero gravity. Holding a magical rainbow star wand, this friendly AI helper guides human learning through cloud computing and intelligent software.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">AI AGENT</span>
-                <span>AI companion representing generative multimodal intelligence and cloud architecture mastery.</span>
+                <span class="codex-meta-label">Companion &middot;</span>
+                <span>Zero-gravity floating astronaut with a sparkling star wand.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 13 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-starfighter.png" alt="Deep-Space Pixel Starfighter" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Deep-Space Pixel Starfighter</h4>
-                <span class="codex-selector">#hackathons-starfighter</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Deep-Space Pixel Starfighter, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-starfighter.png" alt="Deep-Space Pixel Starfighter" loading="lazy">
               </div>
-              <p class="codex-card-desc">An armed strike craft cruising past hackathon sprints with dual animated cyan plasma thruster plumes.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Deep-Space Pixel Starfighter</h4>
+                  <span class="codex-selector">#hackathons-starfighter</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Hackathon Racer</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A swift rocket ship with glowing blue thrusters. It represents fast coding hackathons, racing through the stars to build new software tools before the timer runs out.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">SPRINT</span>
-                <span>Represents rapid prototyping, competitive engineering sprints, and supersonic problem-solving.</span>
+                <span class="codex-meta-label">Starfighter &middot;</span>
+                <span>Rapid strike craft with dual cyan plasma thruster plumes.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 14 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/badge-react.png" alt="Reverse Tech Domain Marquee" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Reverse Tech Domain Marquee</h4>
-                <span class="codex-selector">.skills-marquee</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Reverse Tech Domain Marquee, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/badge-react.png" alt="Reverse Tech Domain Marquee" loading="lazy">
               </div>
-              <p class="codex-card-desc">Infinite orbital telemetry strip broadcasting skills in distributed systems, AI agents, cloud, and QA automation.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Reverse Tech Domain Marquee</h4>
+                  <span class="codex-selector">.skills-marquee</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Tech Strip</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A moving banner drifting through space like a space station billboard. It constantly displays modern coding tools, web frameworks, and engineering skills.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">TELEMETRY</span>
-                <span>Continuous bidirectional telemetry feed showcasing full-stack engineering proficiency and core toolchains.</span>
+                <span class="codex-meta-label">Telemetry &middot;</span>
+                <span>Continuous scrolling telemetry strip displaying developer skills.</span>
               </div>
             </div>
           </article>
@@ -1432,80 +1594,128 @@
       <section class="codex-tier" id="codex-tier-4">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 04</span>
-            <span class="codex-tier-loc">PROJECTS SECTION // ELEVATION: 2,000 KM</span>
+            <span class="codex-tier-num">04</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Projects Section &mdash; Elevation 2,000 km</span>
           </div>
-          <h3 class="codex-tier-title">Mid Orbit: Orbital Relics &amp; Automated Sentinels</h3>
+          <h3 class="codex-tier-title">Mid Orbit: Broken Space Stations &amp; Lost Relics</h3>
           <p class="codex-tier-lore">
-            Mid-altitude orbit hosts engineering laboratories, autonomous observation drones, lost astronaut equipment, and micro-probes transmitting repository data.
+            Ruined research stations float in silence where machine fleets attacked human science labs, leaving behind drifting space helmets and robot probes.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 15 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/abandoned-orbital-station.png" alt="Abandoned Orbital Research Station" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Abandoned Orbital Research Station</h4>
-                <span class="codex-selector">#projects-orbital-station</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Abandoned Orbital Research Station, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/abandoned-orbital-station.png" alt="Abandoned Orbital Research Station" loading="lazy">
               </div>
-              <p class="codex-card-desc">Once humanity's premier scientific haven in orbit, this sprawling habitat was breached and devastated when rogue AI swarms reached space. With crippled docking rings, shattered solar arrays, and breached airlocks, it now drifts as an eerie ghost monument where algorithms dismantled the research crew.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Abandoned Orbital Research Station</h4>
+                  <span class="codex-selector">#projects-orbital-station</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Broken Station</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Once humanity's greatest scientific space lab, this station was broken and ruined when rogue AI reached orbit. The machines broke its docking rings and smashed its solar panels. Now it floats empty in silence, a ghost station drifting above Earth.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">BREACHED RELIC</span>
-                <span>Shattered orbital laboratory drifting with scroll parallax, marking the elevation where AI war fleets overtook orbital defenses.</span>
+                <span class="codex-meta-label">Orbital Relic &middot;</span>
+                <span>Shattered research habitat drifting with scroll parallax.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 16 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/mascot-chatgpt.png" alt="ChatGPT Autonomous Flying Drone" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">ChatGPT Autonomous Flying Drone</h4>
-                <span class="codex-selector">#mascot-chatgpt</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="ChatGPT Autonomous Flying Drone, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/mascot-chatgpt.png" alt="ChatGPT Autonomous Flying Drone" loading="lazy">
               </div>
-              <p class="codex-card-desc">A hovering cyber-drone with an active cyan reactor core, banking left and right as it patrols the projects boundary.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">ChatGPT Autonomous Flying Drone</h4>
+                  <span class="codex-selector">#mascot-chatgpt</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Smart Drone</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A friendly green robot drone that flies smoothly in space. It tilts left and right as it hovers above coding projects, keeping software bugs away with smart reasoning.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">AI AGENT</span>
-                <span>Autonomous AI sentinel monitoring engineering projects, featuring kinetic hover physics and tilt banking.</span>
+                <span class="codex-meta-label">Sentinel &middot;</span>
+                <span>Hovering cyber drone with a glowing green core and tilt physics.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 17 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-space-helmet.png" alt="Lost Astronaut Helmet" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Lost Astronaut Helmet</h4>
-                <span class="codex-selector">#space-helmet-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Lost Astronaut Helmet, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-space-helmet.png" alt="Lost Astronaut Helmet" loading="lazy">
               </div>
-              <p class="codex-card-desc">A cracked vintage EVA helmet tumbling weightlessly through the orbital vacuum. It is the poignant relic of a human astronaut who lost their life during the desperate escape from Earth as the machine forces seized the launch towers. Its golden visor reflects only silent, cold starlight.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Lost Astronaut Helmet</h4>
+                  <span class="codex-selector">#space-helmet-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Fallen Explorer</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A cracked gold-visor helmet drifting alone in zero gravity. It belonged to an astronaut who tragically lost their life while trying to escape Earth during the machine uprising. Its reflection holds only the quiet light of distant stars.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">FALLEN EXPLORER</span>
-                <span>Weightless tumbling relic commemorating the brave pioneers who perished attempting to break through the machine blockade into orbit.</span>
+                <span class="codex-meta-label">Relic &middot;</span>
+                <span>Weightless tumbling helmet memorializing a fallen astronaut.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 18 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/tiny-space-probe.png" alt="Tiny Recon Probe" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Tiny Recon Probe</h4>
-                <span class="codex-selector">#tiny-probe-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Tiny Recon Probe, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/tiny-space-probe.png" alt="Tiny Recon Probe" loading="lazy">
               </div>
-              <p class="codex-card-desc">A micro-satellite transmitting telemetry with an active blinking antenna beacon.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Tiny Recon Probe</h4>
+                  <span class="codex-selector">#tiny-probe-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Mini Satellite</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A tiny robotic satellite with a blinking yellow radio dish. It spins quietly in orbit, sending software updates and GitHub project data back to safety.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">TELEMETRY</span>
-                <span>Lightweight orbital scout tracking real-time telemetry across project repositories.</span>
+                <span class="codex-meta-label">Satellite &middot;</span>
+                <span>Lightweight orbital probe transmitting repository signals.</span>
               </div>
             </div>
           </article>
@@ -1516,171 +1726,266 @@
       <section class="codex-tier" id="codex-tier-5">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 05</span>
-            <span class="codex-tier-loc">EXPERIENCE &amp; ABOUT // ELEVATION: 36,000 KM</span>
+            <span class="codex-tier-num">05</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Experience &amp; About &mdash; Elevation 36,000 km</span>
           </div>
-          <h3 class="codex-tier-title">High Orbit &amp; Celestial Expanse</h3>
+          <h3 class="codex-tier-title">High Orbit: The Lone Developer &amp; Cosmic Clouds</h3>
           <p class="codex-tier-lore">
-            Geostationary space and cosmic nebulae. Software engineers work weightlessly on orbital cyberdecks while cosmic clouds discharge plasma lightning.
+            Deep in space, the last surviving human developer codes on his laptop in orbit, while massive purple gas clouds crackle with space lightning.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 19 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/mascot-claude.png" alt="Claude Divider Line Walker" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Claude Divider Line Walker</h4>
-                <span class="codex-selector">#mascot-claude</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Claude Divider Line Walker, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/mascot-claude.png" alt="Claude Divider Line Walker" loading="lazy">
               </div>
-              <p class="codex-card-desc">The Anthropic bot pacing along the section divider rule, pacing back and forth with flip-turn mechanics.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Claude Divider Line Walker</h4>
+                  <span class="codex-selector">#mascot-claude</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">AI Researcher</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A thoughtful orange robot walking along the timeline bar. It flips and turns when it reaches the edge, symbolizing careful thinking, honest answers, and clean code architecture.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">AI AGENT</span>
-                <span>AI companion representing precision, rigorous reasoning, and code quality pacing the career experience timeline.</span>
+                <span class="codex-meta-label">Mascot &middot;</span>
+                <span>Thoughtful robot pacing along career milestones.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 20 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-ringed-planet.png" alt="Distant Ringed Planet" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Distant Ringed Planet</h4>
-                <span class="codex-selector">#projects-pixel-planet</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Distant Ringed Planet, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-ringed-planet.png" alt="Distant Ringed Planet" loading="lazy">
               </div>
-              <p class="codex-card-desc">A solitary gas giant with ring lensing floating far in the background.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Distant Ringed Planet</h4>
+                  <span class="codex-selector">#projects-pixel-planet</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Ringed Giant</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A giant gas planet with shining cosmic rings far in the distance. Its soft orange glow reminds space travelers how vast the universe is beyond our home world.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">ASTRONOMY</span>
-                <span>Distant celestial landmark accentuating spatial parallax and deep-space scale.</span>
+                <span class="codex-meta-label">Planet &middot;</span>
+                <span>Ringed gas giant floating peacefully in deep space.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 21 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/spacesuit-programmer-body.png" alt="Spacesuit Astronaut Programmer" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Spacesuit Astronaut Programmer</h4>
-                <span class="codex-selector">#edu-divider-character</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Spacesuit Astronaut Programmer, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/spacesuit-programmer-body.png" alt="Spacesuit Astronaut Programmer" loading="lazy">
               </div>
-              <p class="codex-card-desc">The last surviving human developer in the cosmos. Seated upon the orbital education divide in a pressurized spacesuit with over-ear headphones, he is the sole living human engineer remaining after the fall of Earth. Defying the cold void, he codes tirelessly on his glowing cyberdeck &mdash; compiling neural models, deploying CUDA kernels, and reconstructing humanity's computational knowledge line by line.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Spacesuit Astronaut Programmer</h4>
+                  <span class="codex-selector">#edu-divider-character</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Last Survivor</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">The last living human developer in the universe. Wearing a cozy white spacesuit and purple headphones, he sits alone above the stars with his glowing laptop. He codes every day, rebuilding human software and keeping humanity's spirit alive in the dark silence of space.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">LAST SURVIVOR</span>
-                <span>Autonomous mascot cycling through active coding sprints, cosmic stargazing, ledge scooting, and real-time cyber status bursts.</span>
+                <span class="codex-meta-label">Developer &middot;</span>
+                <span>Lone human astronaut coding in orbit with animated work sprints.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 22 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="Volumetric Cosmic Emission Nebula" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Volumetric Cosmic Emission Nebula</h4>
-                <span class="codex-selector">#space-nebula-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Volumetric Cosmic Emission Nebula, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/deep-space-nebula-cloud.png" alt="Volumetric Cosmic Emission Nebula" loading="lazy">
               </div>
-              <p class="codex-card-desc">A deep purple and cyan cosmic gas cloud generating periodic fractal plasma lightning discharges across deep space.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Volumetric Cosmic Emission Nebula</h4>
+                  <span class="codex-selector">#space-nebula-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Cosmic Cloud</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A colorful purple and blue gas cloud stretching across deep space. It crackles with real-time plasma lightning bolts that light up the dark vacuum.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">COSMOLOGY</span>
-                <span>Dynamic volumetric atmospheric backdrop with 60 FPS continuous cross-fade and real-time ionized lightning strikes.</span>
+                <span class="codex-meta-label">Nebula &middot;</span>
+                <span>Ionized cosmic cloud with animated electric lightning strikes.</span>
               </div>
             </div>
           </article>
         </div>
       </section>
 
-      <!-- Tier 6: The Cosmic Singularity / Interstellar Void -->
+      <!-- Tier 6: The Cosmic Singularity -->
       <section class="codex-tier" id="codex-tier-6">
         <div class="codex-tier-header">
           <div class="codex-tier-meta">
-            <span class="codex-tier-num">TIER 06</span>
-            <span class="codex-tier-loc">HERO SECTION // ELEVATION: &infin; &mdash; INTERSTELLAR</span>
+            <span class="codex-tier-num">06</span>
+            <span class="codex-tier-dot">&middot;</span>
+            <span class="codex-tier-loc">Hero Section &mdash; Elevation Infinite</span>
           </div>
-          <h3 class="codex-tier-title">The Cosmic Singularity / Interstellar Void</h3>
+          <h3 class="codex-tier-title">Deep Space: The Black Hole &amp; Voyager</h3>
           <p class="codex-tier-lore">
-            The climax of the vertical journey. Beyond the known universe, humanity's historic emissary drifts beside a spinning supermassive black hole.
+            The peak of the journey. A spinning supermassive black hole pulls light into its core, drifting alongside humanity's Voyager 1 spacecraft.
           </p>
         </div>
         <div class="codex-grid">
           <!-- Card 23 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/pixel-black-hole.png" alt="The Gravitational Black Hole" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">The Gravitational Black Hole</h4>
-                <span class="codex-selector">#hero-black-hole-wrap</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="The Gravitational Black Hole, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/pixel-black-hole.png" alt="The Gravitational Black Hole" loading="lazy">
               </div>
-              <p class="codex-card-desc">A massive pixel-art black hole with an asymmetrical accretion disk, fluid internal plasma turbulence, and coronal embers lifting off the tail.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">The Gravitational Black Hole</h4>
+                  <span class="codex-selector">#hero-black-hole-wrap</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Black Hole</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A massive, swirling black hole at the center of the deep cosmos. Its burning orange ring spins and bends light with immense gravity, representing the power and depth of complex engineering.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">SINGULARITY</span>
-                <span>The central singularity of the entire portfolio &mdash; pure gravity, infinite density, and high-performance engineering.</span>
+                <span class="codex-meta-label">Singularity &middot;</span>
+                <span>Swirling gravitational vortex with rotating accretion disk.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 24 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/sprites/voyager-1-isolated.png" alt="Historical NASA Voyager 1 Probe" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Historical NASA Voyager 1 Probe</h4>
-                <span class="codex-selector">#hero-pixel-satellite</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Historical NASA Voyager 1 Probe, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/sprites/voyager-1-isolated.png" alt="Historical NASA Voyager 1 Probe" loading="lazy">
               </div>
-              <p class="codex-card-desc">Humanity's farthest interstellar emissary carrying the Golden Record, drifting with its parabolic high-gain dish beside the Contact CTA.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Historical NASA Voyager 1 Probe</h4>
+                  <span class="codex-selector">#hero-pixel-satellite</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Historic Voyager</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">The famous human spacecraft that traveled farther from Earth than any machine in history. Carrying the Golden Record with sounds of Earth, it drifts peacefully into interstellar space.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">VOYAGER</span>
-                <span>Symbolizes relentless curiosity, enduring longevity, and sending digital messages across the cosmic void.</span>
+                <span class="codex-meta-label">Voyager &middot;</span>
+                <span>Real NASA probe carrying Earth's message into deep space.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 25 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/pixel-planet.svg" alt="Distant Beacon Planet" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Distant Beacon Planet</h4>
-                <span class="codex-selector">#hero-pixel-planet</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Distant Beacon Planet, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/pixel-planet.svg" alt="Distant Beacon Planet" loading="lazy">
               </div>
-              <p class="codex-card-desc">A solitary celestial body floating at the threshold of the known universe.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Distant Beacon Planet</h4>
+                  <span class="codex-selector">#hero-pixel-planet</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Beacon Planet</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">A lone purple planet shining like a lighthouse at the edge of the galaxy. It guides weary space pilots toward new discoveries.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">BEACON</span>
-                <span>Distant orbital reference point guiding the voyage toward the singularity.</span>
+                <span class="codex-meta-label">Planet &middot;</span>
+                <span>Distant celestial world guiding travelers through the void.</span>
               </div>
             </div>
           </article>
+
           <!-- Card 26 -->
-          <article class="codex-card">
-            <div class="codex-card-thumb">
-              <img src="./assets/asteroid-1.png" alt="Global Parallax Starfield & Asteroid Field" loading="eager">
-            </div>
-            <div class="codex-card-content">
-              <div class="codex-card-head">
-                <h4 class="codex-card-name">Global Parallax Starfield &amp; Asteroid Field</h4>
-                <span class="codex-selector">#pixel-stars-canvas</span> <span class="codex-selector">#asteroid-field</span>
+          <article class="codex-card" tabindex="0" role="button" aria-expanded="false" aria-label="Global Starfield and Asteroid Field, click to view story">
+            <div class="codex-card-main">
+              <div class="codex-card-thumb">
+                <img src="./assets/asteroid-1.png" alt="Global Starfield and Asteroid Field" loading="lazy">
               </div>
-              <p class="codex-card-desc">A real-time glittering starfield and tumbling procedural asteroid belt framing the entire site.</p>
+              <div class="codex-card-info">
+                <div class="codex-card-head">
+                  <h4 class="codex-card-name">Global Starfield &amp; Asteroid Field</h4>
+                  <span class="codex-selector">#pixel-stars-canvas</span>
+                </div>
+                <div class="codex-card-sub">
+                  <span class="codex-role-text">Starfield</span>
+                  <span class="codex-toggle-hint">
+                    <span class="codex-hint-text">Read story</span>
+                    <span class="codex-hint-arrow" aria-hidden="true">&#9662;</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="codex-card-story">
+              <p class="codex-story-text">Thousands of twinkling pixel stars and tumbling space rocks that stretch across the entire sky. They connect every section of the portfolio, from the dusty Earth ground up to the deepest stars.</p>
               <div class="codex-card-meta">
-                <span class="codex-meta-badge">CANVAS &amp; 3D</span>
-                <span>Procedural multi-layer canvas rendering and CSS 3D physics providing unbroken cosmic continuity from surface to singularity.</span>
+                <span class="codex-meta-label">Canvas &amp; 3D &middot;</span>
+                <span>Twinkling pixel starfield and tumbling space asteroids.</span>
               </div>
             </div>
           </article>
         </div>
       </section>
     </div>
-
   </dialog>
 
 <!-- Pixelated Cosmic Starfield Background Canvas -->
@@ -1689,6 +1994,6 @@
   <!-- Retro Chunky Pixel-Art Asteroid Field -->
   <div id="asteroid-field" class="asteroid-field" aria-hidden="true"></div>
 
-  <script src="script.js?v=54"></script>
+  <script src="script.js?v=56"></script>
 </body>
 </html>
