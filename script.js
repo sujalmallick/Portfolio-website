@@ -3214,8 +3214,8 @@ document.addEventListener('keydown', function (e) {
       var relY = (e.clientY - rect.top) / rect.height - 0.5;
 
       // Damped target displacement (+/-18px horizontal, +/-14px vertical)
-      targetX = relX * 36;
-      targetY = relY * 28;
+      targetX = relX * 14;
+      targetY = relY * 10;
       isHovered = true;
 
       if (!rafId) {
@@ -3236,8 +3236,8 @@ document.addEventListener('keydown', function (e) {
       }
 
       // Smooth lerp damping (0.045 factor gives celestial weightless inertia)
-      currentX += (targetX - currentX) * 0.045;
-      currentY += (targetY - currentY) * 0.045;
+      currentX += (targetX - currentX) * 0.025;
+      currentY += (targetY - currentY) * 0.025;
 
       nebulaWrap.style.transform = 'translate3d(' + currentX.toFixed(2) + 'px, ' + currentY.toFixed(2) + 'px, 0)';
 
