@@ -1081,9 +1081,9 @@ document.addEventListener('keydown', function (e) {
     });
   }
 
-  setupTowerAction(citadel, 'is-pulsing', '⚡ OVERCHARGE +250MW', 'ΩN CORE ACTIVE', 1800);
-  setupTowerAction(factory, 'is-venting', '💨 STEAM PURGED', 'SMELTER RUNNING', 1800);
-  setupTowerAction(refinery, 'is-cycling', '⚠️ WINCH CYCLED', 'CARGO DOCKED', 1800);
+  setupTowerAction(citadel, 'is-pulsing', 'OVERCHARGE +250MW', 'ΩN CORE ACTIVE', 1800);
+  setupTowerAction(factory, 'is-venting', 'STEAM PURGED', 'SMELTER RUNNING', 1800);
+  setupTowerAction(refinery, 'is-cycling', 'WINCH CYCLED', 'CARGO DOCKED', 1800);
 })();
 
 
@@ -1501,6 +1501,10 @@ document.addEventListener('keydown', function (e) {
 
     var frame = 0;
     function render() {
+      if (document.body.classList.contains('codex-open')) {
+        requestAnimationFrame(render);
+        return;
+      }
       ctx.clearRect(0, 0, width, height);
       frame++;
 
@@ -1818,13 +1822,13 @@ document.addEventListener('keydown', function (e) {
 
     var STATUS_MESSAGES = [
       'git commit -m "feat: ai-pipeline"',
-      'CUDA kernel deployed ⚡',
+      'CUDA kernel deployed',
       'TIET / Computer Eng \'27',
       'npm run dev -- --host',
-      '0 errors, 0 warnings ✓',
+      '0 errors, 0 warnings',
       'training transformer model...',
-      'multi-agent graph online 🚀',
-      'all tests passing ✓',
+      'multi-agent graph online',
+      'all tests passing',
       'inference latency 3.8ms'
     ];
 
@@ -3304,7 +3308,7 @@ document.addEventListener('keydown', function (e) {
 
     var closeBtn = document.getElementById('codex-close-btn');
     var dialogBody = document.getElementById('codex-body');
-    var pills = dialog.querySelectorAll('.codex-pill');
+    var pills = dialog.querySelectorAll('.codex-tab');
     var tiers = dialog.querySelectorAll('.codex-tier');
 
     function openCodex() {
@@ -3358,6 +3362,27 @@ document.addEventListener('keydown', function (e) {
 
     dialog.addEventListener('cancel', function () {
       document.body.classList.remove('codex-open');
+    });
+
+        // Collapsible Codex Cards: click or keyboard (Enter/Space) toggles story expansion
+    var cards = dialog.querySelectorAll('.codex-card');
+    cards.forEach(function (card) {
+      function toggleCard() {
+        var isExpanded = card.classList.toggle('is-expanded');
+        card.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        var hint = card.querySelector('.codex-hint-text');
+        if (hint) {
+          hint.textContent = isExpanded ? 'Hide story' : 'Read story';
+        }
+      }
+
+      card.addEventListener('click', toggleCard);
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCard();
+        }
+      });
     });
 
     // Quick-jump navigation pills
