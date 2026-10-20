@@ -3364,23 +3364,18 @@ document.addEventListener('keydown', function (e) {
       document.body.classList.remove('codex-open');
     });
 
-        // Collapsible Codex Cards: click or keyboard (Enter/Space) toggles story expansion
+        // Codex Cards: click or keyboard (Enter/Space) focuses and highlights card
     var cards = dialog.querySelectorAll('.codex-card');
     cards.forEach(function (card) {
-      function toggleCard() {
-        var isExpanded = card.classList.toggle('is-expanded');
-        card.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-        var hint = card.querySelector('.codex-hint-text');
-        if (hint) {
-          hint.textContent = isExpanded ? 'Hide story' : 'Read story';
-        }
+      function highlightCard() {
+        cards.forEach(function (c) { if (c !== card) c.classList.remove('is-active'); });
+        card.classList.toggle('is-active');
       }
-
-      card.addEventListener('click', toggleCard);
+      card.addEventListener('click', highlightCard);
       card.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          toggleCard();
+          highlightCard();
         }
       });
     });
