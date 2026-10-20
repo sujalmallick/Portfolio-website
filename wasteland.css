@@ -48,7 +48,7 @@
 /* Distant Orbital Satellite Above Left Wasteland Horizon */
 .prop-wasteland-satellite {
   position: absolute;
-  top: 2px;
+  top: -24px;
   left: 17%;
   width: 26px;
   height: 26px;
@@ -88,6 +88,163 @@
   }
   100% {
     transform: translate3d(6px, -2px, 0) rotate(1deg);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   CYBERPUNK HOVERCAR — AMBIENT FLOATING VEHICLE WITH ACTIVE THRUSTERS
+   (Continuous Skyline Cruise from Right to Left with Subdued Lighting)
+   ════════════════════════════════════════════════════════════════════ */
+
+.prop-wasteland-hovercar {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: auto;
+  z-index: 2; /* Sits naturally in the distant atmospheric sky */
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+  outline: none;
+  animation: hovercarSkylineCruise 26s linear infinite;
+}
+.prop-wasteland-hovercar:hover {
+  animation-play-state: paused;
+}
+.prop-wasteland-hovercar:focus-visible {
+  outline: 2px dashed #38bdf8;
+  outline-offset: 4px;
+}
+
+.wasteland-hovercar-physics {
+  position: relative;
+  display: inline-block;
+  animation: hovercarGentleFloat 5.6s ease-in-out infinite;
+  filter: drop-shadow(0 3px 8px rgba(56, 189, 248, 0.25));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+  will-change: transform, filter;
+}
+
+.prop-wasteland-hovercar:hover .wasteland-hovercar-physics {
+  transform: translateY(-6px) scale(1.04);
+  filter: drop-shadow(0 6px 14px rgba(56, 189, 248, 0.65)) drop-shadow(0 0 10px rgba(14, 165, 233, 0.4));
+}
+.prop-wasteland-hovercar:hover .hovercar-sprite-img {
+  opacity: 1;
+  filter: brightness(0.85) contrast(1);
+}
+
+.hovercar-sprite-img {
+  display: block;
+  width: 94px;
+  height: 46px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  opacity: 0.86;
+  filter: brightness(0.72) contrast(0.95);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Downward plasma jet thrusters plume & ground glow (Subtle Distant Flare) */
+.hovercar-plasma-flare {
+  position: absolute;
+  bottom: -4px;
+  left: 18%;
+  right: 18%;
+  height: 9px;
+  background: radial-gradient(ellipse at center top, rgba(56, 189, 248, 0.65) 0%, rgba(14, 165, 233, 0.2) 50%, transparent 80%);
+  animation: thrusterPlasmaPulse 1.9s ease-in-out infinite alternate;
+  pointer-events: none;
+  filter: blur(1.5px);
+  will-change: transform, opacity;
+}
+
+/* Continuous Horizontal Skyline Cruise: Right to Left across the wasteland */
+@keyframes hovercarSkylineCruise {
+  0% {
+    transform: translate3d(calc(100vw + 60px), 0, 0);
+    visibility: visible;
+  }
+  75% {
+    transform: translate3d(-140px, 0, 0);
+    visibility: visible;
+  }
+  75.01%, 99.99% {
+    transform: translate3d(-140px, 0, 0);
+    visibility: hidden;
+  }
+  100% {
+    transform: translate3d(calc(100vw + 60px), 0, 0);
+    visibility: hidden;
+  }
+}
+
+@keyframes hovercarGentleFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(1.5px, -3.5px, 0) rotate(0.4deg);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(-1.5px, -3px, 0) rotate(-0.35deg);
+  }
+}
+
+@keyframes thrusterPlasmaPulse {
+  0% {
+    opacity: 0.55;
+    transform: scaleX(0.88) scaleY(0.85);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scaleX(1.1) scaleY(1.15);
+  }
+}
+
+/* Interactive click thruster boost */
+.prop-wasteland-hovercar.thrust-boost .wasteland-hovercar-physics {
+  animation: hovercarBoostJump 1.2s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards !important;
+}
+.prop-wasteland-hovercar.thrust-boost .hovercar-plasma-flare {
+  animation: thrusterBoostFlash 1.2s ease-out forwards !important;
+}
+
+@keyframes hovercarBoostJump {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(-3px, -12px, 0) scale(1.06) rotate(0.8deg);
+  }
+  60% {
+    transform: translate3d(1px, -5px, 0) scale(1.01) rotate(-0.3deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes thrusterBoostFlash {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  20% {
+    transform: scaleX(1.4) scaleY(1.8);
+    opacity: 0.95;
+    filter: blur(2px) drop-shadow(0 0 8px #38bdf8);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
   }
 }
 
@@ -603,12 +760,24 @@
   .wasteland-satellite-drift {
     animation: none !important;
   }
+  .prop-wasteland-hovercar {
+    animation: none !important;
+    left: auto !important;
+    right: 25% !important;
+  }
+  .wasteland-hovercar-physics,
+  .hovercar-plasma-flare {
+    animation: none !important;
+  }
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
   .footer-scenery-strip.wasteland-scenery   { height: 220px !important; }
-  .prop-wasteland-satellite                 { left: 19%; top: 2px; width: 23px; height: 23px; }
+  .prop-wasteland-satellite                 { left: 19%; top: -22px; width: 23px; height: 23px; }
+  .prop-wasteland-hovercar                  { top: 20px; animation-duration: 22s; }
+  .hovercar-sprite-img                      { width: 82px; height: 40px; }
+  .hovercar-plasma-flare                    { bottom: -3px; height: 8px; }
   .prop-wasteland-citadel                   { width: 115px; height: 153px; left: 51%; }
   .prop-wasteland-beacon                    { width: 48px; height: 152px; left: 20%; }
   .prop-wasteland-factory-left              { width: 105px; height: 150px; }
@@ -620,7 +789,10 @@
 }
 @media (max-width: 768px) {
   .footer-scenery-strip.wasteland-scenery   { height: 200px !important; }
-  .prop-wasteland-satellite                 { left: 20%; top: 2px; width: 20px; height: 20px; }
+  .prop-wasteland-satellite                 { left: 20%; top: -18px; width: 20px; height: 20px; }
+  .prop-wasteland-hovercar                  { top: 18px; animation-duration: 18s; }
+  .hovercar-sprite-img                      { width: 72px; height: 35px; }
+  .hovercar-plasma-flare                    { bottom: -3px; height: 7px; }
   .prop-wasteland-citadel                   { width: 95px; height: 126px; left: 49%; }
   .prop-wasteland-beacon                    { width: 38px; height: 120px; left: 18%; }
   .beacon-amber-lamp,
@@ -637,7 +809,10 @@
 }
 @media (max-width: 480px) {
   .footer-scenery-strip.wasteland-scenery   { height: 185px !important; }
-  .prop-wasteland-satellite                 { left: 17%; top: 2px; width: 17px; height: 17px; }
+  .prop-wasteland-satellite                 { left: 17%; top: -14px; width: 17px; height: 17px; }
+  .prop-wasteland-hovercar                  { top: 12px; animation-duration: 15s; }
+  .hovercar-sprite-img                      { width: 56px; height: 27px; }
+  .hovercar-plasma-flare                    { bottom: -2px; height: 6px; }
   .prop-wasteland-beacon                    { width: 28px; height: 90px; left: 14%; }
   .beacon-amber-lamp,
   .beacon-red-lamp                          { width: 2.5px; height: 2.5px; }
@@ -651,7 +826,10 @@
 }
 @media (max-width: 360px) {
   .footer-scenery-strip.wasteland-scenery   { height: 175px !important; }
-  .prop-wasteland-satellite                 { left: 15%; top: 2px; width: 15px; height: 15px; }
+  .prop-wasteland-satellite                 { left: 15%; top: -12px; width: 15px; height: 15px; }
+  .prop-wasteland-hovercar                  { top: 10px; animation-duration: 14s; }
+  .hovercar-sprite-img                      { width: 50px; height: 24px; }
+  .hovercar-plasma-flare                    { bottom: -2px; height: 5px; }
   .prop-wasteland-beacon                    { width: 24px; height: 76px; left: 12%; }
   .prop-wasteland-refinery-right            { width: 95px; height: 70px; right: -4px; }
   .prop-wasteland-citadel                   { width: 68px; height: 90px; left: 44%; }

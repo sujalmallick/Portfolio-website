@@ -1084,6 +1084,35 @@ document.addEventListener('keydown', function (e) {
   setupTowerAction(citadel, 'is-pulsing', 'OVERCHARGE +250MW', 'ΩN CORE ACTIVE', 1800);
   setupTowerAction(factory, 'is-venting', 'STEAM PURGED', 'SMELTER RUNNING', 1800);
   setupTowerAction(refinery, 'is-cycling', 'WINCH CYCLED', 'CARGO DOCKED', 1800);
+
+  // 3. Cyberpunk Hovercar Interactive Thruster Boost
+  var hovercar = document.getElementById('prop-wasteland-hovercar');
+  if (hovercar) {
+    var isHovercarBoosting = false;
+    function triggerHovercarBoost() {
+      if (isHovercarBoosting) return;
+      isHovercarBoosting = true;
+      hovercar.classList.remove('thrust-boost');
+      void hovercar.offsetWidth; // Force CSS reflow
+      hovercar.classList.add('thrust-boost');
+      setTimeout(function () {
+        hovercar.classList.remove('thrust-boost');
+        isHovercarBoosting = false;
+      }, 1200);
+    }
+
+    hovercar.addEventListener('click', function (e) {
+      e.stopPropagation();
+      triggerHovercarBoost();
+    });
+
+    hovercar.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerHovercarBoost();
+      }
+    });
+  }
 })();
 
 

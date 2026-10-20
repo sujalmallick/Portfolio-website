@@ -529,7 +529,7 @@
             </svg>
           </a>
         </div>
-        <p class="project-description">Extended a GPU-accelerated open-source CUDA boids simulator. Added spatial-hash neighbour searching to eliminate \(O(N^2)\) particle checks, zero-copy CUDA&ndash;OpenGL interop for direct frame-buffer rendering, and an interactive Dear ImGui control panel &mdash; scaling to 100k+ boids at 60 FPS.</p>
+        <p class="project-description">Extended a GPU-accelerated open-source CUDA boids simulator. Added spatial-hash neighbour searching to eliminate <em>O(N<sup>2</sup>)</em> particle checks, zero-copy CUDA&ndash;OpenGL interop for direct frame-buffer rendering, and an interactive Dear ImGui control panel &mdash; scaling to 100k+ boids at 60 FPS.</p>
         <div class="architecture-callout">
           <button type="button" class="pipeline-dropdown-btn" aria-expanded="false" aria-controls="pipeline-flow-3">
             <span class="pipeline-btn-left">
@@ -989,6 +989,14 @@
         <div class="prop-wasteland-satellite" id="prop-wasteland-satellite" aria-hidden="true">
           <div class="wasteland-satellite-drift">
             <img src="./assets/pixel-satellite.png" alt="" class="wasteland-satellite-img" width="28" height="28" draggable="false">
+          </div>
+        </div>
+
+        <!-- Layer 1c: Cyberpunk Hovercar (Ambient Floating Vehicle) -->
+        <div class="prop-wasteland-hovercar" id="prop-wasteland-hovercar" role="button" tabindex="0" aria-label="Cyberpunk Hovercar: Ambient floating vehicle (Click for thruster boost)">
+          <div class="wasteland-hovercar-physics">
+            <img src="./assets/sprites/cyberpunk-hovercar-sprite.png" alt="" class="hovercar-sprite-img" width="94" height="46" draggable="false">
+            <div class="hovercar-plasma-flare" aria-hidden="true"></div>
           </div>
         </div>
 
