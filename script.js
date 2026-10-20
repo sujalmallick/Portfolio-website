@@ -3185,109 +3185,83 @@ document.addEventListener('keydown', function (e) {
 })();
 
 /* ════════════════════════════════════════════════════════════════════
-   DEEP-SPACE NEBULA 60 FPS CONTINUOUS PLASMA LIGHTNING CROSS-FADER
+   DEEP-SPACE NEBULA GRAVITATIONAL INERTIA & CURSOR REACTIVITY ENGINE
+   - Smooth damped cursor parallax simulating zero-g fluid gas mass
+   - Automatic pause when out of viewport for zero CPU consumption
+   - Respects prefers-reduced-motion
    ════════════════════════════════════════════════════════════════════ */
-(function initNebulaLightningCrossfade() {
+(function initNebulaCosmicPhysics() {
   function start() {
-    var canvas = document.getElementById('space-nebula-canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.imageSmoothingEnabled = false;
+    var nebulaWrap = document.getElementById('space-nebula-wrap');
+    var aboutSection = document.getElementById('about');
+    if (!nebulaWrap || !aboutSection) return;
 
     var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     var prefersReduced = motionQuery.matches;
 
-    var FRAME_W = 264;
-    var FRAME_H = 164;
-    var TOTAL_FRAMES = 12;
-    var CYCLE_DURATION = 18000; // 18s calm cosmic cycle
-    var DORMANT_PORTION = 0.58; // 58% dormant serene drift (~10.4s), 42% continuous fluid discharge (~7.6s)
-
-    var sheet = new Image();
-    sheet.src = './assets/sprites/nebula-lightning-12frame-sheet.png';
-
+    var targetX = 0;
+    var targetY = 0;
+    var currentX = 0;
+    var currentY = 0;
     var isVisible = true;
-    var startTime = null;
+    var isHovered = false;
     var rafId = null;
 
-    function getBlendState(tNorm) {
-      if (tNorm < DORMANT_PORTION) {
-        return { fA: 0, fB: 0, blend: 0 };
+    function onMouseMove(e) {
+      if (prefersReduced || !isVisible) return;
+      var rect = aboutSection.getBoundingClientRect();
+      var relX = (e.clientX - rect.left) / rect.width - 0.5;
+      var relY = (e.clientY - rect.top) / rect.height - 0.5;
+
+      // Damped target displacement (+/-18px horizontal, +/-14px vertical)
+      targetX = relX * 36;
+      targetY = relY * 28;
+      isHovered = true;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(tick);
       }
-      var activeProgress = (tNorm - DORMANT_PORTION) / (1.0 - DORMANT_PORTION);
-      var totalSteps = 12;
-      var stepPos = activeProgress * totalSteps;
-      var stepIdx = Math.floor(stepPos);
-      var rawBlend = stepPos - stepIdx;
-
-      // Smooth cosine easing on blend to eliminate any micro-inflection
-      var smoothBlend = 0.5 - 0.5 * Math.cos(rawBlend * Math.PI);
-
-      var fA = stepIdx % TOTAL_FRAMES;
-      var fB = (stepIdx + 1) % TOTAL_FRAMES;
-      return { fA: fA, fB: fB, blend: smoothBlend };
     }
 
-    function drawFrame(fA, fB, blend) {
-      ctx.clearRect(0, 0, FRAME_W, FRAME_H);
-      ctx.globalAlpha = 1.0 - blend;
-      ctx.drawImage(sheet, fA * FRAME_W, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
-
-      if (blend > 0.001) {
-        ctx.globalAlpha = blend;
-        ctx.drawImage(sheet, fB * FRAME_W, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
-      }
-      ctx.globalAlpha = 1.0;
+    function onMouseLeave() {
+      targetX = 0;
+      targetY = 0;
+      isHovered = false;
     }
 
-    function render(now) {
-      if (document.hidden || !isVisible) {
+    function tick() {
+      if (!isVisible || prefersReduced) {
         rafId = null;
         return;
       }
 
-      if (prefersReduced) {
-        drawFrame(0, 0, 0);
-        rafId = null;
-        return;
-      }
+      // Smooth lerp damping (0.045 factor gives celestial weightless inertia)
+      currentX += (targetX - currentX) * 0.045;
+      currentY += (targetY - currentY) * 0.045;
 
-      if (!startTime) startTime = now;
-      var elapsed = (now - startTime) % CYCLE_DURATION;
-      var tNorm = elapsed / CYCLE_DURATION;
+      nebulaWrap.style.transform = 'translate3d(' + currentX.toFixed(2) + 'px, ' + currentY.toFixed(2) + 'px, 0)';
 
-      var state = getBlendState(tNorm);
-      drawFrame(state.fA, state.fB, state.blend);
-
-      rafId = requestAnimationFrame(render);
-    }
-
-    sheet.onload = function () {
-      if (prefersReduced) {
-        drawFrame(0, 0, 0);
-        return;
-      }
-      rafId = requestAnimationFrame(render);
-    };
-
-    if (sheet.complete && sheet.naturalWidth > 0) {
-      if (prefersReduced) {
-        drawFrame(0, 0, 0);
+      // Continue animating while moving or relaxing back to rest
+      var distSq = (targetX - currentX) * (targetX - currentX) + (targetY - currentY) * (targetY - currentY);
+      if (distSq > 0.01 || isHovered) {
+        rafId = requestAnimationFrame(tick);
       } else {
-        rafId = requestAnimationFrame(render);
+        rafId = null;
+        if (!isHovered && Math.abs(currentX) < 0.05 && Math.abs(currentY) < 0.05) {
+          nebulaWrap.style.transform = '';
+        }
       }
     }
+
+    aboutSection.addEventListener('mousemove', onMouseMove, { passive: true });
+    aboutSection.addEventListener('mouseleave', onMouseLeave, { passive: true });
 
     motionQuery.addEventListener('change', function (e) {
       prefersReduced = e.matches;
       if (prefersReduced) {
         if (rafId) cancelAnimationFrame(rafId);
         rafId = null;
-        drawFrame(0, 0, 0);
-      } else if (isVisible && !rafId) {
-        startTime = null;
-        rafId = requestAnimationFrame(render);
+        nebulaWrap.style.transform = '';
       }
     });
 
@@ -3295,12 +3269,13 @@ document.addEventListener('keydown', function (e) {
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           isVisible = entry.isIntersecting;
-          if (isVisible && !rafId && !prefersReduced && sheet.complete) {
-            rafId = requestAnimationFrame(render);
+          if (!isVisible && rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
           }
         });
-      }, { threshold: 0.05, rootMargin: '120px 0px 120px 0px' });
-      obs.observe(canvas);
+      }, { threshold: 0.05, rootMargin: '100px 0px 100px 0px' });
+      obs.observe(aboutSection);
     }
   }
 
