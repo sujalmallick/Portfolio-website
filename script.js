@@ -1815,7 +1815,7 @@ document.addEventListener('keydown', function (e) {
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // 12 Frames: Frame 0..11, each frame width is 66px
-    var FRAME_W = 66;
+    var FRAME_W = 56;
     function setFrame(idx) {
       sprite.style.backgroundPosition = (-idx * FRAME_W) + 'px 0px';
     }

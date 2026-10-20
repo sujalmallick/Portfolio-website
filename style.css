@@ -873,17 +873,15 @@ section {
 /* Retro Pixel Spacesuit Programmer — Autonomous Education Ledge Coder */
 .edu-divider-character {
   position: absolute;
-  top: -61px; /* Thigh contact line at Y=67.9% sits flush on the 1px divider border */
+  top: -52px; /* Thigh contact line at Y=52px (67.8%) sits flush on the 1px divider border */
   right: 6%;
-  width: 66px;
-  height: 90px;
+  width: 56px;
+  height: 76px;
   pointer-events: auto;
   cursor: pointer;
   z-index: 20;
   user-select: none;
   -webkit-user-select: none;
-  transform: scale(0.85);
-  transform-origin: 100% 67.8%;
 }
 
 .edu-divider-character:hover .edu-programmer-sprite {
@@ -950,10 +948,10 @@ section {
 }
 
 .edu-programmer-sprite {
-  width: 66px;
-  height: 90px;
+  width: 56px;
+  height: 76px;
   background-image: url('./assets/sprites/modern-spacesuit-programmer-sheet.png');
-  background-size: 792px 90px;
+  background-size: 672px 76px;
   background-repeat: no-repeat;
   background-position: 0px 0px;
   image-rendering: -moz-crisp-edges;
