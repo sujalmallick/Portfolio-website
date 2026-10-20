@@ -126,11 +126,13 @@
   }
 
   /* Distant Pixel Moon — Tablet scaling */
-  .contacts-pixel-moon {
+  .contacts-moon-btn {
     width: 130px;
     height: 130px;
     right: -38px;
     top: 175px;
+  }
+  .contacts-pixel-moon {
     opacity: 0.85;
   }
 }
@@ -157,6 +159,135 @@
   .cert-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
+  }
+
+  /* Architecture Callout — Mobile Collapsible Dropdown */
+  .architecture-callout,
+  .project-featured-aside .architecture-callout {
+    height: auto;
+    padding: 0.65rem 0.85rem;
+    border-left: 2px solid var(--accent);
+    background: rgba(12, 12, 14, 0.45);
+    border-radius: 4px;
+    margin-bottom: 1.15rem;
+  }
+
+  .pipeline-dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
+    background: rgba(18, 24, 38, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pipeline-dropdown-btn:hover {
+    background: rgba(24, 34, 52, 0.85);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+  }
+
+  .pipeline-dropdown-btn:focus-visible {
+    outline: 2px dashed var(--accent);
+    outline-offset: 2px;
+  }
+
+  .pipeline-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pipeline-btn-badge {
+    font-family: var(--font-mono, 'Courier New', monospace);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 1px 5px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .pipeline-btn-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #e0f2fe;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pipeline-btn-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono, 'Courier New', monospace);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+
+  .pipeline-toggle-arrow {
+    display: inline-block;
+    transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .pipeline-dropdown-btn[aria-expanded="true"] .pipeline-toggle-arrow {
+    transform: rotate(180deg);
+  }
+
+  .pipeline-collapse-content {
+    display: none;
+    margin-top: 0.85rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed rgba(56, 189, 248, 0.2);
+  }
+
+  .pipeline-collapse-content.is-open {
+    display: block;
+    animation: pipelineFadeIn 0.24s ease-out;
+  }
+
+  .pipeline-collapse-content .arch-label {
+    display: none; /* Title already visible on dropdown button */
+  }
+
+  @keyframes pipelineFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pipeline-toggle-arrow {
+      transition: none !important;
+    }
+    .pipeline-collapse-content.is-open {
+      animation: none !important;
+    }
   }
 
   /* Verified credentials bar: stack and align */
@@ -415,11 +546,13 @@
   }
 
   /* Distant Pixel Moon — Compact Mobile scaling */
-  .contacts-pixel-moon {
+  .contacts-moon-btn {
     width: 76px;
     height: 76px;
     right: -24px;
     top: 145px;
+  }
+  .contacts-pixel-moon {
     opacity: 0.82;
   }
 }
@@ -429,6 +562,15 @@
   :root {
     --section-px: 1rem;
     --section-py: 3.5rem;
+  }
+
+  .pipeline-btn-title {
+    font-size: 0.72rem;
+  }
+
+  .pipeline-btn-badge {
+    font-size: 0.52rem;
+    padding: 1px 4px;
   }
 
   .section__pic-container {
@@ -645,11 +787,13 @@
   }
 
   /* Distant Pixel Moon — Ultra-narrow Mobile scaling */
-  .contacts-pixel-moon {
+  .contacts-moon-btn {
     width: 64px;
     height: 64px;
     right: -20px;
     top: 130px;
+  }
+  .contacts-pixel-moon {
     opacity: 0.78;
   }
 
